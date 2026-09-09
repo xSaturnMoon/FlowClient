@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "channel": "Stable",
+  "releaseNotes": "Flow launcher stable channel.",
+  "manifestUrl": null,
+  "githubRepository": "xSaturnMoon/FlowClient",
+  "downloadUrl": null
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "flowclient-branding",
+  "version": "${version}",
+  "name": "FlowClient Branding",
+  "description": "Adds FlowClient branding to the Minecraft title screen.",
+  "authors": ["FlowClient"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.flowclient.branding.FlowClientBrandingClient"
+    ]
+  },
+  "mixins": [
+    "flowclient-branding.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2"
+  }
+}

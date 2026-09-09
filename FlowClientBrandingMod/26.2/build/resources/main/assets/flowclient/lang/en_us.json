@@ -1,0 +1,9 @@
+{
+  "key.flowclient.mod_panel": "Open Mod Panel",
+  "key.flowclient.zoom": "Zoom",
+  "key.flowclient.freelook": "Freelook",
+  "key.flowclient.fullbright": "Toggle Fullbright (B)",
+  "key.flowclient.all_schematics_menu": "AllSchematics Menu",
+  "key.flowclient.inventory_sort": "Sort Inventory",
+  "key.category.flowclient.flowclient": "FlowClient"
+}

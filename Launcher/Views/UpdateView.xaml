@@ -1,0 +1,104 @@
+    <UserControl x:Class="Launcher.Views.UpdateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Launcher.ViewModels"
+             xmlns:conv="clr-namespace:Launcher.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/ExploreResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <conv:StringNotEmptyToVisibilityConverter x:Key="StrVis"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="#131114">
+        <Grid Margin="48,48,48,32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition Width="280"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" MaxWidth="440">
+                <TextBlock Text="Update" Foreground="#FFFFFF" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                <TextBlock Text="Keep Flow up to date with the latest features and fixes."
+                           Foreground="#6E6E72" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#CCE4FF" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,24"/>
+
+                <Button Style="{StaticResource ExploreLaunchBtn}" Click="Check_Click"
+                        IsEnabled="{Binding CanCheck}" Margin="0">
+                    <TextBlock FontSize="15" FontWeight="SemiBold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Check for updates"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecking}" Value="True">
+                                        <Setter Property="Text" Value="Checking…"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Button>
+
+                <Button Content="Download update" Style="{StaticResource ExploreNavChipActive}"
+                        HorizontalAlignment="Left" Click="Download_Click"
+                        IsEnabled="{Binding CanDownload}" Margin="0,12,0,0"
+                        Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                <StackPanel Margin="0,12,0,0"
+                            Visibility="{Binding ShowDownloadProgress, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ProgressBar Value="{Binding DownloadProgress}" Maximum="100" Height="4"
+                                 Background="#1C1C1E" Foreground="#0A84FF" BorderThickness="0"/>
+                    <TextBlock Foreground="#6E6E72" FontSize="11" Margin="0,6,0,0">
+                        <Run Text="{Binding DownloadProgress, StringFormat={}{0:0}%}"/>
+                        <Run Text=" downloaded"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <Button Content="Install and restart" Style="{StaticResource ExploreNavChipActive}"
+                        HorizontalAlignment="Left" Click="Install_Click"
+                        IsEnabled="{Binding CanInstall}" Margin="0,12,0,0"
+                        Visibility="{Binding CanInstall, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                <Button Content="Back to Launch" Style="{StaticResource ExploreNavChip}"
+                        HorizontalAlignment="Left" Click="BackToLaunch_Click" Margin="0,12,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" VerticalAlignment="Top">
+                <TextBlock Text="Details" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Style="{StaticResource ExploreInstanceNav}">
+                    <StackPanel Margin="6,0">
+                        <TextBlock Text="Current" Foreground="#8E8E93" FontSize="11"/>
+                        <TextBlock Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0">
+                            <Run Text="{Binding LauncherVersion}"/><Run Text=" · "/><Run Text="{Binding LauncherChannel}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource ExploreInstanceNav}">
+                    <StackPanel Margin="6,0">
+                        <TextBlock Text="Latest" Foreground="#8E8E93" FontSize="11"/>
+                        <TextBlock Text="{Binding LatestVersion}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource ExploreInstanceNav}">
+                    <StackPanel Margin="6,0">
+                        <TextBlock Text="Last checked" Foreground="#8E8E93" FontSize="11"/>
+                        <TextBlock Text="{Binding LastCheckedText}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource ExploreInstanceNav}"
+                        Visibility="{Binding HasReleaseNotes, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel Margin="6,0">
+                        <TextBlock Text="Release notes" Foreground="#8E8E93" FontSize="11"/>
+                        <TextBlock Text="{Binding ReleaseNotes}" Foreground="#CCE4FF" FontSize="12"
+                                   Margin="0,2,0,0" TextWrapping="Wrap" MaxHeight="160"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

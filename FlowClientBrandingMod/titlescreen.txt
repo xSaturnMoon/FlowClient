@@ -1,0 +1,481 @@
+﻿Compiled from "TitleScreen.java"
+public class net.minecraft.client.gui.screens.TitleScreen extends net.minecraft.client.gui.screens.Screen {
+  public net.minecraft.client.gui.screens.TitleScreen();
+    Code:
+         0: aload_0
+         1: iconst_0
+         2: invokespecial #55                 // Method "<init>":(Z)V
+         5: return
+
+  public net.minecraft.client.gui.screens.TitleScreen(boolean);
+    Code:
+         0: aload_0
+         1: iload_1
+         2: aconst_null
+         3: invokespecial #60                 // Method "<init>":(ZLnet/minecraft/client/gui/components/LogoRenderer;)V
+         6: return
+
+  public net.minecraft.client.gui.screens.TitleScreen(boolean, net.minecraft.client.gui.components.LogoRenderer);
+    Code:
+         0: aload_0
+         1: getstatic     #62                 // Field TITLE:Lnet/minecraft/network/chat/Component;
+         4: invokespecial #65                 // Method net/minecraft/client/gui/screens/Screen."<init>":(Lnet/minecraft/network/chat/Component;)V
+         7: aload_0
+         8: iload_1
+         9: putfield      #67                 // Field fading:Z
+        12: aload_0
+        13: aload_2
+        14: invokedynamic #86,  0             // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+        19: invokestatic  #92                 // Method java/util/Objects.requireNonNullElseGet:(Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;
+        22: checkcast     #94                 // class net/minecraft/client/gui/components/LogoRenderer
+        25: putfield      #96                 // Field logoRenderer:Lnet/minecraft/client/gui/components/LogoRenderer;
+        28: aload_0
+        29: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+        32: getfield      #106                // Field net/minecraft/client/Minecraft.gameRenderer:Lnet/minecraft/client/renderer/GameRenderer;
+        35: invokevirtual #112                // Method net/minecraft/client/renderer/GameRenderer.panorama:()Lnet/minecraft/client/renderer/Panorama;
+        38: invokevirtual #117                // Method net/minecraft/client/renderer/Panorama.startSpin:()V
+        41: return
+
+  public void tick();
+    Code:
+         0: aload_0
+         1: invokevirtual #124                // Method realmsNotificationsEnabled:()Z
+         4: ifeq          14
+         7: aload_0
+         8: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+        11: invokevirtual #128                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.tick:()V
+        14: aload_0
+        15: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+        18: invokevirtual #132                // Method net/minecraft/client/Minecraft.getPlayerSocialManager:()Lnet/minecraft/client/gui/screens/social/PlayerSocialManager;
+        21: invokevirtual #137                // Method net/minecraft/client/gui/screens/social/PlayerSocialManager.isFriendListEnabled:()Z
+        24: ifeq          41
+        27: aload_0
+        28: getfield      #139                // Field friends:Lnet/minecraft/client/gui/components/FriendsButton;
+        31: ifnull        41
+        34: aload_0
+        35: getfield      #139                // Field friends:Lnet/minecraft/client/gui/components/FriendsButton;
+        38: invokevirtual #144                // Method net/minecraft/client/gui/components/FriendsButton.refreshIncomingRequestCount:()V
+        41: return
+
+  public static void registerTextures(net.minecraft.client.renderer.texture.TextureManager);
+    Code:
+         0: aload_0
+         1: getstatic     #151                // Field net/minecraft/client/gui/components/LogoRenderer.MINECRAFT_LOGO:Lnet/minecraft/resources/Identifier;
+         4: invokevirtual #157                // Method net/minecraft/client/renderer/texture/TextureManager.registerForNextReload:(Lnet/minecraft/resources/Identifier;)V
+         7: aload_0
+         8: getstatic     #160                // Field net/minecraft/client/gui/components/LogoRenderer.MINECRAFT_EDITION:Lnet/minecraft/resources/Identifier;
+        11: invokevirtual #157                // Method net/minecraft/client/renderer/texture/TextureManager.registerForNextReload:(Lnet/minecraft/resources/Identifier;)V
+        14: aload_0
+        15: getstatic     #163                // Field net/minecraft/client/renderer/Panorama.PANORAMA_OVERLAY:Lnet/minecraft/resources/Identifier;
+        18: invokevirtual #157                // Method net/minecraft/client/renderer/texture/TextureManager.registerForNextReload:(Lnet/minecraft/resources/Identifier;)V
+        21: return
+
+  public boolean isPauseScreen();
+    Code:
+         0: iconst_0
+         1: ireturn
+
+  public boolean shouldCloseOnEsc();
+    Code:
+         0: iconst_0
+         1: ireturn
+
+  protected void init();
+    Code:
+         0: aload_0
+         1: getfield      #169                // Field splash:Lnet/minecraft/client/gui/components/SplashRenderer;
+         4: ifnonnull     24
+         7: aload_0
+         8: aload_0
+         9: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+        12: getfield      #173                // Field net/minecraft/client/Minecraft.gui:Lnet/minecraft/client/gui/Gui;
+        15: invokevirtual #179                // Method net/minecraft/client/gui/Gui.splashManager:()Lnet/minecraft/client/resources/SplashManager;
+        18: invokevirtual #185                // Method net/minecraft/client/resources/SplashManager.getSplash:()Lnet/minecraft/client/gui/components/SplashRenderer;
+        21: putfield      #169                // Field splash:Lnet/minecraft/client/gui/components/SplashRenderer;
+        24: aload_0
+        25: getfield      #189                // Field font:Lnet/minecraft/client/gui/Font;
+        28: getstatic     #191                // Field COPYRIGHT_TEXT:Lnet/minecraft/network/chat/Component;
+        31: invokevirtual #197                // Method net/minecraft/client/gui/Font.width:(Lnet/minecraft/network/chat/FormattedText;)I
+        34: istore_1
+        35: aload_0
+        36: getfield      #200                // Field width:I
+        39: iload_1
+        40: isub
+        41: iconst_2
+        42: isub
+        43: istore_2
+        44: bipush        24
+        46: istore_3
+        47: aload_0
+        48: getfield      #203                // Field height:I
+        51: iconst_4
+        52: idiv
+        53: bipush        48
+        55: iadd
+        56: istore        4
+        58: aload_0
+        59: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+        62: invokevirtual #206                // Method net/minecraft/client/Minecraft.isDemo:()Z
+        65: ifeq          81
+        68: aload_0
+        69: iload         4
+        71: bipush        24
+        73: invokevirtual #210                // Method createDemoMenuOptions:(II)I
+        76: istore        4
+        78: goto          91
+        81: aload_0
+        82: iload         4
+        84: bipush        24
+        86: invokevirtual #213                // Method createNormalMenuOptions:(II)I
+        89: istore        4
+        91: iconst_3
+        92: istore        5
+        94: iconst_0
+        95: istore        6
+        97: iinc          4, 24
+       100: aload_0
+       101: aload_0
+       102: bipush        20
+       104: aload_0
+       105: invokedynamic #223,  0            // InvokeDynamic #1:onPress:(Lnet/minecraft/client/gui/screens/TitleScreen;)Lnet/minecraft/client/gui/components/Button$OnPress;
+       110: aload_0
+       111: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+       114: invokevirtual #206                // Method net/minecraft/client/Minecraft.isDemo:()Z
+       117: ifne          124
+       120: iconst_1
+       121: goto          125
+       124: iconst_0
+       125: invokestatic  #228                // Method net/minecraft/client/gui/components/CommonButtons.friends:(ILnet/minecraft/client/gui/components/Button$OnPress;Z)Lnet/minecraft/client/gui/components/FriendsButton;
+       128: invokevirtual #232                // Method addRenderableWidget:(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+       131: checkcast     #141                // class net/minecraft/client/gui/components/FriendsButton
+       134: putfield      #139                // Field friends:Lnet/minecraft/client/gui/components/FriendsButton;
+       137: aload_0
+       138: getfield      #139                // Field friends:Lnet/minecraft/client/gui/components/FriendsButton;
+       141: aload_0
+       142: iinc          6, 1
+       145: iload         6
+       147: iconst_3
+       148: bipush        20
+       150: invokevirtual #236                // Method getHorizontalPosition:(III)I
+       153: iload         4
+       155: invokevirtual #240                // Method net/minecraft/client/gui/components/FriendsButton.setPosition:(II)V
+       158: aload_0
+       159: bipush        20
+       161: aload_0
+       162: invokedynamic #245,  0            // InvokeDynamic #2:onPress:(Lnet/minecraft/client/gui/screens/TitleScreen;)Lnet/minecraft/client/gui/components/Button$OnPress;
+       167: iconst_1
+       168: invokestatic  #249                // Method net/minecraft/client/gui/components/CommonButtons.language:(ILnet/minecraft/client/gui/components/Button$OnPress;Z)Lnet/minecraft/client/gui/components/SpriteIconButton;
+       171: invokevirtual #232                // Method addRenderableWidget:(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+       174: checkcast     #251                // class net/minecraft/client/gui/components/SpriteIconButton
+       177: astore        7
+       179: aload         7
+       181: aload_0
+       182: iinc          6, 1
+       185: iload         6
+       187: iconst_3
+       188: bipush        20
+       190: invokevirtual #236                // Method getHorizontalPosition:(III)I
+       193: iload         4
+       195: invokevirtual #252                // Method net/minecraft/client/gui/components/SpriteIconButton.setPosition:(II)V
+       198: aload_0
+       199: bipush        20
+       201: aload_0
+       202: invokedynamic #257,  0            // InvokeDynamic #3:onPress:(Lnet/minecraft/client/gui/screens/TitleScreen;)Lnet/minecraft/client/gui/components/Button$OnPress;
+       207: iconst_1
+       208: invokestatic  #260                // Method net/minecraft/client/gui/components/CommonButtons.accessibility:(ILnet/minecraft/client/gui/components/Button$OnPress;Z)Lnet/minecraft/client/gui/components/SpriteIconButton;
+       211: invokevirtual #232                // Method addRenderableWidget:(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+       214: checkcast     #251                // class net/minecraft/client/gui/components/SpriteIconButton
+       217: astore        8
+       219: aload         8
+       221: aload_0
+       222: iinc          6, 1
+       225: iload         6
+       227: iconst_3
+       228: bipush        20
+       230: invokevirtual #236                // Method getHorizontalPosition:(III)I
+       233: iload         4
+       235: invokevirtual #252                // Method net/minecraft/client/gui/components/SpriteIconButton.setPosition:(II)V
+       238: aload_0
+       239: ldc_w         #262                // String menu.options
+       242: invokestatic  #268                // InterfaceMethod net/minecraft/network/chat/Component.translatable:(Ljava/lang/String;)Lnet/minecraft/network/chat/MutableComponent;
+       245: aload_0
+       246: invokedynamic #273,  0            // InvokeDynamic #4:onPress:(Lnet/minecraft/client/gui/screens/TitleScreen;)Lnet/minecraft/client/gui/components/Button$OnPress;
+       251: invokestatic  #277                // Method net/minecraft/client/gui/components/Button.builder:(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)Lnet/minecraft/client/gui/components/Button$Builder;
+       254: aload_0
+       255: getfield      #200                // Field width:I
+       258: iconst_2
+       259: idiv
+       260: bipush        100
+       262: isub
+       263: iinc          4, 24
+       266: iload         4
+       268: bipush        98
+       270: bipush        20
+       272: invokevirtual #281                // Method net/minecraft/client/gui/components/Button$Builder.bounds:(IIII)Lnet/minecraft/client/gui/components/Button$Builder;
+       275: invokevirtual #285                // Method net/minecraft/client/gui/components/Button$Builder.build:()Lnet/minecraft/client/gui/components/Button;
+       278: invokevirtual #232                // Method addRenderableWidget:(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+       281: pop
+       282: aload_0
+       283: ldc_w         #287                // String menu.quit
+       286: invokestatic  #268                // InterfaceMethod net/minecraft/network/chat/Component.translatable:(Ljava/lang/String;)Lnet/minecraft/network/chat/MutableComponent;
+       289: aload_0
+       290: invokedynamic #292,  0            // InvokeDynamic #5:onPress:(Lnet/minecraft/client/gui/screens/TitleScreen;)Lnet/minecraft/client/gui/components/Button$OnPress;
+       295: invokestatic  #277                // Method net/minecraft/client/gui/components/Button.builder:(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)Lnet/minecraft/client/gui/components/Button$Builder;
+       298: aload_0
+       299: getfield      #200                // Field width:I
+       302: iconst_2
+       303: idiv
+       304: iconst_2
+       305: iadd
+       306: iload         4
+       308: bipush        98
+       310: bipush        20
+       312: invokevirtual #281                // Method net/minecraft/client/gui/components/Button$Builder.bounds:(IIII)Lnet/minecraft/client/gui/components/Button$Builder;
+       315: invokevirtual #285                // Method net/minecraft/client/gui/components/Button$Builder.build:()Lnet/minecraft/client/gui/components/Button;
+       318: invokevirtual #232                // Method addRenderableWidget:(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+       321: pop
+       322: aload_0
+       323: new           #294                // class net/minecraft/client/gui/components/PlainTextButton
+       326: dup
+       327: iload_2
+       328: aload_0
+       329: getfield      #203                // Field height:I
+       332: bipush        10
+       334: isub
+       335: iload_1
+       336: bipush        10
+       338: getstatic     #191                // Field COPYRIGHT_TEXT:Lnet/minecraft/network/chat/Component;
+       341: aload_0
+       342: invokedynamic #299,  0            // InvokeDynamic #6:onPress:(Lnet/minecraft/client/gui/screens/TitleScreen;)Lnet/minecraft/client/gui/components/Button$OnPress;
+       347: aload_0
+       348: getfield      #189                // Field font:Lnet/minecraft/client/gui/Font;
+       351: invokespecial #302                // Method net/minecraft/client/gui/components/PlainTextButton."<init>":(IIIILnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;Lnet/minecraft/client/gui/Font;)V
+       354: invokevirtual #232                // Method addRenderableWidget:(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+       357: pop
+       358: aload_0
+       359: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+       362: ifnonnull     376
+       365: aload_0
+       366: new           #126                // class com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen
+       369: dup
+       370: invokespecial #304                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen."<init>":()V
+       373: putfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+       376: aload_0
+       377: invokevirtual #124                // Method realmsNotificationsEnabled:()Z
+       380: ifeq          398
+       383: aload_0
+       384: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+       387: aload_0
+       388: getfield      #200                // Field width:I
+       391: aload_0
+       392: getfield      #203                // Field height:I
+       395: invokevirtual #306                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.init:(II)V
+       398: return
+
+  public void extractRenderState(net.minecraft.client.gui.GuiGraphicsExtractor, int, int, float);
+    Code:
+         0: aload_0
+         1: getfield      #477                // Field fadeInStart:J
+         4: lconst_0
+         5: lcmp
+         6: ifne          23
+         9: aload_0
+        10: getfield      #67                 // Field fading:Z
+        13: ifeq          23
+        16: aload_0
+        17: invokestatic  #483                // Method net/minecraft/util/Util.getMillis:()J
+        20: putfield      #477                // Field fadeInStart:J
+        23: fconst_1
+        24: fstore        5
+        26: aload_0
+        27: getfield      #67                 // Field fading:Z
+        30: ifeq          91
+        33: invokestatic  #483                // Method net/minecraft/util/Util.getMillis:()J
+        36: aload_0
+        37: getfield      #477                // Field fadeInStart:J
+        40: lsub
+        41: l2f
+        42: ldc_w         #484                // float 2000.0f
+        45: fdiv
+        46: fstore        6
+        48: fload         6
+        50: fconst_1
+        51: fcmpl
+        52: ifle          63
+        55: aload_0
+        56: iconst_0
+        57: putfield      #67                 // Field fading:Z
+        60: goto          85
+        63: fload         6
+        65: fconst_0
+        66: fconst_1
+        67: invokestatic  #490                // Method net/minecraft/util/Mth.clamp:(FFF)F
+        70: fstore        6
+        72: fload         6
+        74: ldc_w         #491                // float 0.5f
+        77: fconst_1
+        78: fconst_0
+        79: fconst_1
+        80: invokestatic  #495                // Method net/minecraft/util/Mth.clampedMap:(FFFFF)F
+        83: fstore        5
+        85: aload_0
+        86: fload         5
+        88: invokevirtual #499                // Method fadeWidgets:(F)V
+        91: aload_0
+        92: aload_1
+        93: fload         4
+        95: invokevirtual #503                // Method extractPanorama:(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V
+        98: aload_0
+        99: aload_1
+       100: iload_2
+       101: iload_3
+       102: fload         4
+       104: invokespecial #505                // Method net/minecraft/client/gui/screens/Screen.extractRenderState:(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V
+       107: aload_0
+       108: getfield      #96                 // Field logoRenderer:Lnet/minecraft/client/gui/components/LogoRenderer;
+       111: aload_1
+       112: aload_0
+       113: getfield      #200                // Field width:I
+       116: aload_0
+       117: getfield      #96                 // Field logoRenderer:Lnet/minecraft/client/gui/components/LogoRenderer;
+       120: invokevirtual #508                // Method net/minecraft/client/gui/components/LogoRenderer.keepLogoThroughFade:()Z
+       123: ifeq          130
+       126: fconst_1
+       127: goto          132
+       130: fload         5
+       132: invokevirtual #513                // Method net/minecraft/client/gui/components/LogoRenderer.extractRenderState:(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IF)V
+       135: aload_0
+       136: getfield      #169                // Field splash:Lnet/minecraft/client/gui/components/SplashRenderer;
+       139: ifnull        182
+       142: aload_0
+       143: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+       146: getfield      #517                // Field net/minecraft/client/Minecraft.options:Lnet/minecraft/client/Options;
+       149: invokevirtual #523                // Method net/minecraft/client/Options.hideSplashTexts:()Lnet/minecraft/client/OptionInstance;
+       152: invokevirtual #527                // Method net/minecraft/client/OptionInstance.get:()Ljava/lang/Object;
+       155: checkcast     #529                // class java/lang/Boolean
+       158: invokevirtual #532                // Method java/lang/Boolean.booleanValue:()Z
+       161: ifne          182
+       164: aload_0
+       165: getfield      #169                // Field splash:Lnet/minecraft/client/gui/components/SplashRenderer;
+       168: aload_1
+       169: aload_0
+       170: getfield      #200                // Field width:I
+       173: aload_0
+       174: getfield      #189                // Field font:Lnet/minecraft/client/gui/Font;
+       177: fload         5
+       179: invokevirtual #537                // Method net/minecraft/client/gui/components/SplashRenderer.extractRenderState:(Lnet/minecraft/client/gui/GuiGraphicsExtractor;ILnet/minecraft/client/gui/Font;F)V
+       182: invokestatic  #541                // Method net/minecraft/SharedConstants.getCurrentVersion:()Lnet/minecraft/WorldVersion;
+       185: invokeinterface #547,  1          // InterfaceMethod net/minecraft/WorldVersion.name:()Ljava/lang/String;
+       190: invokedynamic #559,  0            // InvokeDynamic #13:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+       195: astore        6
+       197: aload_0
+       198: getfield      #100                // Field minecraft:Lnet/minecraft/client/Minecraft;
+       201: invokevirtual #206                // Method net/minecraft/client/Minecraft.isDemo:()Z
+       204: ifeq          216
+       207: aload         6
+       209: invokedynamic #562,  0            // InvokeDynamic #14:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+       214: astore        6
+       216: invokestatic  #568                // Method net/minecraft/client/Minecraft.checkModStatus:()Lnet/minecraft/util/ModCheck;
+       219: invokevirtual #573                // Method net/minecraft/util/ModCheck.shouldReportAsModified:()Z
+       222: ifeq          244
+       225: aload         6
+       227: ldc_w         #575                // String menu.modded
+       230: iconst_0
+       231: anewarray     #577                // class java/lang/Object
+       234: invokestatic  #582                // Method net/minecraft/client/resources/language/I18n.get:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+       237: invokedynamic #587,  0            // InvokeDynamic #15:makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+       242: astore        6
+       244: aload_1
+       245: aload_0
+       246: getfield      #189                // Field font:Lnet/minecraft/client/gui/Font;
+       249: aload         6
+       251: iconst_2
+       252: aload_0
+       253: getfield      #203                // Field height:I
+       256: bipush        10
+       258: isub
+       259: fload         5
+       261: invokestatic  #593                // Method net/minecraft/util/ARGB.white:(F)I
+       264: invokevirtual #597                // Method net/minecraft/client/gui/GuiGraphicsExtractor.text:(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V
+       267: aload_0
+       268: invokevirtual #124                // Method realmsNotificationsEnabled:()Z
+       271: ifeq          293
+       274: fload         5
+       276: fconst_1
+       277: fcmpl
+       278: iflt          293
+       281: aload_0
+       282: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+       285: aload_1
+       286: iload_2
+       287: iload_3
+       288: fload         4
+       290: invokevirtual #598                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.extractRenderState:(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V
+       293: return
+
+  public void extractBackground(net.minecraft.client.gui.GuiGraphicsExtractor, int, int, float);
+    Code:
+         0: return
+
+  public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent, boolean);
+    Code:
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #610                // Method net/minecraft/client/gui/screens/Screen.mouseClicked:(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z
+         6: ifeq          11
+         9: iconst_1
+        10: ireturn
+        11: aload_0
+        12: invokevirtual #124                // Method realmsNotificationsEnabled:()Z
+        15: ifeq          32
+        18: aload_0
+        19: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+        22: aload_1
+        23: iload_2
+        24: invokevirtual #611                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.mouseClicked:(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z
+        27: ifeq          32
+        30: iconst_1
+        31: ireturn
+        32: iconst_0
+        33: ireturn
+
+  public void removed();
+    Code:
+         0: aload_0
+         1: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+         4: ifnull        14
+         7: aload_0
+         8: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+        11: invokevirtual #615                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.removed:()V
+        14: return
+
+  public void added();
+    Code:
+         0: aload_0
+         1: invokespecial #618                // Method net/minecraft/client/gui/screens/Screen.added:()V
+         4: aload_0
+         5: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+         8: ifnull        18
+        11: aload_0
+        12: getfield      #121                // Field realmsNotificationsScreen:Lcom/mojang/realmsclient/gui/screens/RealmsNotificationsScreen;
+        15: invokevirtual #619                // Method com/mojang/realmsclient/gui/screens/RealmsNotificationsScreen.added:()V
+        18: return
+
+  public boolean canInterruptWithAnotherScreen();
+    Code:
+         0: iconst_1
+         1: ireturn
+
+  static {};
+    Code:
+         0: invokestatic  #799                // Method com/mojang/logging/LogUtils.getLogger:()Lorg/slf4j/Logger;
+         3: putstatic     #457                // Field LOGGER:Lorg/slf4j/Logger;
+         6: ldc_w         #801                // String narrator.screen.title
+         9: invokestatic  #268                // InterfaceMethod net/minecraft/network/chat/Component.translatable:(Ljava/lang/String;)Lnet/minecraft/network/chat/MutableComponent;
+        12: putstatic     #62                 // Field TITLE:Lnet/minecraft/network/chat/Component;
+        15: ldc_w         #803                // String title.credits
+        18: invokestatic  #268                // InterfaceMethod net/minecraft/network/chat/Component.translatable:(Ljava/lang/String;)Lnet/minecraft/network/chat/MutableComponent;
+        21: putstatic     #191                // Field COPYRIGHT_TEXT:Lnet/minecraft/network/chat/Component;
+        24: return
+}

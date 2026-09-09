@@ -1,0 +1,32 @@
+<UserControl x:Class="Launcher.Components.SkinViewer3D"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Cursor="SizeAll"
+             Background="Transparent">
+    <Viewport3D x:Name="Viewport"
+                MouseDown="OnMouseDown"
+                MouseMove="OnMouseMove"
+                MouseUp="OnMouseUp">
+        <Viewport3D.Camera>
+            <PerspectiveCamera x:Name="Camera"
+                               Position="0,0.9,7.5"
+                               LookDirection="0,-0.06,-1"
+                               UpDirection="0,1,0"
+                               FieldOfView="42"/>
+        </Viewport3D.Camera>
+
+        <!-- Illuminazione -->
+        <ModelVisual3D>
+            <ModelVisual3D.Content>
+                <Model3DGroup>
+                    <AmbientLight Color="#BBBBBB"/>
+                    <DirectionalLight Color="#FFFFFF" Direction="-1,-1,-0.5"/>
+                    <DirectionalLight Color="#555555" Direction="1,-0.5,1"/>
+                </Model3DGroup>
+            </ModelVisual3D.Content>
+        </ModelVisual3D>
+
+        <!-- Modello del personaggio -->
+        <ModelVisual3D x:Name="PlayerModel"/>
+    </Viewport3D>
+</UserControl>

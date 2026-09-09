@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.flowclient.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientBrandMixin",
+    "DebugScreenOverlayMixin",
+    "I18nMixin",
+    "KeyboardHandlerMixin",
+    "LivingEntityRendererMixin",
+    "ParticleEngineAccessor",
+    "ScreenAccessor",
+    "TitleScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "flowclient:gui/flow_badge_icon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\uE000"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "flowclient:gui/optifine_badge_icon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\uE001"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "flowclient:gui/lunar_badge_icon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\uE002"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "flowclient:gui/bedrock_badge_icon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\uE003"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "flowclient:gui/tlauncher_badge_icon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\uE004"
+      ]
+    }
+  ]
+}

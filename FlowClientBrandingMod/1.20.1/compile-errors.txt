@@ -1,0 +1,552 @@
+﻿
+> Configure project :1.20.1
+Fabric Loom: 1.10.5
+
+> Task :1.20.1:compileJava
+.\gradlew.bat : C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mi
+xin\ContextAwarePredicateAccessor.java:9: error: Mixin has no targets
+In C:\Users\tobia\AppData\Local\Temp\ps-script-bd0287c3-2763-465f-bd0f-8f762f9ba8bd.ps1:7 car:82
++ ... lowClientBrandingMod"; .\gradlew.bat :1.20.1:compileJava 2>&1 | Out-F ...
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\tobia\... has no targets:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+@Mixin(ContextAwarePredicate.class)
+^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\EntityPredic
+ateAccessor.java:10: error: Mixin has no targets
+@Mixin(EntityPredicate.class)
+^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ScrollWheelH
+andlerMixin.java:10: error: Mixin has no targets
+@Mixin(ScrollWheelHandler.class)
+^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ClientBrandM
+ixin.java:16: error: Unable to locate obfuscation mapping for @Inject target getClientModName
+    @Inject(method = "getClientModName", at = @At("RETURN"), cancellable = true)
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ClientLevelM
+ixin.java:17: warning: Unable to determine descriptor for @Inject target method
+    @Inject(method = "getOverworldClockTime", at = @At("RETURN"), cancellable = true)
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\jei\JeiChatU
+tilMixin.java:14: warning: Cannot find target method 
+"writeChatMessage(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;Lnet/minecraft/ChatFormatting;)V" for @In
+ject.method="writeChatMessage(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;Lnet/minecraft/ChatFormatting
+;)V" in mezz.jei.common.util.ChatUtil
+    @Inject(
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LevelRendere
+rMixin.java:17: warning: Unable to determine descriptor for @Inject target method
+    @Inject(method = "submitBlockOutline", at = @At("HEAD"), cancellable = true)
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LivingEntity
+RendererMixin.java:13: warning: Cannot find target method 
+"shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z" for 
+@Inject.method="shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z" in 
+net.minecraft.client.renderer.entity.LivingEntityRenderer
+    @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z", at = @At("RETURN"), cancellable = 
+true)
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\SkinManagerM
+ixin.java:19: warning: Unable to determine descriptor for @Inject target method
+    @Inject(method = "get", at = @At("RETURN"))
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\KeyBindsList
+Mixin.java:15: warning: Unable to locate method mapping for @At(INVOKE.<target>) 
+'Lorg/apache/commons/lang3/ArrayUtils;clone([Ljava/lang/Object;)[Ljava/lang/Object;'
+    @Redirect(
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\f3\FlowF3Renderer.
+java:13: error: cannot find symbol
+import net.minecraft.client.particle.ParticleGroup;
+                                    ^
+  symbol:   class ParticleGroup
+  location: package net.minecraft.client.particle
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\f3\FlowF3Renderer.
+java:26: error: package net.minecraft.world.timeline does not exist
+import net.minecraft.world.timeline.Timelines;
+                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\f3\FlowF3Renderer.
+java:260: error: cannot find symbol
+    private static String openGlValue(com.mojang.blaze3d.systems.DeviceInfo device) {
+                                                                ^
+  symbol:   class DeviceInfo
+  location: package com.mojang.blaze3d.systems
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ClientAdvanc
+ementsAccessor.java:4: error: cannot find symbol
+import net.minecraft.advancements.AdvancementHolder;
+                                 ^
+  symbol:   class AdvancementHolder
+  location: package net.minecraft.advancements
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ClientAdvanc
+ementsAccessor.java:13: error: cannot find symbol
+    Map<AdvancementHolder, AdvancementProgress> flowclient$getProgress();
+        ^
+  symbol:   class AdvancementHolder
+  location: interface ClientAdvancementsAccessor
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ContextAware
+PredicateAccessor.java:4: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.ContextAwarePredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\EntityPredic
+ateAccessor.java:5: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\EntityPredic
+ateAccessor.java:6: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\EntityPredic
+ateAccessor.java:13: error: cannot find symbol
+    Map<Codec<? extends EntitySubPredicate>, EntitySubPredicate> flowclient$getParts();
+                        ^
+  symbol:   class EntitySubPredicate
+  location: interface EntityPredicateAccessor
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\EntityPredic
+ateAccessor.java:13: error: cannot find symbol
+    Map<Codec<? extends EntitySubPredicate>, EntitySubPredicate> flowclient$getParts();
+                                             ^
+  symbol:   class EntitySubPredicate
+  location: interface EntityPredicateAccessor
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ItemStackMix
+in.java:9: error: package net.minecraft.world.item.component does not exist
+import net.minecraft.world.item.component.ItemContainerContents;
+                                         ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\KeyboardHand
+lerMixin.java:7: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.KeyEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\KeyboardHand
+lerMixin.java:16: error: cannot find symbol
+    private void flowclient$openModPanelOnRightShift(long window, int action, KeyEvent event, CallbackInfo ci) {
+                                                                              ^
+  symbol:   class KeyEvent
+  location: class KeyboardHandlerMixin
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LevelRendere
+rMixin.java:7: error: cannot find symbol
+import net.minecraft.client.renderer.SubmitNodeCollector;
+                                    ^
+  symbol:   class SubmitNodeCollector
+  location: package net.minecraft.client.renderer
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LevelRendere
+rMixin.java:8: error: package net.minecraft.client.renderer.state.level does not exist
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
+                                                ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LevelRendere
+rMixin.java:9: error: package net.minecraft.client.renderer.state.level does not exist
+import net.minecraft.client.renderer.state.level.LevelRenderState;
+                                                ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LevelRendere
+rMixin.java:20: error: cannot find symbol
+            SubmitNodeCollector submitNodeCollector,
+            ^
+  symbol:   class SubmitNodeCollector
+  location: class LevelRendererMixin
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\LevelRendere
+rMixin.java:21: error: cannot find symbol
+            LevelRenderState levelRenderState,
+            ^
+  symbol:   class LevelRenderState
+  location: class LevelRendererMixin
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ParticleEngi
+neAccessor.java:4: error: cannot find symbol
+import net.minecraft.client.particle.ParticleGroup;
+                                    ^
+  symbol:   class ParticleGroup
+  location: package net.minecraft.client.particle
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ParticleEngi
+neAccessor.java:14: error: cannot find symbol
+    Map<ParticleRenderType, ParticleGroup<?>> flowclient$getParticleGroups();
+                            ^
+  symbol:   class ParticleGroup
+  location: interface ParticleEngineAccessor
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ScrollWheelH
+andlerMixin.java:4: error: cannot find symbol
+import net.minecraft.client.ScrollWheelHandler;
+                           ^
+  symbol:   class ScrollWheelHandler
+  location: package net.minecraft.client
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\SkinManagerM
+ixin.java:22: error: cannot find symbol
+            CallbackInfoReturnable<CompletableFuture<Optional<net.minecraft.world.entity.player.PlayerSkin>>> cir
+                                                                                               ^
+  symbol:   class PlayerSkin
+  location: package net.minecraft.world.entity.player
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\voicechat\Vo
+iceChatPTTKeyHandlerMixin.java:5: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.KeyEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\voicechat\Vo
+iceChatPTTKeyHandlerMixin.java:6: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonInfo;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\voicechat\Vo
+iceChatPTTKeyHandlerMixin.java:15: error: cannot find symbol
+    private void flowclient$blockKeyboardPtt(KeyEvent event, CallbackInfo ci) {
+                                             ^
+  symbol:   class KeyEvent
+  location: class VoiceChatPTTKeyHandlerMixin
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\voicechat\Vo
+iceChatPTTKeyHandlerMixin.java:20: error: cannot find symbol
+    private void flowclient$blockMousePtt(MouseButtonInfo button, int action, CallbackInfo ci) {
+                                          ^
+  symbol:   class MouseButtonInfo
+  location: class VoiceChatPTTKeyHandlerMixin
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPanelB
+utton.java:10: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPanelB
+utton.java:41: error: cannot find symbol
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                        ^
+  symbol:   class MouseButtonEvent
+  location: class ModPanelButton
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModCatego
+rySidebarButton.java:10: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModCatego
+rySidebarButton.java:58: error: cannot find symbol
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                        ^
+  symbol:   class MouseButtonEvent
+  location: class ModCategorySidebarButton
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPanelK
+eys.java:5: error: package net.fabricmc.fabric.api.client.keymapping.v1 does not exist
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPositi
+onPanelScreen.java:15: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPositi
+onPanelScreen.java:132: error: cannot find symbol
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+                                ^
+  symbol:   class MouseButtonEvent
+  location: class ModPositionPanelScreen
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPositi
+onPanelScreen.java:148: error: cannot find symbol
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+                                ^
+  symbol:   class MouseButtonEvent
+  location: class ModPositionPanelScreen
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModPositi
+onPanelScreen.java:166: error: cannot find symbol
+    public boolean mouseReleased(MouseButtonEvent event) {
+                                 ^
+  symbol:   class MouseButtonEvent
+  location: class ModPositionPanelScreen
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModSettin
+gsIconButton.java:8: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModSettin
+gsIconButton.java:38: error: cannot find symbol
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                        ^
+  symbol:   class MouseButtonEvent
+  location: class ModSettingsIconButton
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModSettin
+gsResetButton.java:8: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ModSettin
+gsResetButton.java:33: error: cannot find symbol
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                        ^
+  symbol:   class MouseButtonEvent
+  location: class ModSettingsResetButton
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ToggleSwi
+tchWidget.java:7: error: package net.minecraft.client.input does not exist
+import net.minecraft.client.input.MouseButtonEvent;
+                                 ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\modpanel\ToggleSwi
+tchWidget.java:51: error: cannot find symbol
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                        ^
+  symbol:   class MouseButtonEvent
+  location: class ToggleSwitchWidget
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+AdvancementsUnlockController.java:7: error: cannot find symbol
+import net.minecraft.advancements.AdvancementHolder;
+                                 ^
+  symbol:   class AdvancementHolder
+  location: package net.minecraft.advancements
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+AdvancementsUnlockController.java:8: error: cannot find symbol
+import net.minecraft.advancements.AdvancementNode;
+                                 ^
+  symbol:   class AdvancementNode
+  location: package net.minecraft.advancements
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+AdvancementsUnlockController.java:10: error: cannot find symbol
+import net.minecraft.advancements.AdvancementTree;
+                                 ^
+  symbol:   class AdvancementTree
+  location: package net.minecraft.advancements
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+AdvancementsUnlockController.java:12: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.Criterion;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:4: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.ContextAwarePredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:5: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.ChangeDimensionTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:6: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.ConsumeItemTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:7: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.Criterion;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:8: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.EnterBlockTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:9: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:10: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:11: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.KilledTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:12: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.PlayerTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:13: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.RecipeCraftedTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:14: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:15: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.UsedEnderEyeTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:16: error: package net.minecraft.advancements.triggers does not exist
+import net.minecraft.advancements.triggers.UsedTotemTrigger;
+                                          ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:30: error: cannot find symbol
+    static boolean matches(LocalPlayer player, Criterion<?> criterion, AdvancementEventContext context) {
+                                               ^
+  symbol:   class Criterion
+  location: class ClientCriterionMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:73: error: package InventoryChangeTrigger does not exist
+    private static boolean matchesInventory(LocalPlayer player, InventoryChangeTrigger.TriggerInstance instance) {
+                                                                                      ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:86: error: package ChangeDimensionTrigger does not exist
+    private static boolean matchesDimension(ChangeDimensionTrigger.TriggerInstance instance, AdvancementEventContext 
+context) {
+                                                                  ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:95: error: package RecipeCraftedTrigger does not exist
+    private static boolean matchesCrafted(RecipeCraftedTrigger.TriggerInstance instance, ResourceKey<Recipe<?>> 
+recipe) {
+                                                              ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:101: error: package KilledTrigger does not exist
+            KilledTrigger.TriggerInstance instance,
+                         ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:120: error: cannot find symbol
+            Optional<ContextAwarePredicate> predicate,
+                     ^
+  symbol:   class ContextAwarePredicate
+  location: class ClientCriterionMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:131: error: cannot find symbol
+            Criterion<?> criterion,
+            ^
+  symbol:   class Criterion
+  location: class ClientCriterionMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientCriterionMatcher.java:166: error: cannot find symbol
+    private static ResourceLocation triggerId(Criterion<?> criterion) {
+                                              ^
+  symbol:   class Criterion
+  location: class ClientCriterionMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:6: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.ContextAwarePredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:7: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.LocationPredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:8: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntityEquipmentPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:9: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntityFlagsPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:10: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntityLocationPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:11: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:12: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntityTypePredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:13: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.MovementPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:14: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.SteppingOnPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:15: error: package net.minecraft.advancements.predicates.entity does not exist
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:31: error: cannot find symbol
+    static boolean matchesPlayerPredicate(LocalPlayer player, Optional<ContextAwarePredicate> predicate) {
+                                                                       ^
+  symbol:   class ContextAwarePredicate
+  location: class ClientEntityMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:38: error: cannot find symbol
+    static boolean matchesEntityPredicate(LocalPlayer player, Entity entity, EntityPredicate predicate) {
+                                                                             ^
+  symbol:   class EntityPredicate
+  location: class ClientEntityMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:54: error: cannot find symbol
+    static boolean matchesContextPredicate(LocalPlayer player, Entity subject, ContextAwarePredicate predicate) {
+                                                                               ^
+  symbol:   class ContextAwarePredicate
+  location: class ClientEntityMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientEntityMatcher.java:96: error: cannot find symbol
+            EntitySubPredicate part
+            ^
+  symbol:   class EntitySubPredicate
+  location: class ClientEntityMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientLocationMatcher.java:3: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.BlockPredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientLocationMatcher.java:4: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.LightPredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientLocationMatcher.java:5: error: package net.minecraft.advancements.predicates does not exist
+import net.minecraft.advancements.predicates.LocationPredicate;
+                                            ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientLocationMatcher.java:20: error: cannot find symbol
+    static boolean matches(Level level, Vec3 position, LocationPredicate predicate) {
+                                                       ^
+  symbol:   class LocationPredicate
+  location: class ClientLocationMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientLocationMatcher.java:59: error: cannot find symbol
+    private static boolean matchesBlock(LevelReader level, BlockPos pos, BlockPredicate predicate) {
+                                                                         ^
+  symbol:   class BlockPredicate
+  location: class ClientLocationMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\advancements\
+ClientLocationMatcher.java:63: error: cannot find symbol
+    private static boolean matchesLight(Level level, BlockPos pos, LightPredicate predicate) {
+                                                                   ^
+  symbol:   class LightPredicate
+  location: class ClientLocationMatcher
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\elytra\Elytra
+FlightPathRenderer.java:8: error: package net.minecraft.gizmos does not exist
+import net.minecraft.gizmos.Gizmos;
+                           ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\explosion\Cry
+stalBedPreviewRenderer.java:7: error: package net.minecraft.gizmos does not exist
+import net.minecraft.gizmos.GizmoStyle;
+                           ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\explosion\Cry
+stalBedPreviewRenderer.java:8: error: package net.minecraft.gizmos does not exist
+import net.minecraft.gizmos.Gizmos;
+                           ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\freelook\Free
+lookKeys.java:6: error: package net.fabricmc.fabric.api.client.keymapping.v1 does not exist
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\fullbright\Fu
+llbrightKeys.java:5: error: package net.fabricmc.fabric.api.client.keymapping.v1 does not exist
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\immersion\Tra
+jectoryArcRenderer.java:7: error: package net.minecraft.gizmos does not exist
+import net.minecraft.gizmos.Gizmos;
+                           ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\inventory\Inv
+entorySortExecutor.java:12: error: cannot find symbol
+import net.minecraft.world.inventory.ContainerInput;
+                                    ^
+  symbol:   class ContainerInput
+  location: package net.minecraft.world.inventory
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\inventory\Inv
+entorySortExecutor.java:128: error: cannot find symbol
+    private static void click(Minecraft client, int slot, int button, ContainerInput input) {
+                                                                      ^
+  symbol:   class ContainerInput
+  location: class InventorySortExecutor
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\inventory\Inv
+entorySortKeys.java:6: error: package net.fabricmc.fabric.api.client.keymapping.v1 does not exist
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+                                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\otherclient\B
+edrockDetector.java:9: error: cannot find symbol
+import net.minecraft.core.ClientAsset;
+                         ^
+  symbol:   class ClientAsset
+  location: package net.minecraft.core
+100 errors
+6 warnings
+
+> Task :1.20.1:compileJava FAILED
+
+[Incubating] Problems report is available at: file:///C:/Users/tobia/Desktop/progetti/FlowClient/FlowClientBrandingMod/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':1.20.1:compileJava'.
+> Compilation failed; see the compiler output below.
+  C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\ContextAwa
+rePredicateAccessor.java:9: error: Mixin has no targets
+  @Mixin(ContextAwarePredicate.class)
+  ^
+  100 errors
+  6 warnings
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+1 actionable task: 1 executed
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 3s

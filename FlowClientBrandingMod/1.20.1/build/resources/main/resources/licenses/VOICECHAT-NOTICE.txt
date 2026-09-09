@@ -1,0 +1,11 @@
+This distribution embeds Simple Voice Chat (voicechat) by Max Henkel / henkelmax.
+Embedded artifact: META-INF/jars/voicechat.jar
+Version: 2.6.21+26.2
+
+Simple Voice Chat is distributed under the GNU Lesser General Public License v3.0 (LGPL-3.0).
+See META-INF/licenses/VOICECHAT-LICENSE.txt for the full license text.
+
+Source code: https://github.com/henkelmax/simple-voice-chat
+Project page: https://modrepo.de/minecraft/voicechat/overview
+
+The embedded mod remains a separate jar file inside this distribution, as required by LGPL.

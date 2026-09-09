@@ -1,0 +1,16 @@
+﻿# Build results
+[Bb]in/
+[Oo]bj/
+dist/
+*.user
+*.suo
+.vs/
+
+# Temporary
+cfr.jar
+com/
+net/
+testjson/
+mc_methods.txt
+flowclient-branding-1.0.0.jar
+FlowClient-*.zip

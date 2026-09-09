@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "flowclient",
+  "version": "${version}",
+  "name": "FlowClient",
+  "description": "FlowClient in-game menu, branding and client features.",
+  "authors": ["FlowClient"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.flowclient.FlowClientMod"
+    ],
+    "server": [
+      "com.flowclient.FlowClientServerMod"
+    ],
+    "jei_mod_plugin": [
+      "com.flowclient.mods.jei.FlowJeiPlugin"
+    ]
+  },
+  "mixins": [
+    "flowclient.mixins.json"
+  ],
+  "jars": [
+    {
+      "file": "META-INF/jars/jei.jar"
+    },
+    {
+      "file": "META-INF/jars/voicechat.jar"
+    }
+  ],
+  "custom": {
+    "flowclient:embedded_mods": [
+      "jei",
+      "voicechat"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "fabric-api": "*",
+    "minecraft": ">=26.2"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 0
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\tobia\\Desktop\\progetti\\FlowClient\\FlowClientBrandingMod\\1.21.1-neoforge\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\tobia\\Desktop\\progetti\\FlowClient\\FlowClientBrandingMod\\1.21.1-neoforge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dflowclient%%C:\\Users\\tobia\\Desktop\\progetti\\FlowClient\\FlowClientBrandingMod\\1.21.1-neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\1.21.1-neoforge\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

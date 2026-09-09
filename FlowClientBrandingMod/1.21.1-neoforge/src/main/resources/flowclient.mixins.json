@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.flowclient.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "DebugScreenOverlayMixin",
+    "FreelookCameraMixin",
+    "GameRendererMixin",
+    "HudMixin",
+    "KeyboardHandlerMixin",
+    "LivingEntityRendererMixin",
+    "LocalPlayerMixin",
+    "MouseHandlerMixin",
+    "ParticleEngineAccessor",
+    "ScreenAccessor",
+    "TitleScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

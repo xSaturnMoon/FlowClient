@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "flowclient:noto_sans.ttf",
+      "shift": [0, 0],
+      "size": 9.0,
+      "oversample": 8.0
+    }
+  ]
+}

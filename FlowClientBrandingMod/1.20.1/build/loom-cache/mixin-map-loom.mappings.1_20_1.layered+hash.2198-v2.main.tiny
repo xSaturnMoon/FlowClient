@@ -1,0 +1,13 @@
+v1	named	intermediary
+FIELD	com/flowclient/mixin/HudCinematicMixin	Lnet/minecraft/client/Minecraft;	minecraft	field_2035
+FIELD	com/flowclient/mixin/HudCinematicMixin	Lnet/minecraft/client/gui/components/PlayerTabOverlay;	tabList	field_2015
+FIELD	com/flowclient/mixin/HudCinematicMixin	I	screenWidth	field_2011
+FIELD	com/flowclient/mixin/HudElementsMixin	Lnet/minecraft/client/Minecraft;	minecraft	field_2035
+FIELD	com/flowclient/mixin/HudMixin	Lnet/minecraft/client/Minecraft;	minecraft	field_2035
+FIELD	com/flowclient/mixin/PlayerTabOverlayMixin	Lnet/minecraft/client/Minecraft;	minecraft	field_2155
+FIELD	com/flowclient/mixin/PlayerTabOverlayMixin	Lnet/minecraft/network/chat/Component;	footer	field_2154
+FIELD	com/flowclient/mixin/PlayerTabOverlayMixin	Lnet/minecraft/network/chat/Component;	header	field_2153
+METHOD	com/flowclient/mixin/ClientLevelMixin	()Z	isClientSide	method_8608
+METHOD	com/flowclient/mixin/FreelookCameraMixin	(FF)V	setRotation	method_19325
+METHOD	com/flowclient/mixin/HudElementsMixin	()Lnet/minecraft/client/gui/Font;	getFont	method_1756
+METHOD	com/flowclient/mixin/PlayerTabOverlayMixin	(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V	renderPingIcon	method_1923

@@ -1,0 +1,620 @@
+﻿
+> Configure project :1.20.1
+Fabric Loom: 1.10.5
+
+> Task :1.20.1:compileJava FAILED
+.\gradlew.bat : C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mi
+xin\jei\JeiChatUtilMixin.java:14: warning: Cannot find target method 
+"writeChatMessage(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;Lnet/minecraft/ChatFormatting;)V" for @In
+ject.method="writeChatMessage(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;Lnet/minecraft/ChatFormatting
+;)V" in mezz.jei.common.util.ChatUtil
+In C:\Users\tobia\AppData\Local\Temp\ps-script-af74df12-a47d-40b0-bafe-12cb7c91298d.ps1:85 car:82
++ ... lowClientBrandingMod"; .\gradlew.bat :1.20.1:compileJava 2>&1 | Out-F ...
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\tobia\...n.util.ChatUtil:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    @Inject(
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\KeyBindsList
+Mixin.java:15: warning: Unable to locate method mapping for @At(INVOKE.<target>) 
+'Lorg/apache/commons/lang3/ArrayUtils;clone([Ljava/lang/Object;)[Ljava/lang/Object;'
+    @Redirect(
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\SkinManagerM
+ixin.java:16: warning: Unable to determine descriptor for @ModifyVariable target method
+    @ModifyVariable(
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\f3\FlowF3Renderer.
+java:261: error: cannot find symbol
+            String brand = client.getConnection().brand;
+                                                 ^
+  symbol:   variable brand
+  location: class ClientPacketListener
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\freelook\Free
+lookController.java:107: error: cannot find symbol
+        cameraYaw   = camera.yRot();
+                            ^
+  symbol:   method yRot()
+  location: variable camera of type Camera
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\freelook\Free
+lookController.java:108: error: cannot find symbol
+        cameraPitch = camera.xRot();
+                            ^
+  symbol:   method xRot()
+  location: variable camera of type Camera
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\health\Health
+BarRenderer.java:39: error: cannot find symbol
+            Vec3 projected = client.gameRenderer.projectPointToScreen(anchor);
+                                                ^
+  symbol:   method projectPointToScreen(Vec3)
+  location: variable gameRenderer of type GameRenderer
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\immersion\Com
+boCounterTracker.java:60: error: cannot find symbol
+                if (delta > 0.05F && entity.getLastHurtByPlayer() == player) {
+                                           ^
+  symbol:   method getLastHurtByPlayer()
+  location: variable entity of type LivingEntity
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\immersion\Por
+talFxRenderer.java:51: error: cannot find symbol
+                graphics.centeredText(font, Component.literal(title), width / 2, height / 2 - 24, textAlpha | 
+0x00FFFFFF);
+                        ^
+  symbol:   method centeredText(Font,MutableComponent,int,int,int)
+  location: variable graphics of type GuiGraphics
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\jei\FlowJeiPl
+ugin.java:10: error: cannot access class_2960
+public final class FlowJeiPlugin implements IModPlugin {
+             ^
+  class file for net.minecraft.class_2960 not found
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\jei\FlowJeiPl
+ugin.java:14: error: getPluginUid() in FlowJeiPlugin cannot implement getPluginUid() in IModPlugin
+    public ResourceLocation getPluginUid() {
+                            ^
+  return type ResourceLocation is not compatible with class_2960
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\jei\FlowJeiPl
+ugin.java:13: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaAl
+bumArtTexture.java:101: error: no suitable constructor found for DynamicTexture(()->"flowc[...]_art",NativeImage)
+            this.gpuTexture = new DynamicTexture(() -> "flowclient_media_album_art", gpuImage);
+                              ^
+    constructor DynamicTexture.DynamicTexture(NativeImage) is not applicable
+      (actual and formal argument lists differ in length)
+    constructor DynamicTexture.DynamicTexture(int,int,boolean) is not applicable
+      (actual and formal argument lists differ in length)
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaAl
+bumArtTexture.java:131: error: cannot find symbol
+                        source.getPixel(
+                              ^
+  symbol:   method getPixel(int,int)
+  location: variable source of type NativeImage
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaAl
+bumArtTexture.java:153: error: cannot find symbol
+                    image.setPixel(x, y, 0);
+                         ^
+  symbol:   method setPixel(int,int,int)
+  location: variable image of type NativeImage
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaAl
+bumArtTexture.java:189: error: cannot find symbol
+                square.setPixel(x, y, source.getPixel(
+                                            ^
+  symbol:   method getPixel(int,int)
+  location: variable source of type NativeImage
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaDi
+scRenderer.java:46: error: cannot find symbol
+        pose.rotate((float) Math.toRadians(rotationDegrees));
+            ^
+  symbol:   method rotate(float)
+  location: variable pose of type PoseStack
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaDi
+scRenderer.java:48: error: incompatible types: int cannot be converted to ResourceLocation
+        graphics.blit(texture.getId(), 0, 0, size, size, 0.0F, 0.0F, 1.0F, 1.0F);
+                                   ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaDi
+scRenderer.java:75: error: cannot find symbol
+        pose.rotate((float) Math.toRadians(rotation));
+            ^
+  symbol:   method rotate(float)
+  location: variable pose of type PoseStack
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\media\MediaDi
+scRenderer.java:152: error: cannot find symbol
+                int color = toRenderColor(image.getPixel(sx, sy));
+                                               ^
+  symbol:   method getPixel(int,int)
+  location: variable image of type NativeImage
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\otherclient\C
+lientBadgeHelper.java:27: error: cannot find symbol
+        triggerDetection(player.getUUID(), player.getGameProfile().name(), info);
+                                                                  ^
+  symbol:   method name()
+  location: class GameProfile
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\otherclient\C
+lientDetector.java:163: error: cannot find symbol
+        CACHE.put(uuid, List.of(gameClients.getFirst()));
+                                           ^
+  symbol:   method getFirst()
+  location: variable gameClients of type List<DetectedClient>
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\preview\Proje
+ctileSimulation.java:45: error: cannot find symbol
+            if (position.y < level.getMinY() - 16) {
+                                  ^
+  symbol:   method getMinY()
+  location: variable level of type Level
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\preview\Proje
+ctileSimulation.java:50: error: cannot find symbol
+        return new SimulationResult(points, points.getLast(), false);
+                                                  ^
+  symbol:   method getLast()
+  location: variable points of type List<Vec3>
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\quiet\FlowQui
+etController.java:98: error: cannot find symbol
+        boolean unfocusQuiet = settings.isUnfocusedEnabled() && !client.getWindow().isFocused();
+                                                                                   ^
+  symbol:   method isFocused()
+  location: class Window
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\render\BlockO
+verlayRenderer.java:47: error: 
+renderShape(PoseStack,VertexConsumer,VoxelShape,double,double,double,float,float,float,float) has private access in 
+LevelRenderer
+        LevelRenderer.renderShape(poseStack, consumer, shape, 0.0D, 0.0D, 0.0D, red, green, blue, alpha);
+                     ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\render\Crossh
+airRenderer.java:12: error: cannot find symbol
+        if (!settings.showWhileDebug() && mc.gui.getDebugOverlay().showDebugScreen()) {
+                                                ^
+  symbol:   method getDebugOverlay()
+  location: variable gui of type Gui
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\render\Damage
+IndicatorRenderer.java:30: error: cannot find symbol
+            Vec3 projected = client.gameRenderer.projectPointToScreen(anchor.add(0.0D, popup.rise(), 0.0D));
+                                                ^
+  symbol:   method projectPointToScreen(Vec3)
+  location: variable gameRenderer of type GameRenderer
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\BlockStateReader.java:37: error: cannot find symbol
+        String name = entry.getStringOr("Name", "minecraft:air");
+                           ^
+  symbol:   method getStringOr(String,String)
+  location: variable entry of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\BlockStateReader.java:38: error: cannot find symbol
+        CompoundTag properties = entry.getCompoundOrEmpty("Properties");
+                                      ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable entry of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\BlockStateReader.java:45: error: cannot find symbol
+        for (String key : properties.keySet()) {
+                                    ^
+  symbol:   method keySet()
+  location: variable properties of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\BlockStateReader.java:49: error: cannot find symbol
+            state.append(key).append('=').append(properties.getStringOr(key, ""));
+                                                           ^
+  symbol:   method getStringOr(String,String)
+  location: variable properties of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\BlockStateReader.java:61: error: incompatible types: DefaultedRegistry<Block> cannot be converted to 
+HolderLookup<Block>
+        return BuiltInRegistries.BLOCK;
+                                ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\ClassicSchematicParser.java:61: error: cannot find symbol
+        int[] fromInts = schematic.getIntArray("Blocks").orElse(new int[0]);
+                                                        ^
+  symbol:   method orElse(int[])
+  location: class int[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\ClassicSchematicParser.java:66: error: cannot find symbol
+        byte[] blocks = schematic.getByteArray("Blocks").orElse(new byte[0]);
+                                                        ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\ClassicSchematicParser.java:67: error: cannot find symbol
+        byte[] addBlocks = schematic.getByteArray("AddBlocks").orElse(new byte[0]);
+                                                              ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\ClassicSchematicParser.java:89: error: cannot find symbol
+        int[] fromInts = schematic.getIntArray("Data").orElse(new int[0]);
+                                                      ^
+  symbol:   method orElse(int[])
+  location: class int[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\ClassicSchematicParser.java:94: error: cannot find symbol
+        byte[] data = schematic.getByteArray("Data").orElse(new byte[0]);
+                                                    ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\ClassicSchematicParser.java:95: error: cannot find symbol
+        byte[] addData = schematic.getByteArray("AddData").orElse(new byte[0]);
+                                                          ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:17: error: cannot find symbol
+        CompoundTag regions = root.getCompoundOrEmpty("Regions");
+                                  ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable root of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:22: error: cannot find symbol
+        String firstKey = regions.keySet().stream().sorted().findFirst().orElse(null);
+                                 ^
+  symbol:   method keySet()
+  location: variable regions of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:27: error: cannot find symbol
+        CompoundTag region = regions.getCompoundOrEmpty(firstKey);
+                                    ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable regions of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:28: error: cannot find symbol
+        CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
+                                    ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable region of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:36: error: cannot find symbol
+        ListTag palette = region.getListOrEmpty("BlockStatePalette");
+                                ^
+  symbol:   method getListOrEmpty(String)
+  location: variable region of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:39: error: cannot find symbol
+            paletteMap.put(i, BlockStateReader.fromPaletteEntry(palette.getCompoundOrEmpty(i)));
+                                                                       ^
+  symbol:   method getCompoundOrEmpty(int)
+  location: variable palette of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\LitematicParser.java:43: error: cannot find symbol
+        long[] states = region.getLongArray("BlockStates").orElse(new long[0]);
+                                                          ^
+  symbol:   method orElse(long[])
+  location: class long[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicFormatDetector.java:21: error: cannot find symbol
+        CompoundTag blocks = schematic.getCompoundOrEmpty("Blocks");
+                                      ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable schematic of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicFormatDetector.java:31: error: cannot find symbol
+        byte[] blocks = schematic.getByteArray("Blocks").orElse(new byte[0]);
+                                                        ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicFormatDetector.java:36: error: cannot find symbol
+        return schematic.getIntArray("Blocks").orElse(new int[0]).length > 0;
+                                              ^
+  symbol:   method orElse(int[])
+  location: class int[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:123: error: cannot find symbol
+        boolean inverted = paletteTag.keySet().stream().allMatch(SchematicLoader::isNumericPaletteKey);
+                                     ^
+  symbol:   method keySet()
+  location: variable paletteTag of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:125: error: cannot find symbol
+            for (String key : paletteTag.keySet()) {
+                                        ^
+  symbol:   method keySet()
+  location: variable paletteTag of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:136: error: cannot find symbol
+            for (String blockId : paletteTag.keySet()) {
+                                            ^
+  symbol:   method keySet()
+  location: variable paletteTag of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:157: error: cannot find symbol
+            return numeric.intValue();
+                          ^
+  symbol:   method intValue()
+  location: variable numeric of type NumericTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:161: error: cannot find symbol
+                return Integer.parseInt(stringTag.value());
+                                                 ^
+  symbol:   method value()
+  location: variable stringTag of type StringTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:170: error: cannot find symbol
+            return stringTag.value();
+                            ^
+  symbol:   method value()
+  location: variable stringTag of type StringTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicLoader.java:173: error: cannot find symbol
+            String name = compound.getStringOr("Name", "");
+                                  ^
+  symbol:   method getStringOr(String,String)
+  location: variable compound of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicNbt.java:55: error: cannot find symbol
+            CompoundTag nested = root.getCompoundOrEmpty("Schematic");
+                                     ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable root of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicNbt.java:68: error: cannot find symbol
+        int asInt = tag.getIntOr(key, -1);
+                       ^
+  symbol:   method getIntOr(String,int)
+  location: variable tag of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicNbt.java:73: error: cannot find symbol
+        int asShort = tag.getShortOr(key, (short) -1) & 0xFFFF;
+                         ^
+  symbol:   method getShortOr(String,short)
+  location: variable tag of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicNbt.java:83: error: cannot find symbol
+            return NbtIo.read(input, NbtAccounter.unlimitedHeap());
+                                                 ^
+  symbol:   method unlimitedHeap()
+  location: class NbtAccounter
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SchematicNbt.java:92: error: cannot find symbol
+            return NbtIo.read(input, NbtAccounter.unlimitedHeap());
+                                                 ^
+  symbol:   method unlimitedHeap()
+  location: class NbtAccounter
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SpongeSchemParser.java:26: error: cannot find symbol
+        CompoundTag paletteTag = blockSection.getCompoundOrEmpty("Palette");
+                                             ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable blockSection of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SpongeSchemParser.java:28: error: cannot find symbol
+            paletteTag = schematic.getCompoundOrEmpty("Palette");
+                                  ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable schematic of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SpongeSchemParser.java:55: error: cannot find symbol
+            CompoundTag blocks = schematic.getCompoundOrEmpty("Blocks");
+                                          ^
+  symbol:   method getCompoundOrEmpty(String)
+  location: variable schematic of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SpongeSchemParser.java:64: error: cannot find symbol
+        byte[] data = blockSection.getByteArray("Data").orElse(new byte[0]);
+                                                       ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SpongeSchemParser.java:69: error: cannot find symbol
+        data = blockSection.getByteArray("BlockData").orElse(new byte[0]);
+                                                     ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\SpongeSchemParser.java:74: error: cannot find symbol
+        return schematic.getByteArray("BlockData").orElse(new byte[0]);
+                                                  ^
+  symbol:   method orElse(byte[])
+  location: class byte[]
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:24: error: cannot find symbol
+        ListTag sizeList = root.getListOrEmpty("size");
+                               ^
+  symbol:   method getListOrEmpty(String)
+  location: variable root of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:28: error: cannot find symbol
+        int width = sizeList.getIntOr(0, 0);
+                            ^
+  symbol:   method getIntOr(int,int)
+  location: variable sizeList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:29: error: cannot find symbol
+        int height = sizeList.getIntOr(1, 0);
+                             ^
+  symbol:   method getIntOr(int,int)
+  location: variable sizeList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:30: error: cannot find symbol
+        int length = sizeList.getIntOr(2, 0);
+                             ^
+  symbol:   method getIntOr(int,int)
+  location: variable sizeList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:35: error: cannot find symbol
+        ListTag paletteList = root.getListOrEmpty("palette");
+                                  ^
+  symbol:   method getListOrEmpty(String)
+  location: variable root of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:38: error: cannot find symbol
+            CompoundTag entry = paletteList.getCompoundOrEmpty(i);
+                                           ^
+  symbol:   method getCompoundOrEmpty(int)
+  location: variable paletteList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:42: error: cannot find symbol
+        ListTag blocks = root.getListOrEmpty("blocks");
+                             ^
+  symbol:   method getListOrEmpty(String)
+  location: variable root of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:45: error: cannot find symbol
+            CompoundTag block = blocks.getCompoundOrEmpty(i);
+                                      ^
+  symbol:   method getCompoundOrEmpty(int)
+  location: variable blocks of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:46: error: cannot find symbol
+            ListTag posList = block.getListOrEmpty("pos");
+                                   ^
+  symbol:   method getListOrEmpty(String)
+  location: variable block of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:50: error: cannot find symbol
+            int stateId = block.getIntOr("state", 0);
+                               ^
+  symbol:   method getIntOr(String,int)
+  location: variable block of type CompoundTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:56: error: cannot find symbol
+                    posList.getIntOr(0, 0),
+                           ^
+  symbol:   method getIntOr(int,int)
+  location: variable posList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:57: error: cannot find symbol
+                    posList.getIntOr(1, 0),
+                           ^
+  symbol:   method getIntOr(int,int)
+  location: variable posList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\pa
+rser\StructureNbtParser.java:58: error: cannot find symbol
+                    posList.getIntOr(2, 0)
+                           ^
+  symbol:   method getIntOr(int,int)
+  location: variable posList of type ListTag
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\schematics\ui
+\SchematicBrowserScreen.java:123: error: cannot find symbol
+            this.scrollOffset = (int) Math.max(0, this.scrollOffset - scrollY);
+                                                                      ^
+  symbol:   variable scrollY
+  location: class SchematicBrowserScreen
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\serveraddress
+\ServerAddressResolver.java:32: error: cannot find symbol
+            String brand = mc.getConnection().serverBrand();
+                                             ^
+  symbol:   method serverBrand()
+  location: class ClientPacketListener
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\tab\FlowTabRe
+nderer.java:153: error: cannot find symbol
+                upsideDown = AbstractClientPlayer.isPlayerUpsideDown(player);
+                                                 ^
+  symbol:   method isPlayerUpsideDown(Player)
+  location: class AbstractClientPlayer
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\tab\FlowTabRe
+nderer.java:165: error: no suitable method found for translate(float,float,float,double)
+            pose.translate(x + size / 2.0F, y + size / 2.0F, 0.0F, 0.0D);
+                ^
+    method PoseStack.translate(double,double,double) is not applicable
+      (actual and formal argument lists differ in length)
+    method PoseStack.translate(float,float,float) is not applicable
+      (actual and formal argument lists differ in length)
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\tab\FlowTabRe
+nderer.java:166: error: method scale in class PoseStack cannot be applied to given types;
+            pose.scale(1.0F, -1.0F, 1.0F, 1.0F);
+                ^
+  required: float,float,float
+  found:    float,float,float,float
+  reason: actual and formal argument lists differ in length
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\tab\FlowTabRe
+nderer.java:207: error: invalid method reference
+            case VANILLA -> Comparator.comparingInt(PlayerInfo::getTabListOrder);
+                                                    ^
+  cannot find symbol
+    symbol:   method getTabListOrder()
+    location: class PlayerInfo
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\voicechat\Voi
+ceChatJarManager.java:83: error: cannot find symbol
+        String mcVersion = SharedConstants.getCurrentVersion().name();
+                                                              ^
+  symbol:   method name()
+  location: interface WorldVersion
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mods\voicechat\Voi
+ceChatJarManager.java:97: error: cannot find symbol
+        String mcVersion = SharedConstants.getCurrentVersion().name();
+                                                              ^
+  symbol:   method name()
+  location: interface WorldVersion
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\FlowSidebarButt
+on.java:22: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarAccountWid
+get.java:12: error: LunarAccountWidget is not abstract and does not override abstract method 
+renderWidget(GuiGraphics,int,int,float) in AbstractWidget
+public final class LunarAccountWidget extends AbstractWidget {
+             ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarAccountWid
+get.java:17: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarBannerCard
+.java:13: error: LunarBannerCard is not abstract and does not override abstract method 
+renderWidget(GuiGraphics,int,int,float) in AbstractWidget
+public final class LunarBannerCard extends AbstractWidget {
+             ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarBannerCard
+.java:18: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarButton.jav
+a:34: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarButton.jav
+a:79: error: cannot find symbol
+        g.text(font, label, textX, textY, textColor);
+         ^
+  symbol:   method text(Font,Component,int,int,int)
+  location: variable g of type GuiGraphics
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarButton.jav
+a:85: error: cannot find symbol
+            g.text(font, badgeText, bx + 5, by + (13 - font.lineHeight) / 2 + 1, FlowArgb.color(255, 148, 163, 184));
+             ^
+  symbol:   method text(Font,String,int,int,int)
+  location: variable g of type GuiGraphics
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarIconButton
+.java:41: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarIconButton
+.java:56: error: cannot find symbol
+        g.text(font, label, lx, ly, fg);
+         ^
+  symbol:   method text(Font,String,int,int,int)
+  location: variable g of type GuiGraphics
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarQuestCard.
+java:12: error: LunarQuestCard is not abstract and does not override abstract method 
+renderWidget(GuiGraphics,int,int,float) in AbstractWidget
+public final class LunarQuestCard extends AbstractWidget {
+             ^
+C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\ui\LunarQuestCard.
+java:34: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+97 errors
+3 warnings
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':1.20.1:compileJava'.
+> Compilation failed; see the compiler output below.
+  C:\Users\tobia\Desktop\progetti\FlowClient\FlowClientBrandingMod\1.20.1\src\main\java\com\flowclient\mixin\jei\JeiCha
+tUtilMixin.java:14: warning: Cannot find target method 
+"writeChatMessage(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;Lnet/minecraft/ChatFormatting;)V" for @In
+ject.method="writeChatMessage(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;Lnet/minecraft/ChatFormatting
+;)V" in mezz.jei.common.util.ChatUtil
+      @Inject(
+      ^
+  97 errors
+  3 warnings
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 1s
+
+[Incubating] Problems report is available at: file:///C:/Users/tobia/Desktop/progetti/FlowClient/FlowClientBrandingMod/build/reports/problems/problems-report.html
+1 actionable task: 1 executed

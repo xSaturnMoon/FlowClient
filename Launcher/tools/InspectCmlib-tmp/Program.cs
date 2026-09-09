@@ -1,0 +1,13 @@
+using System.Reflection;
+
+var dll = Path.Combine(AppContext.BaseDirectory, "CmlLib.Core.dll");
+var asm = Assembly.LoadFrom(dll);
+foreach (var t in asm.GetTypes().Where(t => t.Name.Contains("MinecraftLauncher") || t.Name.Contains("Java") || t.Name.Contains("Install")))
+{
+    Console.WriteLine("TYPE: " + t.FullName);
+    foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
+    {
+        if (m.DeclaringType == t)
+            Console.WriteLine("  " + m);
+    }
+}

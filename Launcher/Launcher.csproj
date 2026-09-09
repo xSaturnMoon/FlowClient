@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>FlowClient</AssemblyName>
+    <RootNamespace>Launcher</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <ApplicationIcon>flow.ico</ApplicationIcon>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <DistDir>$(MSBuildProjectDirectory)\..\dist</DistDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin/**" />
+    <Compile Remove="tools/**" />
+    <None Remove="bin/**" />
+    <None Remove="tools/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CmlLib.Core" Version="4.0.6" />
+    <PackageReference Include="CmlLib.Core.Installer.Forge" Version="1.1.1" />
+    <PackageReference Include="CmlLib.Core.Installer.NeoForge" Version="4.0.1" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+    <ItemGroup>
+    <Resource Include="flow.ico" />
+    <Resource Include="flowm.ico" />
+    <Resource Include="Fonts\Montserrat-SemiBold.ttf" />
+    <Resource Include="Fonts\Nunito-Regular.ttf" />
+    <Resource Include="Fonts\Nunito-SemiBold.ttf" />
+    <Resource Include="Fonts\Nunito-Bold.ttf" />
+    <Resource Include="Assets\Loaders\fabric.png" />
+    <Resource Include="Assets\Loaders\forge.png" />
+    <Resource Include="Assets\Loaders\neoforge.png" />
+    <Resource Include="Assets\Loaders\quilt.png" />
+    <Resource Include="Assets\Loaders\vanilla.png" />
+    <Content Include="Assets\update.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Mods\flowclient-branding-1.21.1-neoforge-1.0.0.jar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Mods\flowclient-branding-1.20.1-1.0.0.jar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Mods\flowclient-branding-26.2-1.0.0.jar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="PublishMediaProbe" BeforeTargets="Build">
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\tools\MediaProbe\MediaProbe.csproj&quot; -c Release -r win-x64 --self-contained false" />
+  </Target>
+
+  <Target Name="CopyMediaProbe" AfterTargets="PublishMediaProbe">
+    <ItemGroup>
+      <MediaProbeFiles Include="$(MSBuildProjectDirectory)\tools\MediaProbe\bin\Release\net8.0-windows10.0.19041.0\win-x64\publish\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MediaProbeFiles)" DestinationFolder="$(OutputPath)FlowMediaProbe\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishBatteryProbe" BeforeTargets="Build">
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\tools\BatteryProbe\BatteryProbe.csproj&quot; -c Release -r win-x64 --self-contained false" />
+  </Target>
+
+  <Target Name="CopyBatteryProbe" AfterTargets="PublishBatteryProbe">
+    <ItemGroup>
+      <BatteryProbeFiles Include="$(MSBuildProjectDirectory)\tools\BatteryProbe\bin\Release\net8.0-windows10.0.19041.0\win-x64\publish\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BatteryProbeFiles)" DestinationFolder="$(OutputPath)FlowBatteryProbe\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyToDist" AfterTargets="Build">
+    <ItemGroup>
+      <DistFiles Include="$(OutputPath)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DistFiles)" DestinationFolder="$(DistDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

@@ -1,0 +1,5 @@
+This distribution embeds Just Enough Items (JEI) by mezz.
+JEI is licensed under the MIT License. See META-INF/licenses/JEI-LICENSE.txt.
+
+Source: https://github.com/mezz/JustEnoughItems
+Maven: mezz.jei:jei-26.2-fabric

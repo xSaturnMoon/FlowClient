@@ -1,0 +1,31 @@
+subprojects {
+    tasks.register('copyToLauncher') {
+        dependsOn 'build'
+        doLast {
+            def jar = file("${buildDir}/libs/flowclient-branding-${project.name}-1.0.0.jar")
+            if (!jar.exists()) {
+                jar = fileTree("${buildDir}/libs").matching { include 'flowclient-branding*.jar' }.files.max { it.lastModified() }
+            }
+            def launcherMods = file("${rootProject.projectDir}/../Launcher/Assets/Mods")
+            launcherMods.mkdirs()
+            copy {
+                from jar
+                into launcherMods
+            }
+            def distMods = file("${rootProject.projectDir}/../dist/Assets/Mods")
+            distMods.mkdirs()
+            copy {
+                from jar
+                into distMods
+            }
+        }
+    }
+}
+
+tasks.register('buildAll') {
+    dependsOn ':1.20.1:build', ':1.20.1:copyToLauncher'
+    dependsOn ':1.21.1-neoforge:build', ':1.21.1-neoforge:copyToLauncher'
+    if (gradle.startParameter.taskNames.join(' ').toLowerCase().contains('buildall')) {
+        dependsOn ':26.2:build', ':26.2:copyToLauncher'
+    }
+}
