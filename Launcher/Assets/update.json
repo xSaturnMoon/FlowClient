@@ -1,8 +1,8 @@
-{
-  "version": "1.0.4",
+﻿{
+  "version": "1.0.5",
   "releaseDate": "11 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Versioni installate ora visibili nella sidebar sinistra sotto 'Installed versions'.",
+  "releaseNotes": "Sidebar: icone versioni installate piu grandi e layout migliorato (stile card).",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
   "downloadUrl": null
