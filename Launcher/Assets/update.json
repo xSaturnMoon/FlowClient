@@ -1,8 +1,8 @@
 ﻿{
-  "version": "1.0.5",
+  "version": "1.0.6",
   "releaseDate": "11 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Sidebar: icone versioni installate piu grandi e layout migliorato (stile card).",
+  "releaseNotes": "Fix corner radius hover, niente blu su versioni installate, play icon sull'icona al passaggio del mouse.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
   "downloadUrl": null
