@@ -1,7 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.4",
+  "releaseDate": "11 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow launcher stable channel.",
+  "releaseNotes": "Versioni installate ora visibili nella sidebar sinistra sotto 'Installed versions'.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
   "downloadUrl": null
