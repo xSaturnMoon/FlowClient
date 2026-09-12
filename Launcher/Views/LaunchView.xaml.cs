@@ -459,6 +459,12 @@ namespace Launcher.Views
                 window.NavigateTo("Explore");
         }
 
+        private void GoToSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is MainWindow window)
+                window.NavigateTo("Settings");
+        }
+
         private static string FormatLastPlayed(DateTime? dt)
         {
             if (dt == null) return "Mai giocato";

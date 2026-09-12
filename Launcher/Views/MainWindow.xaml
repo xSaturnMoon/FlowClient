@@ -33,24 +33,28 @@
             <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
-            <!-- Simple icon button style for the mini sidebar — no min-width, fully centered -->
+            <!-- Sleek button style for bottom utility dock -->
             <Style x:Key="MiniSidebarButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="#666666"/>
+                <Setter Property="Foreground" Value="#7E7D8E"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Height" Value="36"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="6" Padding="8">
+                            <Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="7" Padding="4">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="bg" Property="Background" Value="#12FFFFFF"/>
-                                    <Setter Property="Foreground" Value="#CCCCCC"/>
+                                    <Setter TargetName="bg" Property="Background" Value="#18FFFFFF"/>
+                                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bg" Property="Background" Value="#25FFFFFF"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -61,22 +65,27 @@
             <Style x:Key="SidebarInstanceItemStyle" TargetType="Border">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="8,8"/>
-                <Setter Property="Margin" Value="0,0,0,4"/>
+                <Setter Property="Padding" Value="7,6"/>
+                <Setter Property="Margin" Value="0,0,0,3"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#12FFFFFF"/>
+                        <Setter Property="Background" Value="#14FFFFFF"/>
                     </Trigger>
+                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                        <Setter Property="Background" Value="#152438"/>
+                        <Setter Property="BorderBrush" Value="#0A84FF"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="SidebarIconBadge" TargetType="Border">
-                <Setter Property="Width" Value="42"/>
-                <Setter Property="Height" Value="52"/>
-                <Setter Property="CornerRadius" Value="7"/>
-                <Setter Property="Background" Value="#151417"/>
-                <Setter Property="Padding" Value="7"/>
+                <Setter Property="Width" Value="40"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Background" Value="#15141E"/>
+                <Setter Property="Padding" Value="6"/>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -84,17 +93,16 @@
     <Window.Clip>
         <RectangleGeometry x:Name="WindowClipGeometry" RadiusX="10" RadiusY="10" Rect="0,0,1114,794"/>
     </Window.Clip>
-    <Border BorderBrush="#222224" BorderThickness="0.3" CornerRadius="10">
+    <Border BorderBrush="#201E2E" BorderThickness="1" CornerRadius="10">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="227" />
-            <ColumnDefinition Width="48"  />
+            <ColumnDefinition Width="234" />
             <ColumnDefinition Width="*"   />
         </Grid.ColumnDefinitions>
 
-        <!-- ═══ COLUMN 0 — MAIN LEFT SIDEBAR  (original, untouched) ═══ -->
-        <Border x:Name="SidebarBorder" Grid.Column="0" Background="#1B1619" BorderBrush="#222224" BorderThickness="0,0,0.3,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
-            <Grid Margin="16,20,16,16">
+        <!-- ═══ COLUMN 0 — UNIFIED LUXURY SIDEBAR ═══ -->
+        <Border x:Name="SidebarBorder" Grid.Column="0" Background="#100F16" BorderBrush="#1F1D2B" BorderThickness="0,0,1,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+            <Grid Margin="14,18,14,14">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -104,15 +112,20 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Logo -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,28">
-                    <Image Source="/flowm.ico" Height="26" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    <TextBlock Text="FLOW" Foreground="#FFFFFF" FontFamily="{StaticResource FlowBrandFont}" FontSize="26" VerticalAlignment="Center"/>
-                </StackPanel>
+                <!-- Row 0: Brand Logo & Version Pill -->
+                <Grid Grid.Row="0" Margin="4,2,4,20">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="/flowm.ico" Height="26" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="FLOW" Foreground="#FFFFFF" FontFamily="{StaticResource FlowBrandFont}" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Border HorizontalAlignment="Right" VerticalAlignment="Center" Background="#161424" BorderBrush="#28253D" BorderThickness="1" CornerRadius="5" Padding="7,2">
+                        <TextBlock Text="v1.0.9" Foreground="#0A84FF" FontSize="10.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                    </Border>
+                </Grid>
 
-                <!-- Nav menu -->
-                <Grid Grid.Row="1" Margin="0,0,0,20">
-                    <Border x:Name="NavIndicator" Height="48" CornerRadius="8" Background="#0A6FCB"
+                <!-- Row 1: Nav menu (Launch, Explore, Account, Settings) -->
+                <Grid Grid.Row="1" Margin="0,0,0,14">
+                    <Border x:Name="NavIndicator" Height="48" CornerRadius="9" Background="#0A6FCB"
                             VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False" Panel.ZIndex="0">
                         <Border.RenderTransform>
                             <TranslateTransform x:Name="NavIndicatorTransform" Y="0"/>
@@ -120,46 +133,54 @@
                     </Border>
                     <StackPanel Panel.ZIndex="1">
                         <Button Style="{StaticResource NavigationButtonStyleGhost}" Margin="0,0,0,9" Height="48" Click="Launch_Click" Tag="Launch">
-                            <StackPanel Orientation="Horizontal" Margin="-4,0,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
                                 <Path Data="M12,2 C12,2 7,6 7,12 L9,12 C9,12 9,10 12,8 C15,10 15,12 15,12 L17,12 C17,6 12,2 12,2 Z M9,14 L9,18 L11,17 L11,20 L13,20 L13,17 L15,18 L15,14 Z"
                                       StrokeThickness="0" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,11,0"/>
-                                <TextBlock Text="Launch" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Avvia" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource NavigationButtonStyleGhost}" Margin="0,0,0,9" Height="48" Click="Explore_Click" Tag="Explore">
-                            <StackPanel Orientation="Horizontal" Margin="-4,0,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
                                 <Path Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z M16.24,7.76 L14.12,14.12 L7.76,16.24 L9.88,9.88 Z"
                                       StrokeThickness="2" Fill="Transparent" Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,11,0"/>
-                                <TextBlock Text="Explore" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Esplora" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource NavigationButtonStyleGhost}" Height="48" Click="Account_Click" Tag="Account">
-                            <StackPanel Orientation="Horizontal" Margin="-4,0,0,0">
+                        <Button Style="{StaticResource NavigationButtonStyleGhost}" Margin="0,0,0,9" Height="48" Click="Account_Click" Tag="Account">
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
                                 <Path Data="M12,12 C14.21,12 16,10.21 16,8 C16,5.79 14.21,4 12,4 C9.79,4 8,5.79 8,8 C8,10.21 9.79,12 12,12 Z M12,14 C8.13,14 5,15.79 5,18 V20 H19 V18 C19,15.79 15.87,14 12,14 Z"
                                       StrokeThickness="2" Fill="Transparent" Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,11,0"/>
+                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
                                 <TextBlock Text="Account" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource NavigationButtonStyleGhost}" Height="48" Click="Settings_Click" Tag="Settings">
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
+                                <Path Data="M12,15 A3,3 0 1,0 12,9 A3,3 0 1,0 12,15 Z M19.4,13 L21.7,9.2 L19.1,4.6 L16.4,5.7 C15.8,5.3 15.2,4.9 14.5,4.6 L14.1,1.7 L9.5,1.7 L9.1,4.6 C8.4,4.9 7.8,5.3 7.2,5.7 L4.5,4.6 L1.9,9.2 L4.2,11 C4.1,11.3 4.1,11.7 4.1,12 C4.1,12.3 4.1,12.7 4.2,13 L1.9,14.8 L4.5,19.4 L7.2,18.3 C7.8,18.7 8.4,19.1 9.1,19.4 L9.5,22.3 L14.1,22.3 L14.5,19.4 C15.2,19.1 15.8,18.7 16.4,18.3 L19.1,19.4 L21.7,14.8 Z"
+                                      StrokeThickness="2" Fill="Transparent" Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Impostazioni" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
                 </Grid>
 
-                <!-- Installed versions -->
-                <Grid Grid.Row="2" Margin="4,30,4,0">
+                <!-- Row 2: Installed versions header -->
+                <Grid Grid.Row="2" Margin="4,14,4,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Installed versions" Foreground="#777777" FontSize="11"
-                               FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="8,0,8,0"/>
-                    <Line Grid.Column="1" Stroke="#2A2A2E" StrokeThickness="0.8"
-                          X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <TextBlock Grid.Column="0" Text="VERSIONI INSTALLATE" Foreground="#666575" FontSize="10"
+                               FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="2,0,8,0"/>
+                    <Line Grid.Column="1" Stroke="#201E2E" StrokeThickness="1"
+                          X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" VerticalAlignment="Center"/>
                 </Grid>
 
-                <!-- Installed versions list -->
-                <ScrollViewer Grid.Row="3" Margin="0,10,0,10"
+                <!-- Row 3: Installed versions list -->
+                <ScrollViewer Grid.Row="3" Margin="0,2,0,8"
                               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <ScrollViewer.Resources>
                         <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
@@ -175,21 +196,21 @@
                                         </Grid.ColumnDefinitions>
 
                                         <!-- Badge with play icon overlay on hover -->
-                                        <Border Width="42" Height="52" CornerRadius="7"
-                                                Background="#151417" Margin="0,0,11,0"
+                                        <Border Width="40" Height="40" CornerRadius="8"
+                                                Background="#15141E" Margin="0,0,10,0"
                                                 Cursor="Hand" ClipToBounds="True"
                                                 Tag="{Binding Id}" MouseLeftButtonDown="SidebarInstance_Click">
                                             <Grid>
                                                 <!-- Loader icon -->
                                                 <Image Source="{Binding LoaderIconUri, Converter={StaticResource ImgSrc}}"
-                                                       Stretch="Uniform" Margin="7"/>
-                                                <!-- Dark overlay (hidden by default) -->
-                                                <Border x:Name="PlayBg" Background="#99000000" Opacity="0" CornerRadius="7"/>
+                                                       Stretch="Uniform" Margin="6" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                <!-- Dark overlay -->
+                                                <Border x:Name="PlayBg" Background="#A0000000" Opacity="0" CornerRadius="8"/>
                                                 <!-- Play triangle -->
                                                 <Path x:Name="PlayIcon"
                                                       Data="M8,7 L19,13 L8,19 Z"
                                                       Fill="#FFFFFF" Stretch="Uniform"
-                                                      Width="14" Height="14"
+                                                      Width="13" Height="13"
                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
                                                       Opacity="0"/>
                                             </Grid>
@@ -215,12 +236,12 @@
 
                                         <!-- Name + subtitle -->
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="Bold"
-                                                       Foreground="#CCCCCC"
+                                            <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="Bold"
+                                                       Foreground="#DCDCE2"
                                                        FontFamily="{StaticResource NunitoFont}"
                                                        TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock FontSize="11.5" Margin="0,3,0,0"
-                                                       Foreground="#66666A"
+                                            <TextBlock FontSize="11" Margin="0,2,0,0"
+                                                       Foreground="#686776"
                                                        FontFamily="{StaticResource NunitoFont}"
                                                        TextTrimming="CharacterEllipsis">
                                                 <Run Text="{Binding Version}"/><Run Text=" · "/><Run Text="{Binding Loader}"/>
@@ -233,180 +254,151 @@
                     </ItemsControl>
                 </ScrollViewer>
 
-                <!-- Separator above Settings -->
-                <Line Grid.Row="4" Stroke="#2A2A2E" StrokeThickness="0.8"
-                      X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Margin="4,0,4,6"/>
+                <!-- Row 4: Separator above Utility Dock -->
+                <Line Grid.Row="4" Stroke="#201E2E" StrokeThickness="1"
+                      X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Margin="4,0,4,8"/>
 
-                <!-- Settings button -->
-                <Grid Grid.Row="5">
-                    <Border x:Name="BottomNavIndicator" Height="48" CornerRadius="8" Background="#0A6FCB"
-                            VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False"
-                            Visibility="Collapsed" Panel.ZIndex="0">
-                        <Border.RenderTransform>
-                            <TranslateTransform x:Name="BottomNavIndicatorTransform" Y="0"/>
-                        </Border.RenderTransform>
-                    </Border>
-                    <StackPanel Panel.ZIndex="1">
-                        <Button Style="{StaticResource NavigationButtonStyleGhost}" Height="48" Click="Settings_Click" Tag="Settings">
-                            <StackPanel Orientation="Horizontal" Margin="-4,0,0,0">
-                                <Path Data="M12,15 A3,3 0 1,0 12,9 A3,3 0 1,0 12,15 Z M19.4,13 L21.7,9.2 L19.1,4.6 L16.4,5.7 C15.8,5.3 15.2,4.9 14.5,4.6 L14.1,1.7 L9.5,1.7 L9.1,4.6 C8.4,4.9 7.8,5.3 7.2,5.7 L4.5,4.6 L1.9,9.2 L4.2,11 C4.1,11.3 4.1,11.7 4.1,12 C4.1,12.3 4.1,12.7 4.2,13 L1.9,14.8 L4.5,19.4 L7.2,18.3 C7.8,18.7 8.4,19.1 9.1,19.4 L9.5,22.3 L14.1,22.3 L14.5,19.4 C15.2,19.1 15.8,18.7 16.4,18.3 L19.1,19.4 L21.7,14.8 Z"
-                                      StrokeThickness="2" Fill="Transparent" Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                      Width="16" Height="16" Stretch="Uniform" Margin="0,0,11,0"/>
-                                <TextBlock Text="Settings" VerticalAlignment="Center" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                            </StackPanel>
+                <!-- Row 5: Bottom Utility Dock (Info, Folder, Update, Quit) -->
+                <Border Grid.Row="5" Background="#13121B" BorderBrush="#201E2E" BorderThickness="1" CornerRadius="10" Padding="3,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Info Button -->
+                        <Button x:Name="BtnInfo" Grid.Column="0"
+                                Style="{StaticResource MiniSidebarButtonStyle}"
+                                HorizontalAlignment="Stretch"
+                                Click="Info_Click" Tag="Info" ToolTip="Informazioni su Flow Client">
+                            <Path Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z M12,16 L12,11 M12,8 L12,8.01"
+                                  StrokeThickness="1.6" Fill="Transparent"
+                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Width="17" Height="17" Stretch="Uniform"/>
                         </Button>
-                    </StackPanel>
-                </Grid>
+
+                        <!-- Open Official Folder -->
+                        <Button x:Name="BtnOpenFolder" Grid.Column="1"
+                                Style="{StaticResource MiniSidebarButtonStyle}"
+                                HorizontalAlignment="Stretch"
+                                Click="OpenFolder_Click" Tag="Folder" ToolTip="Apri cartella Flow Client">
+                            <Path Data="M 22,19 A 2,2 0 0,1 20,21 L 4,21 A 2,2 0 0,1 2,19 L 2,5 A 2,2 0 0,1 4,3 L 9,3 L 11,6 L 20,6 A 2,2 0 0,1 22,8 Z"
+                                  StrokeThickness="1.6" Fill="Transparent"
+                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Width="17" Height="17" Stretch="Uniform"/>
+                        </Button>
+
+                        <!-- Update Button with morphing animations -->
+                        <Button x:Name="BtnUpdate" Grid.Column="2"
+                                Style="{StaticResource MiniSidebarButtonStyle}"
+                                HorizontalAlignment="Stretch"
+                                Click="Update_Click" Tag="Update" ToolTip="Controlla aggiornamenti">
+                            <Grid Width="17" Height="17">
+                                <!-- 1. Outer Circle of Update Icon -->
+                                <Path x:Name="OuterCircle"
+                                      Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z"
+                                      StrokeThickness="1.6" Fill="Transparent"
+                                      Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                      Width="17" Height="17" Stretch="Uniform"
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="OuterCircleScale" ScaleX="1" ScaleY="1"/>
+                                    </Path.RenderTransform>
+                                </Path>
+
+                                <!-- 2. Inner Down Arrow -->
+                                <Path x:Name="IconUpdateArrow"
+                                      Data="M2,2 M22,22 M12,8.5 L12,14.5 M9,12.5 L12,15.5 L15,12.5"
+                                      StrokeThickness="1.6" Fill="Transparent"
+                                      Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                      Width="17" Height="17" Stretch="Uniform"
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="UpdateArrowScale" ScaleX="1" ScaleY="1"/>
+                                    </Path.RenderTransform>
+                                </Path>
+
+                                <!-- 3. Windows 11 boot style spinning arc -->
+                                <Path x:Name="OuterCircleSpinner"
+                                      Data="M2,2 M22,22 M12,2 A10,10 0 0,1 22,12"
+                                      StrokeThickness="1.8" Fill="Transparent"
+                                      Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Width="17" Height="17" Stretch="Uniform"
+                                      Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform x:Name="SpinnerScale" ScaleX="1" ScaleY="1"/>
+                                            <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                                        </TransformGroup>
+                                    </Path.RenderTransform>
+                                </Path>
+
+                                <!-- 4. Checkmark (✓) -->
+                                <Path x:Name="IconCheckmark"
+                                      Data="M4,12 L9,17 L20,6"
+                                      StrokeThickness="1.8" Fill="Transparent"
+                                      Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                      Width="17" Height="17" Stretch="Uniform"
+                                      Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform x:Name="CheckmarkScale" ScaleX="0" ScaleY="0"/>
+                                            <RotateTransform x:Name="CheckmarkRotate" Angle="-35"/>
+                                        </TransformGroup>
+                                    </Path.RenderTransform>
+                                </Path>
+
+                                <!-- 5. Cross (✕) -->
+                                <Path x:Name="IconCross"
+                                      Data="M4,4 L20,20 M20,4 L4,20"
+                                      StrokeThickness="1.8" Fill="Transparent"
+                                      Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Width="17" Height="17" Stretch="Uniform"
+                                      Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform x:Name="CrossScale" ScaleX="0" ScaleY="0"/>
+                                            <RotateTransform x:Name="CrossRotate" Angle="90"/>
+                                        </TransformGroup>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </Button>
+
+                        <!-- Quit/Power -->
+                        <Button Grid.Column="3"
+                                Style="{StaticResource MiniSidebarButtonStyle}"
+                                HorizontalAlignment="Stretch"
+                                Click="Quit_Click" Tag="Quit" ToolTip="Chiudi Flow Client">
+                            <Path Data="M12,3 L12,12 M6.34,5.64 A8,8 0 1,0 17.66,5.64"
+                                  StrokeThickness="1.6" Fill="Transparent"
+                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Width="17" Height="17" Stretch="Uniform"/>
+                        </Button>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
 
-        <!-- ═══ COLUMN 1 — MINI ICON SIDEBAR ═══ -->
-        <Grid x:Name="MiniSidebarGrid" Grid.Column="1" Background="#1B1619">
-            <!-- Left separator — same as Line Stroke="#2A2A2E" StrokeThickness="0.8" -->
-            <Rectangle Width="0.8" Fill="#2A2A2E" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
-            <!-- Right separator — same style -->
-            <Rectangle Width="0.8" Fill="#2A2A2E" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
-
-            <Grid Margin="4,16,4,16">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*"    />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10"   />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10"   />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <!-- Info Button -->
-                <Button x:Name="BtnInfo" Grid.Row="0"
-                        Style="{StaticResource MiniSidebarButtonStyle}"
-                        HorizontalAlignment="Stretch"
-                        Click="Info_Click" Tag="Info" ToolTip="Informazioni su Flow Client">
-                    <Path Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z M12,16 L12,11 M12,8 L12,8.01"
-                          StrokeThickness="1.6" Fill="Transparent"
-                          Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                          Width="18" Height="18" Stretch="Uniform"/>
-                </Button>
-
-                <!-- Open Official Folder -->
-                <Button x:Name="BtnOpenFolder" Grid.Row="2"
-                        Style="{StaticResource MiniSidebarButtonStyle}"
-                        HorizontalAlignment="Stretch"
-                        Click="OpenFolder_Click" Tag="Folder" ToolTip="Apri cartella Flow Client">
-                    <Path Data="M 22,19 A 2,2 0 0,1 20,21 L 4,21 A 2,2 0 0,1 2,19 L 2,5 A 2,2 0 0,1 4,3 L 9,3 L 11,6 L 20,6 A 2,2 0 0,1 22,8 Z"
-                          StrokeThickness="1.6" Fill="Transparent"
-                          Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                          Width="18" Height="18" Stretch="Uniform"/>
-                </Button>
-
-                <!-- Update -->
-                <Button x:Name="BtnUpdate" Grid.Row="4"
-                        Style="{StaticResource MiniSidebarButtonStyle}"
-                        HorizontalAlignment="Stretch"
-                        Click="Update_Click" Tag="Update" ToolTip="Controlla aggiornamenti">
-                    <Grid Width="18" Height="18">
-                        <!-- 1. Outer Circle of Update Icon (same 18x18 size as Power icon) -->
-                        <Path x:Name="OuterCircle"
-                              Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z"
-                              StrokeThickness="1.6" Fill="Transparent"
-                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                              Width="18" Height="18" Stretch="Uniform"
-                              RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <ScaleTransform x:Name="OuterCircleScale" ScaleX="1" ScaleY="1"/>
-                            </Path.RenderTransform>
-                        </Path>
-
-                        <!-- 2. Inner Down Arrow (recedes into distance on click, perfectly centered at 12,12) -->
-                        <Path x:Name="IconUpdateArrow"
-                              Data="M2,2 M22,22 M12,8.5 L12,14.5 M9,12.5 L12,15.5 L15,12.5"
-                              StrokeThickness="1.6" Fill="Transparent"
-                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                              Width="18" Height="18" Stretch="Uniform"
-                              RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <ScaleTransform x:Name="UpdateArrowScale" ScaleX="1" ScaleY="1"/>
-                            </Path.RenderTransform>
-                        </Path>
-
-                        <!-- 3. Windows 11 boot style spinning arc (NO faint background line!) -->
-                        <Path x:Name="OuterCircleSpinner"
-                              Data="M2,2 M22,22 M12,2 A10,10 0 0,1 22,12"
-                              StrokeThickness="1.8" Fill="Transparent"
-                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                              Width="18" Height="18" Stretch="Uniform"
-                              Opacity="0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform x:Name="SpinnerScale" ScaleX="1" ScaleY="1"/>
-                                    <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-
-                        <!-- 4. Checkmark (✓) - the circle morphs directly into this (full 18x18 size) -->
-                        <Path x:Name="IconCheckmark"
-                              Data="M4,12 L9,17 L20,6"
-                              StrokeThickness="1.8" Fill="Transparent"
-                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                              Width="18" Height="18" Stretch="Uniform"
-                              Opacity="0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform x:Name="CheckmarkScale" ScaleX="0" ScaleY="0"/>
-                                    <RotateTransform x:Name="CheckmarkRotate" Angle="-35"/>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-
-                        <!-- 5. Cross (✕) - the circle morphs directly into this (full 18x18 size) -->
-                        <Path x:Name="IconCross"
-                              Data="M4,4 L20,20 M20,4 L4,20"
-                              StrokeThickness="1.8" Fill="Transparent"
-                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                              Width="18" Height="18" Stretch="Uniform"
-                              Opacity="0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform x:Name="CrossScale" ScaleX="0" ScaleY="0"/>
-                                    <RotateTransform x:Name="CrossRotate" Angle="90"/>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
-                </Button>
-
-                <!-- Quit/Power -->
-                <Button Grid.Row="6"
-                        Style="{StaticResource MiniSidebarButtonStyle}"
-                        HorizontalAlignment="Stretch"
-                        Click="Quit_Click" Tag="Quit" ToolTip="Quit">
-                    <Path Data="M12,3 L12,12 M6.34,5.64 A8,8 0 1,0 17.66,5.64"
-                          StrokeThickness="1.6" Fill="Transparent"
-                          Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                          Width="18" Height="18" Stretch="Uniform"/>
-                </Button>
-            </Grid>
-        </Grid>
-
-        <!-- ═══ COLUMN 2 — MAIN CONTENT ═══ -->
-        <Border x:Name="ContentBorder" Grid.Column="2" Background="#131114">
+        <!-- ═══ COLUMN 1 — MAIN CONTENT ═══ -->
+        <Border x:Name="ContentBorder" Grid.Column="1" Background="#0C0B10">
             <ContentControl x:Name="MainContentControl"/>
         </Border>
 
         <!-- ═══ INFO MODAL OVERLAY ═══ -->
-        <Grid x:Name="InfoModalOverlay" Grid.ColumnSpan="3" Panel.ZIndex="999"
+        <Grid x:Name="InfoModalOverlay" Grid.ColumnSpan="2" Panel.ZIndex="999"
               Background="#80000000" Visibility="Collapsed" Opacity="0"
               MouseDown="InfoOverlay_MouseDown">
-            <Border Width="380" Background="#1B1619" BorderBrush="#2E2830" BorderThickness="1"
+            <Border Width="380" Background="#14131D" BorderBrush="#28253A" BorderThickness="1"
                     CornerRadius="14" Padding="24" VerticalAlignment="Center" HorizontalAlignment="Center"
                     MouseDown="InfoCard_MouseDown">
                 <Border.Effect>
@@ -440,12 +432,12 @@
                     </Grid>
 
                     <!-- Divider -->
-                    <Rectangle Grid.Row="1" Height="1" Fill="#262228" Margin="0,0,0,16"/>
+                    <Rectangle Grid.Row="1" Height="1" Fill="#242132" Margin="0,0,0,16"/>
 
                     <!-- Info Rows -->
                     <StackPanel Grid.Row="2" Margin="0,0,0,20">
                         <!-- Row 1: Launcher Version -->
-                        <Border Background="#141113" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#242026" BorderThickness="1">
+                        <Border Background="#12111A" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#222030" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -456,13 +448,13 @@
                                     <TextBlock Text="Versione corrente installata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <Border Grid.Column="1" Background="#0A6FCB" CornerRadius="5" Padding="8,4" VerticalAlignment="Center">
-                                    <TextBlock x:Name="TxtInfoVersion" Text="v1.0.3" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock x:Name="TxtInfoVersion" Text="v1.0.9" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                 </Border>
                             </Grid>
                         </Border>
 
                         <!-- Row 2: Release Date -->
-                        <Border Background="#141113" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#242026" BorderThickness="1">
+                        <Border Background="#12111A" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#222030" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -472,12 +464,12 @@
                                     <TextBlock Text="DATA DI RILASCIO" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="Quando è stata pubblicata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
-                                <TextBlock x:Name="TxtInfoReleaseDate" Grid.Column="1" Text="11 Settembre 2026" Foreground="#E0E0E0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
+                                <TextBlock x:Name="TxtInfoReleaseDate" Grid.Column="1" Text="12 Settembre 2026" Foreground="#E0E0E0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
                             </Grid>
                         </Border>
 
                         <!-- Row 3: Download Date -->
-                        <Border Background="#141113" CornerRadius="8" Padding="12,10" BorderBrush="#242026" BorderThickness="1">
+                        <Border Background="#12111A" CornerRadius="8" Padding="12,10" BorderBrush="#222030" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -487,14 +479,14 @@
                                     <TextBlock Text="DATA DI DOWNLOAD" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="Quando l'hai scaricata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
-                                <TextBlock x:Name="TxtInfoDownloadDate" Grid.Column="1" Text="11/09/2026 alle 03:25" Foreground="#30D158" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
+                                <TextBlock x:Name="TxtInfoDownloadDate" Grid.Column="1" Text="12/09/2026 alle 19:30" Foreground="#30D158" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
                             </Grid>
                         </Border>
                     </StackPanel>
 
                     <!-- Close button -->
                     <Button Grid.Row="3" Content="Chiudi" Height="34"
-                            Background="#242026" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12.5"
+                            Background="#222032" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12.5"
                             FontFamily="{StaticResource NunitoFont}" Click="CloseInfoModal_Click"/>
                 </Grid>
             </Border>

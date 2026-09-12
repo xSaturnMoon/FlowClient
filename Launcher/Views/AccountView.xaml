@@ -20,7 +20,13 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="#131114">
+    <Grid>
+        <Grid.Background>
+            <RadialGradientBrush Center="0.85,0.15" GradientOrigin="0.85,0.15" RadiusX="0.8" RadiusY="0.8">
+                <GradientStop Color="#1A162B" Offset="0"/>
+                <GradientStop Color="#0C0B10" Offset="0.85"/>
+            </RadialGradientBrush>
+        </Grid.Background>
         <Grid Margin="48,48,48,32">
 
             <!-- Sign in -->

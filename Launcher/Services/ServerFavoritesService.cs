@@ -73,8 +73,14 @@ namespace Launcher.Services
             ImportServersDat(MinecraftServersPath);
             ImportAllFlowServersDat();
 
-            if (!_seeded && _favoriteKeys.Count == 0 && _catalog.Count > 0)
+            if (!_seeded && _favoriteKeys.Count == 0)
             {
+                if (_catalog.Count == 0)
+                {
+                    MergeServer(new SavedServerEntry { Host = "mc.hypixel.net", Port = 25565, Name = "Hypixel Network" });
+                    MergeServer(new SavedServerEntry { Host = "mc.coralmc.it", Port = 25565, Name = "CoralMC" });
+                }
+
                 foreach (var key in _catalog.Keys)
                     _favoriteKeys.Add(key);
                 SaveFavorites();

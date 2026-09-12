@@ -15,8 +15,7 @@ namespace Launcher.Views
 {
     public partial class MainWindow : Window
     {
-        private static readonly string[] TopNavTags = ["Launch", "Explore", "Account"];
-        private static readonly string[] BottomNavTags = ["Settings"];
+        private static readonly string[] TopNavTags = ["Launch", "Explore", "Account", "Settings"];
         private const double NavItemStep = 57;
 
         private readonly MainViewModel _viewModel;
@@ -65,10 +64,11 @@ namespace Launcher.Views
                 UpdateNavIndicators(_viewModel.ActiveButton, animate: false);
                 UpdateMainContent(_viewModel.ActiveButton);
                 LoadInstalledVersions();
+                UpdateService.CleanOldUpdates();
                 _ = RunStartupUpdateCheckAsync();
 
                 // Startup entrance animation — converges to the current layout, changes nothing permanently
-                UiTransitions.PlayStartupAnimation(this, SidebarBorder, MiniSidebarGrid, ContentBorder);
+                UiTransitions.PlayStartupAnimation(this, SidebarBorder, null, ContentBorder);
 
                 // Pre-warm views in background so switching to Explore, Account, etc. is instant with 0 freeze
                 PrewarmViews();
@@ -277,24 +277,15 @@ namespace Launcher.Views
         private void UpdateNavIndicators(string activeButton, bool animate)
         {
             var topIndex = Array.IndexOf(TopNavTags, activeButton);
-            var bottomIndex = Array.IndexOf(BottomNavTags, activeButton);
 
             if (topIndex >= 0)
             {
                 NavIndicator.Visibility = Visibility.Visible;
-                BottomNavIndicator.Visibility = Visibility.Collapsed;
                 MoveIndicator(NavIndicatorTransform, topIndex * NavItemStep, animate);
-            }
-            else if (bottomIndex >= 0)
-            {
-                NavIndicator.Visibility = Visibility.Collapsed;
-                BottomNavIndicator.Visibility = Visibility.Visible;
-                MoveIndicator(BottomNavIndicatorTransform, bottomIndex * NavItemStep, animate);
             }
             else
             {
                 NavIndicator.Visibility = Visibility.Collapsed;
-                BottomNavIndicator.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -748,7 +739,7 @@ namespace Launcher.Views
             IsHitTestVisible = false;
 
             UiTransitions.PlayExitAnimation(
-                this, SidebarBorder, MiniSidebarGrid, ContentBorder,
+                this, SidebarBorder, null, ContentBorder,
                 onCompleted: () => Application.Current.Shutdown());
         }
     }

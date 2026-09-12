@@ -113,7 +113,7 @@ namespace Launcher.Services
                 if (!Directory.Exists(UpdatesDirectory))
                     return;
 
-                foreach (var file in Directory.EnumerateFiles(UpdatesDirectory, "FlowClient-*.zip"))
+                foreach (var file in Directory.EnumerateFiles(UpdatesDirectory, "*.*"))
                 {
                     if (keepZip != null && string.Equals(file, keepZip, StringComparison.OrdinalIgnoreCase))
                         continue;
@@ -124,11 +124,6 @@ namespace Launcher.Services
                 if (Directory.Exists(stagingDir))
                 {
                     try { Directory.Delete(stagingDir, recursive: true); } catch { }
-                }
-
-                foreach (var file in Directory.EnumerateFiles(UpdatesDirectory, "*.cmd"))
-                {
-                    try { File.Delete(file); } catch { }
                 }
             }
             catch { }

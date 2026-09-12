@@ -135,7 +135,7 @@ namespace Launcher.Helpers
         public static void PlayStartupAnimation(
             Window window,
             FrameworkElement sidebar,
-            FrameworkElement miniSidebar,
+            FrameworkElement? miniSidebar,
             FrameworkElement content)
         {
             // Always fade in the window even if animations are disabled (avoids flash)
@@ -166,7 +166,7 @@ namespace Launcher.Helpers
                 scale.BeginAnimation(ScaleTransform.ScaleYProperty, sy);
             }
 
-            // ── 3. Sidebar & Mini Sidebar: slide in together in lockstep as a solid unit ──
+            // ── 3. Sidebar slide in ──
             var sidebarSlideIn = new DoubleAnimation(-22, 0, TimeSpan.FromMilliseconds(500))
             {
                 EasingFunction = ease,
@@ -177,9 +177,12 @@ namespace Launcher.Helpers
             sidebar.RenderTransform = sidebarT;
             sidebarT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideIn);
 
-            var miniT = new TranslateTransform(-22, 0);
-            miniSidebar.RenderTransform = miniT;
-            miniT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideIn);
+            if (miniSidebar != null)
+            {
+                var miniT = new TranslateTransform(-22, 0);
+                miniSidebar.RenderTransform = miniT;
+                miniT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideIn);
+            }
 
             // ── 4. Content: slide from right + fade in ──────────────────────
             var contentT = new TranslateTransform(28, 0);
@@ -199,14 +202,11 @@ namespace Launcher.Helpers
                     BeginTime = TimeSpan.FromMilliseconds(100)
                 });
         }
-        /// <summary>
-        /// Plays a premium exit animation, then shuts down the application.
-        /// Reverse of PlayStartupAnimation — everything fades/slides away.
-        /// </summary>
+
         public static void PlayExitAnimation(
             Window window,
             FrameworkElement sidebar,
-            FrameworkElement miniSidebar,
+            FrameworkElement? miniSidebar,
             FrameworkElement content,
             Action onCompleted)
         {
@@ -227,7 +227,7 @@ namespace Launcher.Helpers
             content.BeginAnimation(UIElement.OpacityProperty,
                 new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(dur * 0.85)) { EasingFunction = ease });
 
-            // Sidebar and Mini sidebar: move together in 100% lockstep so they never separate
+            // Sidebar: move out
             var sidebarSlideOut = new DoubleAnimation(0, -22, TimeSpan.FromMilliseconds(dur))
             {
                 EasingFunction = ease,
@@ -238,9 +238,12 @@ namespace Launcher.Helpers
             sidebar.RenderTransform = sidebarT;
             sidebarT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideOut);
 
-            var miniT = miniSidebar.RenderTransform as TranslateTransform ?? new TranslateTransform();
-            miniSidebar.RenderTransform = miniT;
-            miniT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideOut);
+            if (miniSidebar != null)
+            {
+                var miniT = miniSidebar.RenderTransform as TranslateTransform ?? new TranslateTransform();
+                miniSidebar.RenderTransform = miniT;
+                miniT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideOut);
+            }
 
             // Window: fade out — fire onCompleted when done
             var windowFade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(dur + 60))
