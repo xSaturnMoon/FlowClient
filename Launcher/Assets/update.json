@@ -1,9 +1,9 @@
 {
-  "version": "1.0.9",
+  "version": "1.1.0",
   "releaseDate": "12 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Redesign Luxury completo del client: unificazione del sidebar in un unico pannello ergonomico con dock strumenti inferiore (info, cartella, update con animazione morphing, quit), nuova dashboard gaming a tutto schermo per l'avvio con avatar skin HD, server multiplayer ad avvio rapido, palette cosmica unificata su tutte le schermate e Discord RPC nativo.",
+  "releaseNotes": "Flow Client v1.1.0: Minimalist Luxury Redesign. Eliminazione completa dei gradienti e delle scritte AI fittizie, layout arioso e funzionale per l'avvio, server preferiti rapidi ad 1 clic, palette con colori sicuri e Discord Rich Presence nativo.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": null
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.0/FlowClient-v1.1.0.zip"
 }
