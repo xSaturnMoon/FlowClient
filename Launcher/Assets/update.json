@@ -1,8 +1,8 @@
 ﻿{
-  "version": "1.0.6",
-  "releaseDate": "11 Settembre 2026",
+  "version": "1.0.7",
+  "releaseDate": "12 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Fix corner radius hover, niente blu su versioni installate, play icon sull'icona al passaggio del mouse.",
+  "releaseNotes": "Icone loader 3D ufficiali colorate, nuova sezione Impostazioni moderna a schede, fix definitivo chiusura/crash post-avvio e pulizia automatica vecchi aggiornamenti.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
   "downloadUrl": null
