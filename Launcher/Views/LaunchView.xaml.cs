@@ -284,13 +284,13 @@ namespace Launcher.Views
             var l = (loader ?? "VANILLA").Trim().ToUpperInvariant();
             TxtLoaderBadge.Text = l;
 
-            LoaderBadgeBorder.Background = l switch
+            TxtLoaderBadge.Foreground = l switch
             {
-                "FABRIC"   => new SolidColorBrush(Color.FromRgb(59, 130, 246)),
-                "QUILT"    => new SolidColorBrush(Color.FromRgb(168, 85, 247)),
-                "NEOFORGE" => new SolidColorBrush(Color.FromRgb(249, 115, 22)),
-                "FORGE"    => new SolidColorBrush(Color.FromRgb(100, 116, 139)),
-                _          => new SolidColorBrush(Color.FromRgb(16, 185, 129))
+                "FABRIC"   => new SolidColorBrush(Color.FromRgb(96, 165, 250)),
+                "QUILT"    => new SolidColorBrush(Color.FromRgb(192, 132, 252)),
+                "NEOFORGE" => new SolidColorBrush(Color.FromRgb(251, 146, 60)),
+                "FORGE"    => new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+                _          => new SolidColorBrush(Color.FromRgb(52, 211, 153))
             };
         }
 

@@ -88,14 +88,20 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="#141416" ClipToBounds="True">
+    <Grid Background="Transparent" ClipToBounds="True">
+        <Grid.RowDefinitions>
+            <!-- Row 0: Central Stage (midpoint between top bar and launch dock) -->
+            <RowDefinition Height="*"/>
+            <!-- Row 1: Bottom Launch Dock & Controls -->
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <!-- ══════ CENTRAL STAGE: INTERACTIVE 3D MINECRAFT OBJECT ══════ -->
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <!-- ══════ ROW 0: CENTRAL STAGE (3D MINECRAFT OBJECT & EDGE ARROWS) ══════ -->
+        <Grid Grid.Row="0">
 
             <!-- Real Hardware-Accelerated 3D Viewport with Drag-to-Rotate -->
             <Viewport3D x:Name="ModelViewport" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Width="440" Height="440" Margin="0,-50,0,0"
+                        Width="440" Height="440" Margin="0"
                         MouseDown="Viewport_MouseDown" MouseMove="Viewport_MouseMove"
                         MouseUp="Viewport_MouseUp" Cursor="Hand"
                         ToolTip="Click and drag to rotate in 3D">
@@ -134,46 +140,53 @@
                     </ModelVisual3D.Content>
                 </ModelVisual3D>
             </Viewport3D>
+
+            <!-- Navigation Arrows: Exactly Vertically Centered in Row 0 at Same Centerline as 3D Model -->
+            <Button Style="{StaticResource HomeNavArrowButton}" Click="PreviousVersion_Click"
+                    HorizontalAlignment="Left" VerticalAlignment="Center" Margin="28,0,0,0"
+                    ToolTip="Previous Version">
+                <Path Data="M 15,10 L 9,16 L 15,22" Stroke="#8E92A4" StrokeThickness="2.4"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                      Width="14" Height="16" Stretch="Uniform"/>
+            </Button>
+
+            <Button Style="{StaticResource HomeNavArrowButton}" Click="NextVersion_Click"
+                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,28,0"
+                    ToolTip="Next Version">
+                <Path Data="M 9,10 L 15,16 L 9,22" Stroke="#8E92A4" StrokeThickness="2.4"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                      Width="14" Height="16" Stretch="Uniform"/>
+            </Button>
         </Grid>
 
-        <!-- ══════ NAVIGATION ARROWS AT SCREEN EDGES (< and >) ══════ -->
-        <!-- Left Arrow (Previous Version) -->
-        <Button Style="{StaticResource HomeNavArrowButton}" Click="PreviousVersion_Click"
-                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="26,0,0,30"
-                ToolTip="Previous Version">
-            <Path Data="M 15,10 L 9,16 L 15,22" Stroke="#8E92A4" StrokeThickness="2.2"
-                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                  Width="12" Height="14" Stretch="Uniform"/>
-        </Button>
-
-        <!-- Right Arrow (Next Version) -->
-        <Button Style="{StaticResource HomeNavArrowButton}" Click="NextVersion_Click"
-                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,26,30"
-                ToolTip="Next Version">
-            <Path Data="M 9,10 L 15,16 L 9,22" Stroke="#8E92A4" StrokeThickness="2.2"
-                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                  Width="12" Height="14" Stretch="Uniform"/>
-        </Button>
-
-        <!-- ══════ BOTTOM LAUNCH DOCK & VERSION DISPLAY ══════ -->
-        <Grid VerticalAlignment="Bottom" Margin="0,0,0,36">
+        <!-- ══════ ROW 1: BOTTOM LAUNCH DOCK & VERSION DISPLAY ══════ -->
+        <Grid Grid.Row="1" Margin="0,0,0,26">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <!-- Current Selected Version Card -->
-                <Border Background="#161720" BorderBrush="#252735" BorderThickness="1" CornerRadius="10"
-                        Padding="14,6" Margin="0,0,0,12" HorizontalAlignment="Center" SnapsToDevicePixels="True">
+                <!-- Upgraded Selected Version Showcase Card -->
+                <Border Background="#181923" BorderBrush="#2A2C3E" BorderThickness="1" CornerRadius="12"
+                        Padding="14,8" Margin="0,0,0,12" HorizontalAlignment="Center" SnapsToDevicePixels="True">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Loader Badge -->
-                        <Border x:Name="LoaderBadgeBorder" Background="#2563EB" CornerRadius="5" Padding="7,2" Margin="0,0,9,0">
-                            <TextBlock x:Name="TxtLoaderBadge" Text="VANILLA" Foreground="#FFFFFF" FontSize="10.5" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoFont}"/>
+                        <!-- Loader Icon Container -->
+                        <Border x:Name="LoaderBadgeBorder" Background="#222434" BorderBrush="#32354A" BorderThickness="1"
+                                CornerRadius="8" Width="36" Height="36" Margin="0,0,12,0" VerticalAlignment="Center">
+                            <Image Source="{Binding SelectedLoaderIconUri, Converter={StaticResource ImgSrc}}"
+                                   Width="22" Height="22" RenderOptions.BitmapScalingMode="HighQuality"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <!-- Instance / Version Title -->
-                        <TextBlock Text="{Binding SelectedName}" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold"
-                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
-                        <TextBlock Text=" · " Foreground="#525464" FontSize="13.5" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding SelectedVersion}" Foreground="#9AA0B4" FontSize="13" FontWeight="SemiBold"
-                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+
+                        <!-- Instance / Version Details -->
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,6,0">
+                            <TextBlock Text="{Binding SelectedName}" Foreground="#FFFFFF" FontSize="14.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <TextBlock x:Name="TxtLoaderBadge" Text="FABRIC" Foreground="#60A5FA" FontSize="11.5" FontWeight="Bold"
+                                           FontFamily="{StaticResource NunitoFont}"/>
+                                <TextBlock Text=" · " Foreground="#525464" FontSize="11.5" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedVersion}" Foreground="#8E92A4" FontSize="11.5" FontWeight="SemiBold"
+                                           FontFamily="{StaticResource NunitoFont}"/>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 

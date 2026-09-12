@@ -1,9 +1,9 @@
 {
-  "version": "1.1.5",
+  "version": "1.1.6",
   "releaseDate": "September 13, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.1.5: Pixel-perfect 3D fox head with per-face textures, flat paper model (no edge line), transparent nav/action buttons (no plates), slow soothing bob animation (no auto-spin), and fixed Home\u2194Account slide animation.",
+  "releaseNotes": "Flow Client v1.1.6: Centered 3D stage and navigation arrows at exact vertical midpoint, upgraded version showcase card with loader icon and branded typography, true 3D voxel thickness for Fabric paper model, and restored crisp full window border line.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.5/FlowClient-v1.1.5.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.6/FlowClient-v1.1.6.zip"
 }

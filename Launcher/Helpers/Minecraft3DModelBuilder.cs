@@ -183,28 +183,148 @@ namespace Launcher.Helpers
         #endregion
 
         #region Paper Item Sheet (Fabric/Quilt)
-        // A clean double-sided flat quad — no extruded prism edges, no side lines.
-        // Slightly tilted towards the camera using a very thin depth so WPF renders both sides.
+        // Authentic 3D Voxel Extrusion: each pixel has real depth (thickness),
+        // with front/back faces and boundary edge quads sampled from paper.png.
+
+        private static readonly ushort[] PaperOpaqueMask = new ushort[]
+        {
+            0x0000, // row  0
+            0x0000, // row  1
+            0x0060, // row  2
+            0x00F0, // row  3
+            0x03F8, // row  4
+            0x07FC, // row  5
+            0x1FFE, // row  6
+            0x3FFF, // row  7
+            0x7FFE, // row  8
+            0x3FFC, // row  9
+            0x1FF8, // row 10
+            0x0FE0, // row 11
+            0x07C0, // row 12
+            0x0300, // row 13
+            0x0000, // row 14
+            0x0000  // row 15
+        };
 
         public static Model3D CreatePaperModel()
         {
             EnsureMaterials();
             var group = new Model3DGroup();
+            var mesh = new MeshGeometry3D();
 
-            const double hw = 1.05; // half width
-            const double hh = 1.05; // half height
-            const double hd = 0.001; // essentially zero depth — completely flat, no visible edge
+            const double totalSize = 2.15;
+            const double ps = totalSize / 16.0;
+            const double halfDepth = 0.055; // tactile 3D thickness
+            const double originOffset = totalSize / 2.0;
 
-            // Front face (+Z)
-            AddFace(group,
-                new Point3D(-hw, -hh, hd), new Point3D(hw, -hh, hd), new Point3D(hw, hh, hd), new Point3D(-hw, hh, hd),
-                _paperMat!);
+            bool IsOpaque(int x, int y) =>
+                x >= 0 && x < 16 && y >= 0 && y < 16 &&
+                (PaperOpaqueMask[y] & (1 << (15 - x))) != 0;
 
-            // Back face (-Z) — same texture, flipped winding
-            AddFace(group,
-                new Point3D(hw, -hh, -hd), new Point3D(-hw, -hh, -hd), new Point3D(-hw, hh, -hd), new Point3D(hw, hh, -hd),
-                _paperMat!);
+            void AddQuad(Point3D p0, Point3D p1, Point3D p2, Point3D p3,
+                         Point uv0, Point uv1, Point uv2, Point uv3)
+            {
+                int baseIndex = mesh.Positions.Count;
+                mesh.Positions.Add(p0);
+                mesh.Positions.Add(p1);
+                mesh.Positions.Add(p2);
+                mesh.Positions.Add(p3);
 
+                mesh.TextureCoordinates.Add(uv0);
+                mesh.TextureCoordinates.Add(uv1);
+                mesh.TextureCoordinates.Add(uv2);
+                mesh.TextureCoordinates.Add(uv3);
+
+                mesh.TriangleIndices.Add(baseIndex);
+                mesh.TriangleIndices.Add(baseIndex + 1);
+                mesh.TriangleIndices.Add(baseIndex + 2);
+
+                mesh.TriangleIndices.Add(baseIndex);
+                mesh.TriangleIndices.Add(baseIndex + 2);
+                mesh.TriangleIndices.Add(baseIndex + 3);
+            }
+
+            for (int y = 0; y < 16; y++)
+            {
+                for (int x = 0; x < 16; x++)
+                {
+                    if (!IsOpaque(x, y)) continue;
+
+                    double x0 = x * ps - originOffset;
+                    double x1 = x0 + ps;
+                    double y1 = -(y * ps - originOffset);
+                    double y0 = y1 - ps;
+
+                    double u0 = x / 16.0;
+                    double u1 = (x + 1) / 16.0;
+                    double v0 = y / 16.0;
+                    double v1 = (y + 1) / 16.0;
+
+                    var uvCenter = new Point((x + 0.5) / 16.0, (y + 0.5) / 16.0);
+
+                    // Front face (+Z)
+                    AddQuad(
+                        new Point3D(x0, y0, halfDepth),
+                        new Point3D(x1, y0, halfDepth),
+                        new Point3D(x1, y1, halfDepth),
+                        new Point3D(x0, y1, halfDepth),
+                        new Point(u0, v1), new Point(u1, v1), new Point(u1, v0), new Point(u0, v0));
+
+                    // Back face (-Z)
+                    AddQuad(
+                        new Point3D(x1, y0, -halfDepth),
+                        new Point3D(x0, y0, -halfDepth),
+                        new Point3D(x0, y1, -halfDepth),
+                        new Point3D(x1, y1, -halfDepth),
+                        new Point(u1, v1), new Point(u0, v1), new Point(u0, v0), new Point(u1, v0));
+
+                    // Top (+Y)
+                    if (!IsOpaque(x, y - 1))
+                    {
+                        AddQuad(
+                            new Point3D(x0, y1, halfDepth),
+                            new Point3D(x1, y1, halfDepth),
+                            new Point3D(x1, y1, -halfDepth),
+                            new Point3D(x0, y1, -halfDepth),
+                            uvCenter, uvCenter, uvCenter, uvCenter);
+                    }
+
+                    // Bottom (-Y)
+                    if (!IsOpaque(x, y + 1))
+                    {
+                        AddQuad(
+                            new Point3D(x0, y0, -halfDepth),
+                            new Point3D(x1, y0, -halfDepth),
+                            new Point3D(x1, y0, halfDepth),
+                            new Point3D(x0, y0, halfDepth),
+                            uvCenter, uvCenter, uvCenter, uvCenter);
+                    }
+
+                    // Left (-X)
+                    if (!IsOpaque(x - 1, y))
+                    {
+                        AddQuad(
+                            new Point3D(x0, y0, -halfDepth),
+                            new Point3D(x0, y0, halfDepth),
+                            new Point3D(x0, y1, halfDepth),
+                            new Point3D(x0, y1, -halfDepth),
+                            uvCenter, uvCenter, uvCenter, uvCenter);
+                    }
+
+                    // Right (+X)
+                    if (!IsOpaque(x + 1, y))
+                    {
+                        AddQuad(
+                            new Point3D(x1, y0, halfDepth),
+                            new Point3D(x1, y0, -halfDepth),
+                            new Point3D(x1, y1, -halfDepth),
+                            new Point3D(x1, y1, halfDepth),
+                            uvCenter, uvCenter, uvCenter, uvCenter);
+                    }
+                }
+            }
+
+            group.Children.Add(new GeometryModel3D(mesh, _paperMat!));
             return group;
         }
 

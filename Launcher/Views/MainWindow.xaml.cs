@@ -322,14 +322,6 @@ namespace Launcher.Views
             }
         }
 
-        // Update the Window.Clip geometry when the window size changes
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-        {
-            base.OnRenderSizeChanged(sizeInfo);
-            if (WindowClipGeometry != null)
-                WindowClipGeometry.Rect = new Rect(0, 0, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height);
-        }
-
         private void LoadUserAccount()
         {
             try

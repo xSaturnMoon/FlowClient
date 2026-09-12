@@ -34,11 +34,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Window.Clip>
-        <RectangleGeometry x:Name="WindowClipGeometry" RadiusX="12" RadiusY="12" Rect="0,0,1114,794"/>
-    </Window.Clip>
-
-    <Border BorderBrush="#222328" BorderThickness="1" CornerRadius="12" Background="#141416">
+    <Border BorderBrush="#353744" BorderThickness="1" CornerRadius="12" Background="#141416" Margin="1" SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="56"/>
@@ -46,7 +42,7 @@
             </Grid.RowDefinitions>
 
             <!-- ══════ TOP NAVIGATION BAR (IDENTICAL TO BLUEBERRY CLIENT) ══════ -->
-            <Grid x:Name="TopBarGrid" Grid.Row="0" Background="#141416" MouseLeftButtonDown="TitleBar_MouseDown">
+            <Grid x:Name="TopBarGrid" Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="*"/>
@@ -188,7 +184,7 @@
             </Grid>
 
             <!-- ══════ MAIN CONTENT STAGE WITH DIRECTIONAL SLIDE ══════ -->
-            <Border x:Name="ContentBorder" Grid.Row="1" Background="#141416" ClipToBounds="True">
+            <Border x:Name="ContentBorder" Grid.Row="1" Background="Transparent" ClipToBounds="True">
                 <ContentControl x:Name="MainContentControl">
                     <ContentControl.RenderTransform>
                         <TranslateTransform x:Name="ContentTranslate" X="0" Y="0"/>
