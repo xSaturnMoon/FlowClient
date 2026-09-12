@@ -64,17 +64,17 @@
 
             <Style x:Key="SidebarInstanceItemStyle" TargetType="Border">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="7,6"/>
+                <Setter Property="CornerRadius" Value="10"/>
+                <Setter Property="Padding" Value="8,6"/>
                 <Setter Property="Margin" Value="0,0,0,3"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#14FFFFFF"/>
+                        <Setter Property="Background" Value="#0DFFFFFF"/>
                     </Trigger>
                     <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                        <Setter Property="Background" Value="#152438"/>
-                        <Setter Property="BorderBrush" Value="#0A84FF"/>
+                        <Setter Property="Background" Value="#181824"/>
+                        <Setter Property="BorderBrush" Value="#2A2A3C"/>
                         <Setter Property="BorderThickness" Value="1"/>
                     </DataTrigger>
                 </Style.Triggers>
@@ -93,7 +93,7 @@
     <Window.Clip>
         <RectangleGeometry x:Name="WindowClipGeometry" RadiusX="10" RadiusY="10" Rect="0,0,1114,794"/>
     </Window.Clip>
-    <Border BorderBrush="#201E2E" BorderThickness="1" CornerRadius="10">
+    <Border BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="10">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="234" />
@@ -101,7 +101,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- ═══ COLUMN 0 — UNIFIED LUXURY SIDEBAR ═══ -->
-        <Border x:Name="SidebarBorder" Grid.Column="0" Background="#100F16" BorderBrush="#1F1D2B" BorderThickness="0,0,1,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        <Border x:Name="SidebarBorder" Grid.Column="0" Background="#0C0C10" BorderBrush="#1C1C26" BorderThickness="0,0,1,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
             <Grid Margin="14,18,14,14">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -118,14 +118,14 @@
                         <Image Source="/flowm.ico" Height="26" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Text="FLOW" Foreground="#FFFFFF" FontFamily="{StaticResource FlowBrandFont}" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <Border HorizontalAlignment="Right" VerticalAlignment="Center" Background="#161424" BorderBrush="#28253D" BorderThickness="1" CornerRadius="5" Padding="7,2">
-                        <TextBlock Text="v1.0.9" Foreground="#0A84FF" FontSize="10.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                    <Border HorizontalAlignment="Right" VerticalAlignment="Center" Background="#15151E" BorderBrush="#242432" BorderThickness="1" CornerRadius="6" Padding="8,2">
+                        <TextBlock Text="v1.0.9" Foreground="#9E9EA8" FontSize="10.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                     </Border>
                 </Grid>
 
                 <!-- Row 1: Nav menu (Launch, Explore, Account, Settings) -->
                 <Grid Grid.Row="1" Margin="0,0,0,14">
-                    <Border x:Name="NavIndicator" Height="48" CornerRadius="9" Background="#0A6FCB"
+                    <Border x:Name="NavIndicator" Height="48" CornerRadius="10" Background="#181824" BorderBrush="#2A2A3C" BorderThickness="1"
                             VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False" Panel.ZIndex="0">
                         <Border.RenderTransform>
                             <TranslateTransform x:Name="NavIndicatorTransform" Y="0"/>
@@ -259,7 +259,7 @@
                       X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Margin="4,0,4,8"/>
 
                 <!-- Row 5: Bottom Utility Dock (Info, Folder, Update, Quit) -->
-                <Border Grid.Row="5" Background="#13121B" BorderBrush="#201E2E" BorderThickness="1" CornerRadius="10" Padding="3,2">
+                <Border Grid.Row="5" Background="#13121B" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="10" Padding="3,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -390,7 +390,7 @@
         </Border>
 
         <!-- ═══ COLUMN 1 — MAIN CONTENT ═══ -->
-        <Border x:Name="ContentBorder" Grid.Column="1" Background="#0C0B10">
+        <Border x:Name="ContentBorder" Grid.Column="1" Background="#0C0C10">
             <ContentControl x:Name="MainContentControl"/>
         </Border>
 
@@ -398,7 +398,7 @@
         <Grid x:Name="InfoModalOverlay" Grid.ColumnSpan="2" Panel.ZIndex="999"
               Background="#80000000" Visibility="Collapsed" Opacity="0"
               MouseDown="InfoOverlay_MouseDown">
-            <Border Width="380" Background="#14131D" BorderBrush="#28253A" BorderThickness="1"
+            <Border Width="380" Background="#13131A" BorderBrush="#22222E" BorderThickness="1"
                     CornerRadius="14" Padding="24" VerticalAlignment="Center" HorizontalAlignment="Center"
                     MouseDown="InfoCard_MouseDown">
                 <Border.Effect>
@@ -437,7 +437,7 @@
                     <!-- Info Rows -->
                     <StackPanel Grid.Row="2" Margin="0,0,0,20">
                         <!-- Row 1: Launcher Version -->
-                        <Border Background="#12111A" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#222030" BorderThickness="1">
+                        <Border Background="#161622" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#22222E" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -447,14 +447,14 @@
                                     <TextBlock Text="VERSIONE LAUNCHER" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="Versione corrente installata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Background="#0A6FCB" CornerRadius="5" Padding="8,4" VerticalAlignment="Center">
+                                <Border Grid.Column="1" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="5" Padding="8,4" VerticalAlignment="Center">
                                     <TextBlock x:Name="TxtInfoVersion" Text="v1.0.9" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                 </Border>
                             </Grid>
                         </Border>
 
                         <!-- Row 2: Release Date -->
-                        <Border Background="#12111A" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#222030" BorderThickness="1">
+                        <Border Background="#161622" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#22222E" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -469,7 +469,7 @@
                         </Border>
 
                         <!-- Row 3: Download Date -->
-                        <Border Background="#12111A" CornerRadius="8" Padding="12,10" BorderBrush="#222030" BorderThickness="1">
+                        <Border Background="#161622" CornerRadius="8" Padding="12,10" BorderBrush="#22222E" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -486,7 +486,7 @@
 
                     <!-- Close button -->
                     <Button Grid.Row="3" Content="Chiudi" Height="34"
-                            Background="#222032" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12.5"
+                            Background="#181824" BorderBrush="#2A2A3C" BorderThickness="1" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12.5"
                             FontFamily="{StaticResource NunitoFont}" Click="CloseInfoModal_Click"/>
                 </Grid>
             </Border>

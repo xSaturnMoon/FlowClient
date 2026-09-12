@@ -17,13 +17,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.Background>
-            <RadialGradientBrush Center="0.85,0.15" GradientOrigin="0.85,0.15" RadiusX="0.8" RadiusY="0.8">
-                <GradientStop Color="#1A162B" Offset="0"/>
-                <GradientStop Color="#0C0B10" Offset="0.85"/>
-            </RadialGradientBrush>
-        </Grid.Background>
+    <Grid Background="#0C0C10">
+
 
         <Grid Margin="48,48,48,32">
             <Grid.ColumnDefinitions>
@@ -217,7 +212,7 @@
                             <StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <TextBlock Text="Allocated memory" Foreground="#FFF" FontSize="13" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding EditRam, StringFormat={}{0} MB}" Foreground="#0A84FF"
+                                    <TextBlock Text="{Binding EditRam, StringFormat={}{0} MB}" Foreground="#2563EB"
                                                HorizontalAlignment="Right" FontSize="13" FontWeight="SemiBold"/>
                                 </Grid>
                                 <Slider Style="{StaticResource ExploreSlider}" Minimum="1024" Maximum="16384"
@@ -231,14 +226,14 @@
                                 <TextBlock Text="Resolution" Foreground="#FFF" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,14"/>
                                 <Grid Margin="0,0,0,8">
                                     <TextBlock Text="Width" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding EditWidth, StringFormat={}{0}px}" Foreground="#0A84FF"
+                                    <TextBlock Text="{Binding EditWidth, StringFormat={}{0}px}" Foreground="#2563EB"
                                                HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
                                 </Grid>
                                 <Slider Style="{StaticResource ExploreSlider}" Minimum="800" Maximum="3840"
                                         TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditWidth}" Margin="0,0,0,14"/>
                                 <Grid Margin="0,0,0,8">
                                     <TextBlock Text="Height" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding EditHeight, StringFormat={}{0}px}" Foreground="#0A84FF"
+                                    <TextBlock Text="{Binding EditHeight, StringFormat={}{0}px}" Foreground="#2563EB"
                                                HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
                                 </Grid>
                                 <Slider Style="{StaticResource ExploreSlider}" Minimum="600" Maximum="2160"

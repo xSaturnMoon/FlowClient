@@ -98,13 +98,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.Background>
-            <RadialGradientBrush Center="0.85,0.15" GradientOrigin="0.85,0.15" RadiusX="0.8" RadiusY="0.8">
-                <GradientStop Color="#1A162B" Offset="0"/>
-                <GradientStop Color="#0C0B10" Offset="0.85"/>
-            </RadialGradientBrush>
-        </Grid.Background>
+    <Grid Background="#0C0C10">
+
         <Grid Margin="36,32,36,24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="220"/>
@@ -137,7 +132,7 @@
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsLaunchCategory}" Value="True">
-                                                <Setter Property="Foreground" Value="#0A84FF"/>
+                                                <Setter Property="Foreground" Value="#FFFFFF"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -155,7 +150,7 @@
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsPerformanceCategory}" Value="True">
-                                                <Setter Property="Foreground" Value="#0A84FF"/>
+                                                <Setter Property="Foreground" Value="#FFFFFF"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -173,7 +168,7 @@
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsModsCategory}" Value="True">
-                                                <Setter Property="Foreground" Value="#0A84FF"/>
+                                                <Setter Property="Foreground" Value="#FFFFFF"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -191,7 +186,7 @@
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsAppearanceCategory}" Value="True">
-                                                <Setter Property="Foreground" Value="#0A84FF"/>
+                                                <Setter Property="Foreground" Value="#FFFFFF"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -209,7 +204,7 @@
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStorageCategory}" Value="True">
-                                                <Setter Property="Foreground" Value="#0A84FF"/>
+                                                <Setter Property="Foreground" Value="#FFFFFF"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -359,7 +354,7 @@
                                         <TextBlock Text="{Binding JavaVersion}" Foreground="#30D158" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                     </StackPanel>
                                     <Border Background="#122A44" CornerRadius="5" Padding="8,3" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                        <TextBlock Text="AUTOMATICO" Foreground="#0A84FF" FontSize="10" FontWeight="Bold"/>
+                                        <TextBlock Text="AUTOMATICO" Foreground="#2563EB" FontSize="10" FontWeight="Bold"/>
                                     </Border>
                                 </Grid>
                                 <Border Background="#0C0C0E" CornerRadius="6" Padding="10,7" Margin="0,10,0,0">
@@ -393,7 +388,7 @@
                                 <!-- RAM -->
                                 <StackPanel Grid.Column="2" Margin="4,0,0,0">
                                     <TextBlock Text="RAM TOTALE PC" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="{Binding TotalRam}" Foreground="#0A84FF" FontSize="13" FontWeight="Bold" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="{Binding TotalRam}" Foreground="#2563EB" FontSize="13" FontWeight="Bold" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -407,7 +402,7 @@
                                         <TextBlock Text="Memoria consigliata" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
                                         <TextBlock Text="Seleziona la RAM iniziale da assegnare quando crei nuove versioni." Foreground="#7E7E84" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                     </StackPanel>
-                                    <TextBlock Text="{Binding DefaultRamGbText}" Foreground="#0A84FF" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DefaultRamGbText}" Foreground="#2563EB" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </Grid>
                                 <WrapPanel Margin="0,14,0,0">
                                     <Button Style="{StaticResource RamChipButton}" Content="2 GB" Click="RamPreset_Click" Tag="2048"/>
@@ -499,7 +494,7 @@
                                         <TextBlock Text="Flow Client" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                         <TextBlock Text="{Binding ReleaseDate, StringFormat='Rilasciata il {0}'}" Foreground="#7E7E84" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                     </StackPanel>
-                                    <Border Background="#0A6FCB" CornerRadius="5" Padding="9,3" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Border Background="#2563EB" CornerRadius="5" Padding="9,3" HorizontalAlignment="Right" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding CurrentVersion}" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     </Border>
                                 </Grid>
