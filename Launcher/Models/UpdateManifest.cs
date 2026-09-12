@@ -21,5 +21,8 @@ namespace Launcher.Models
 
         [JsonPropertyName("downloadUrl")]
         public string? DownloadUrl { get; set; }
+
+        [JsonPropertyName("releaseDate")]
+        public string? ReleaseDate { get; set; }
     }
 }

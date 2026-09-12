@@ -1,13 +1,21 @@
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace Launcher.ViewModels
 {
     public class LaunchViewModel : INotifyPropertyChanged
     {
         private string? _selectedInstanceId;
-        private string _greeting = "Ready to play";
+        private string _greeting = "Bentornato";
+        private string _playerName = "Player";
+        private ImageSource? _playerAvatar;
+        private bool _isAuthenticated;
+        private bool _isDiscordRpcConnected;
+        private string _discordRpcStatus = "Discord RPC Attivo";
+
         private string _selectedName = "";
         private string _selectedVersion = "";
         private string _selectedLoader = "";
@@ -19,6 +27,8 @@ namespace Launcher.ViewModels
         private bool _isRunning;
 
         private ObservableCollection<InstanceListItemViewModel> _instances = new();
+        private ObservableCollection<ServerListItemViewModel> _favoriteServers = new();
+        private bool _isServersExpanded = true;
 
         public string? SelectedInstanceId
         {
@@ -40,6 +50,43 @@ namespace Launcher.ViewModels
         {
             get => _greeting;
             set { _greeting = value; OnPropertyChanged(); }
+        }
+
+        public string PlayerName
+        {
+            get => _playerName;
+            set { _playerName = value; OnPropertyChanged(); }
+        }
+
+        public ImageSource? PlayerAvatar
+        {
+            get => _playerAvatar;
+            set
+            {
+                _playerAvatar = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasPlayerAvatar));
+            }
+        }
+
+        public bool HasPlayerAvatar => _playerAvatar != null;
+
+        public bool IsAuthenticated
+        {
+            get => _isAuthenticated;
+            set { _isAuthenticated = value; OnPropertyChanged(); }
+        }
+
+        public bool IsDiscordRpcConnected
+        {
+            get => _isDiscordRpcConnected;
+            set { _isDiscordRpcConnected = value; OnPropertyChanged(); }
+        }
+
+        public string DiscordRpcStatus
+        {
+            get => _discordRpcStatus;
+            set { _discordRpcStatus = value; OnPropertyChanged(); }
         }
 
         public string SelectedName
@@ -95,7 +142,7 @@ namespace Launcher.ViewModels
             }
         }
 
-        public string PlayButtonText => _isRunning ? "Stop" : "Play";
+        public string PlayButtonText => _isRunning ? "Chiudi Minecraft" : "GIOCA ORA";
 
         public string? StatusMessage
         {
@@ -106,11 +153,14 @@ namespace Launcher.ViewModels
         public ObservableCollection<InstanceListItemViewModel> Instances
         {
             get => _instances;
-            set { _instances = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasInstances)); OnPropertyChanged(nameof(ShowEmpty)); }
+            set
+            {
+                _instances = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasInstances));
+                OnPropertyChanged(nameof(ShowEmpty));
+            }
         }
-
-        private bool _isServersExpanded;
-        private ObservableCollection<ServerListItemViewModel> _favoriteServers = new();
 
         public bool IsServersExpanded
         {

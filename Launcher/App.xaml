@@ -218,7 +218,7 @@
                                     <Condition Property="IsMouseOver" Value="True"/>
                                     <Condition Property="helpers:NavAssist.IsSelected" Value="False"/>
                                 </MultiTrigger.Conditions>
-                                <Setter TargetName="border" Property="Background" Value="#222224"/>
+                                <Setter TargetName="border" Property="Background" Value="#12FFFFFF"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </MultiTrigger>
                         </ControlTemplate.Triggers>

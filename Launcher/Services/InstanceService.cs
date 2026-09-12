@@ -24,6 +24,8 @@ namespace Launcher.Services
         private static readonly string LegacyInstancesRoot = Path.Combine(AppRoot, "instances");
         private static readonly string LegacyIndexPath = Path.Combine(AppRoot, "instances.json");
 
+        public static event Action? InstancesChanged;
+
         public InstanceService() => EnsureLoaded();
 
         private InstanceService(bool loading) { }
@@ -35,6 +37,7 @@ namespace Launcher.Services
                 _loaded = false;
                 EnsureLoaded();
             }
+            InstancesChanged?.Invoke();
         }
 
         private static void EnsureLoaded()
@@ -80,6 +83,7 @@ namespace Launcher.Services
                 JsonSerializer.Serialize(instance, new JsonSerializerOptions { WriteIndented = true }));
 
             SaveIndex();
+            InstancesChanged?.Invoke();
         }
 
         public MinecraftInstance Create(string name, string version, string loader)
@@ -122,6 +126,7 @@ namespace Launcher.Services
                 if (Directory.Exists(dir)) Directory.Delete(dir, true);
             }
             catch { }
+            InstancesChanged?.Invoke();
         }
 
         public void ToggleFavorite(string id)

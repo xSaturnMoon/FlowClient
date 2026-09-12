@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -19,6 +21,7 @@ namespace Launcher.Views
 
         private readonly MainViewModel _viewModel;
         private readonly AccountViewModel _accountViewModel;
+        private readonly InstanceService _instances = new();
 
         #region Windows API for Snap Prevention
 
@@ -49,6 +52,10 @@ namespace Launcher.Views
             DataContext = _viewModel;
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             MinecraftProcessTracker.Instance.ProcessStarted += OnGameProcessStarted;
+            MinecraftProcessTracker.Instance.ProcessExited += OnGameProcessExited;
+            InstanceService.InstancesChanged += OnInstancesChanged;
+            InstanceSelectionService.SelectedInstanceChanged += OnInstanceSelectionChanged;
+
             Loaded += (_, _) =>
             {
                 DisableMaximizeButton();
@@ -57,6 +64,7 @@ namespace Launcher.Views
                 BatteryProbeBootstrapService.EnsureInstalled();
                 UpdateNavIndicators(_viewModel.ActiveButton, animate: false);
                 UpdateMainContent(_viewModel.ActiveButton);
+                LoadInstalledVersions();
                 _ = RunStartupUpdateCheckAsync();
 
                 // Startup entrance animation — converges to the current layout, changes nothing permanently
@@ -64,11 +72,19 @@ namespace Launcher.Views
 
                 // Pre-warm views in background so switching to Explore, Account, etc. is instant with 0 freeze
                 PrewarmViews();
+
+                // Discord Rich Presence
+                DiscordRpcService.Instance.Start();
+                DiscordRpcService.Instance.SetPresenceInLauncher();
             };
             Closed += (_, _) =>
             {
+                DiscordRpcService.Instance.Stop();
                 MinecraftProcessTracker.Instance.ProcessStarted -= OnGameProcessStarted;
+                MinecraftProcessTracker.Instance.ProcessExited -= OnGameProcessExited;
                 MinecraftProcessTracker.Instance.ReleaseRunningGame();
+                InstanceService.InstancesChanged -= OnInstancesChanged;
+                InstanceSelectionService.SelectedInstanceChanged -= OnInstanceSelectionChanged;
             };
         }
 
@@ -174,8 +190,27 @@ namespace Launcher.Views
             }
         }
 
-        private void OnGameProcessStarted() =>
-            Dispatcher.BeginInvoke(() => LauncherPostLaunchBehavior.Apply(this));
+        private void OnGameProcessStarted()
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                LauncherPostLaunchBehavior.Apply(this);
+                var meta = MinecraftProcessTracker.Instance.CurrentLaunchMetadata;
+                if (meta != null)
+                {
+                    DiscordRpcService.Instance.SetPresenceInGame("Minecraft", meta.Loader, meta.Version, meta.Server);
+                }
+                else
+                {
+                    DiscordRpcService.Instance.SetPresenceInGame("Minecraft", null, null, null);
+                }
+            });
+        }
+
+        private void OnGameProcessExited()
+        {
+            Dispatcher.BeginInvoke(() => DiscordRpcService.Instance.SetPresenceInLauncher());
+        }
 
         private static async Task RunStartupUpdateCheckAsync()
         {
@@ -309,6 +344,77 @@ namespace Launcher.Views
 
         private void Settings_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "Settings";
+
+        #region Installed Versions in Sidebar
+
+        private void OnInstancesChanged()
+        {
+            LoadInstalledVersions();
+        }
+
+        private void OnInstanceSelectionChanged(string id)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                foreach (var item in _viewModel.InstalledVersions)
+                {
+                    item.IsSelected = item.Id == id;
+                }
+                var list = _viewModel.InstalledVersions.ToList();
+                _viewModel.InstalledVersions.Clear();
+                foreach (var item in list)
+                    _viewModel.InstalledVersions.Add(item);
+            });
+        }
+
+        public void LoadInstalledVersions()
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                var all = _instances.GetAll()
+                    .OrderByDescending(i => i.IsFavorite)
+                    .ThenByDescending(i => i.LastPlayedAt ?? DateTime.MinValue)
+                    .ToList();
+
+                var currentSelected = InstanceSelectionService.SelectedInstanceId;
+                if ((string.IsNullOrEmpty(currentSelected) || all.All(i => i.Id != currentSelected)) && all.Count > 0)
+                {
+                    currentSelected = all[0].Id;
+                    InstanceSelectionService.ForceSelect(currentSelected);
+                }
+
+                _viewModel.InstalledVersions.Clear();
+                foreach (var inst in all)
+                {
+                    _viewModel.InstalledVersions.Add(new InstanceListItemViewModel
+                    {
+                        Id = inst.Id,
+                        Name = inst.Name,
+                        Version = inst.MinecraftVersion,
+                        Loader = inst.Loader,
+                        LastPlayedText = inst.LastPlayedAt.HasValue ? $"{inst.LastPlayedAt.Value:dd/MM/yyyy}" : "Never",
+                        IsFavorite = inst.IsFavorite,
+                        LoaderIconUri = LoaderBranding.GetIconUri(inst.Loader),
+                        IsSelected = inst.Id == currentSelected
+                    });
+                }
+                _viewModel.NotifyInstalledVersionsChanged();
+            });
+        }
+
+        private void SidebarInstance_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement fe || fe.Tag is not string id) return;
+
+            InstanceSelectionService.Select(id);
+
+            if (_viewModel.ActiveButton != "Launch")
+            {
+                _viewModel.ActiveButton = "Launch";
+            }
+        }
+
+        #endregion
 
         #region Interactive Update Animation & Check Logic
 
@@ -542,6 +648,95 @@ namespace Launcher.Views
             finally
             {
                 _isCheckingUpdate = false;
+            }
+        }
+
+        #endregion
+
+        private void OpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var targetDir = UpdateService.GetInstallDir();
+                if (!Directory.Exists(targetDir))
+                {
+                    targetDir = AppDomain.CurrentDomain.BaseDirectory;
+                }
+
+                if (Directory.Exists(targetDir))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = targetDir,
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Impossibile aprire la cartella:\n{ex.Message}", "Flow Client",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        #region Info Modal
+
+        private void Info_Click(object sender, RoutedEventArgs e)
+        {
+            OpenInfoModal();
+        }
+
+        private void OpenInfoModal()
+        {
+            try
+            {
+                TxtInfoVersion.Text = "v" + AppVersionInfoService.GetCurrentVersion();
+                TxtInfoReleaseDate.Text = AppVersionInfoService.GetReleaseDateString();
+                TxtInfoDownloadDate.Text = AppVersionInfoService.GetDownloadOrInstallDateString();
+            }
+            catch { }
+
+            InfoModalOverlay.Visibility = Visibility.Visible;
+            var anim = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150));
+            InfoModalOverlay.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
+
+        private void CloseInfoModal()
+        {
+            if (InfoModalOverlay.Visibility != Visibility.Visible) return;
+
+            var anim = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
+            anim.Completed += (_, _) =>
+            {
+                InfoModalOverlay.Visibility = Visibility.Collapsed;
+            };
+            InfoModalOverlay.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
+
+        private void CloseInfoModal_Click(object sender, RoutedEventArgs e)
+        {
+            CloseInfoModal();
+        }
+
+        private void InfoOverlay_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource == InfoModalOverlay)
+            {
+                CloseInfoModal();
+            }
+        }
+
+        private void InfoCard_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && InfoModalOverlay.Visibility == Visibility.Visible)
+            {
+                CloseInfoModal();
+                e.Handled = true;
             }
         }
 

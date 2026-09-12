@@ -106,12 +106,44 @@ namespace Launcher.Services
             }
         }
 
+        public static void CleanOldUpdates(string? keepZip = null)
+        {
+            try
+            {
+                if (!Directory.Exists(UpdatesDirectory))
+                    return;
+
+                foreach (var file in Directory.EnumerateFiles(UpdatesDirectory, "FlowClient-*.zip"))
+                {
+                    if (keepZip != null && string.Equals(file, keepZip, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    try { File.Delete(file); } catch { }
+                }
+
+                var stagingDir = Path.Combine(UpdatesDirectory, "staging");
+                if (Directory.Exists(stagingDir))
+                {
+                    try { Directory.Delete(stagingDir, recursive: true); } catch { }
+                }
+
+                foreach (var file in Directory.EnumerateFiles(UpdatesDirectory, "*.cmd"))
+                {
+                    try { File.Delete(file); } catch { }
+                }
+            }
+            catch { }
+        }
+
         public async Task<string> DownloadAsync(
             string downloadUrl,
             IProgress<double>? progress = null,
             CancellationToken ct = default)
         {
             Directory.CreateDirectory(UpdatesDirectory);
+
+            // Clean any previous downloaded updates so disk space is not wasted
+            CleanOldUpdates();
+
             var fileName = $"FlowClient-{Guid.NewGuid():N}.zip";
             var destPath = Path.Combine(UpdatesDirectory, fileName);
 
@@ -142,20 +174,41 @@ namespace Launcher.Services
             if (!File.Exists(zipPath))
                 throw new FileNotFoundException("Update package not found.", zipPath);
 
+            // Clean any other old zips, keeping only current
+            CleanOldUpdates(keepZip: zipPath);
+
             var stagingDir = Path.Combine(UpdatesDirectory, "staging");
             if (Directory.Exists(stagingDir))
                 Directory.Delete(stagingDir, recursive: true);
 
             ZipFile.ExtractToDirectory(zipPath, stagingDir, overwriteFiles: true);
 
-            var installDir = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            var launcherBat = ResolveFlowClientBatPath();
+            try
+            {
+                var stagedUpdateJson = Path.Combine(stagingDir, "Assets", "update.json");
+                var targetVer = "1.0.3";
+                if (File.Exists(stagedUpdateJson))
+                {
+                    using var doc = JsonDocument.Parse(File.ReadAllText(stagedUpdateJson));
+                    if (doc.RootElement.TryGetProperty("version", out var vp))
+                        targetVer = vp.GetString() ?? targetVer;
+                }
+                AppVersionInfoService.RecordInstall(targetVer, DateTime.Now);
+            }
+            catch { }
+
+            var installDir = GetInstallDir();
+            Directory.CreateDirectory(installDir);
+
+            var exePath = Path.Combine(installDir, "FlowClient.exe");
             var scriptPath = Path.Combine(UpdatesDirectory, "apply-update.cmd");
             var script = $"""
                 @echo off
                 timeout /t 2 /nobreak >nul
                 xcopy /E /Y /I "{stagingDir}\*" "{installDir}"
-                start "" "{launcherBat}"
+                start "" "{exePath}"
+                rmdir /S /Q "{stagingDir}" >nul 2>&1
+                del /Q "{UpdatesDirectory}\*.zip" >nul 2>&1
                 del "%~f0"
                 """;
 
@@ -163,8 +216,25 @@ namespace Launcher.Services
             return scriptPath;
         }
 
+        /// <summary>
+        /// Returns the canonical install directory: %LOCALAPPDATA%\Programs\FlowClient
+        /// This is where the Inno Setup installer places the application.
+        /// </summary>
+        public static string GetInstallDir()
+        {
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Programs", "FlowClient");
+        }
+
         public string ResolveFlowClientBatPath()
         {
+            // After installation the EXE lives directly in GetInstallDir().
+            // We keep the bat fallback for legacy / dev runs.
+            var installDir = GetInstallDir();
+            var batInInstall = Path.Combine(installDir, "FlowClient.bat");
+            if (File.Exists(batInInstall)) return batInInstall;
+
             var baseDir = AppContext.BaseDirectory;
             var candidates = new[]
             {
@@ -181,6 +251,7 @@ namespace Launcher.Services
 
             return Path.GetFullPath(Path.Combine(baseDir, "..", "FlowClient.bat"));
         }
+
 
         private async Task<UpdateManifest> LoadManifestAsync(CancellationToken ct)
         {

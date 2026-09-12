@@ -4,15 +4,50 @@ using System.Text.Json;
 
 namespace Launcher.Services
 {
+    public enum LaunchPostAction
+    {
+        KeepOpen = 0,
+        Minimize = 1,
+        HideWhilePlaying = 2,
+        CloseWhenGameReady = 3
+    }
+
     public sealed class LauncherSettings
     {
-        public bool CloseLauncherOnLaunch { get; set; }
-        public bool MinimizeLauncherOnLaunch { get; set; }
+        public LaunchPostAction PostLaunchAction { get; set; } = LaunchPostAction.KeepOpen;
+
+        public bool CloseLauncherOnLaunch
+        {
+            get => PostLaunchAction == LaunchPostAction.CloseWhenGameReady;
+            set
+            {
+                if (value)
+                    PostLaunchAction = LaunchPostAction.CloseWhenGameReady;
+                else if (PostLaunchAction == LaunchPostAction.CloseWhenGameReady)
+                    PostLaunchAction = LaunchPostAction.KeepOpen;
+            }
+        }
+
+        public bool MinimizeLauncherOnLaunch
+        {
+            get => PostLaunchAction == LaunchPostAction.Minimize;
+            set
+            {
+                if (value)
+                    PostLaunchAction = LaunchPostAction.Minimize;
+                else if (PostLaunchAction == LaunchPostAction.Minimize)
+                    PostLaunchAction = LaunchPostAction.KeepOpen;
+            }
+        }
+
         public bool EnableFlowClientMod { get; set; } = true;
         public bool EnableVoiceChatMod { get; set; } = true;
         public bool UiAnimations { get; set; } = true;
         public bool AutoCheckUpdates { get; set; } = true;
         public bool ConfirmBeforeStop { get; set; }
+        public bool EnableDiscordRpc { get; set; } = true;
+        public int DefaultRamMb { get; set; } = 4096;
+        public string? CustomJvmArgs { get; set; }
 
         // Legacy UI prefs (kept for forward compatibility)
         public bool GlassEffect { get; set; } = true;

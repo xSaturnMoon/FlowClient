@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:Launcher.Converters"
         xmlns:vm="clr-namespace:Launcher.ViewModels"
         mc:Ignorable="d"
         Title="Flow Client"
@@ -20,33 +21,64 @@
         TextOptions.TextRenderingMode="ClearType"
         RenderOptions.BitmapScalingMode="HighQuality"
         UseLayoutRounding="True"
-        FontFamily="{StaticResource NunitoFont}">
+        FontFamily="{StaticResource NunitoFont}"
+        KeyDown="Window_KeyDown">
 
     <Window.Resources>
-        <!-- Simple icon button style for the mini sidebar — no min-width, fully centered -->
-        <Style x:Key="MiniSidebarButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="#666666"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="6" Padding="8">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#252128"/>
-                                <Setter Property="Foreground" Value="#CCCCCC"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/ExploreResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+            <!-- Simple icon button style for the mini sidebar — no min-width, fully centered -->
+            <Style x:Key="MiniSidebarButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="#666666"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="6" Padding="8">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bg" Property="Background" Value="#12FFFFFF"/>
+                                    <Setter Property="Foreground" Value="#CCCCCC"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="SidebarInstanceItemStyle" TargetType="Border">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Padding" Value="8,8"/>
+                <Setter Property="Margin" Value="0,0,0,4"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#12FFFFFF"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="SidebarIconBadge" TargetType="Border">
+                <Setter Property="Width" Value="42"/>
+                <Setter Property="Height" Value="52"/>
+                <Setter Property="CornerRadius" Value="7"/>
+                <Setter Property="Background" Value="#151417"/>
+                <Setter Property="Padding" Value="7"/>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Window.Clip>
@@ -80,7 +112,7 @@
 
                 <!-- Nav menu -->
                 <Grid Grid.Row="1" Margin="0,0,0,20">
-                    <Border x:Name="NavIndicator" Height="48" CornerRadius="5" Background="#0A6FCB"
+                    <Border x:Name="NavIndicator" Height="48" CornerRadius="8" Background="#0A6FCB"
                             VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False" Panel.ZIndex="0">
                         <Border.RenderTransform>
                             <TranslateTransform x:Name="NavIndicatorTransform" Y="0"/>
@@ -126,8 +158,80 @@
                           X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" VerticalAlignment="Center" Margin="0,0,4,0"/>
                 </Grid>
 
-                <!-- Spacer -->
-                <Grid Grid.Row="3"/>
+                <!-- Installed versions list -->
+                <ScrollViewer Grid.Row="3" Margin="0,10,0,10"
+                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
+                    </ScrollViewer.Resources>
+                    <ItemsControl ItemsSource="{Binding InstalledVersions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource SidebarInstanceItemStyle}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Badge with play icon overlay on hover -->
+                                        <Border Width="42" Height="52" CornerRadius="7"
+                                                Background="#151417" Margin="0,0,11,0"
+                                                Cursor="Hand" ClipToBounds="True"
+                                                Tag="{Binding Id}" MouseLeftButtonDown="SidebarInstance_Click">
+                                            <Grid>
+                                                <!-- Loader icon -->
+                                                <Image Source="{Binding LoaderIconUri, Converter={StaticResource ImgSrc}}"
+                                                       Stretch="Uniform" Margin="7"/>
+                                                <!-- Dark overlay (hidden by default) -->
+                                                <Border x:Name="PlayBg" Background="#99000000" Opacity="0" CornerRadius="7"/>
+                                                <!-- Play triangle -->
+                                                <Path x:Name="PlayIcon"
+                                                      Data="M8,7 L19,13 L8,19 Z"
+                                                      Fill="#FFFFFF" Stretch="Uniform"
+                                                      Width="14" Height="14"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                      Opacity="0"/>
+                                            </Grid>
+                                            <Border.Triggers>
+                                                <EventTrigger RoutedEvent="MouseEnter">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="PlayBg"   Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.12"/>
+                                                            <DoubleAnimation Storyboard.TargetName="PlayIcon" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.12"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                                <EventTrigger RoutedEvent="MouseLeave">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="PlayBg"   Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="PlayIcon" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Border.Triggers>
+                                        </Border>
+
+                                        <!-- Name + subtitle -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="Bold"
+                                                       Foreground="#CCCCCC"
+                                                       FontFamily="{StaticResource NunitoFont}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock FontSize="11.5" Margin="0,3,0,0"
+                                                       Foreground="#66666A"
+                                                       FontFamily="{StaticResource NunitoFont}"
+                                                       TextTrimming="CharacterEllipsis">
+                                                <Run Text="{Binding Version}"/><Run Text=" · "/><Run Text="{Binding Loader}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
                 <!-- Separator above Settings -->
                 <Line Grid.Row="4" Stroke="#2A2A2E" StrokeThickness="0.8"
@@ -135,7 +239,7 @@
 
                 <!-- Settings button -->
                 <Grid Grid.Row="5">
-                    <Border x:Name="BottomNavIndicator" Height="48" CornerRadius="5" Background="#0A6FCB"
+                    <Border x:Name="BottomNavIndicator" Height="48" CornerRadius="8" Background="#0A6FCB"
                             VerticalAlignment="Top" HorizontalAlignment="Stretch" IsHitTestVisible="False"
                             Visibility="Collapsed" Panel.ZIndex="0">
                         <Border.RenderTransform>
@@ -165,14 +269,41 @@
 
             <Grid Margin="4,16,4,16">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*"    />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10"   />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="10"   />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
+                <!-- Info Button -->
+                <Button x:Name="BtnInfo" Grid.Row="0"
+                        Style="{StaticResource MiniSidebarButtonStyle}"
+                        HorizontalAlignment="Stretch"
+                        Click="Info_Click" Tag="Info" ToolTip="Informazioni su Flow Client">
+                    <Path Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z M12,16 L12,11 M12,8 L12,8.01"
+                          StrokeThickness="1.6" Fill="Transparent"
+                          Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                          Width="18" Height="18" Stretch="Uniform"/>
+                </Button>
+
+                <!-- Open Official Folder -->
+                <Button x:Name="BtnOpenFolder" Grid.Row="2"
+                        Style="{StaticResource MiniSidebarButtonStyle}"
+                        HorizontalAlignment="Stretch"
+                        Click="OpenFolder_Click" Tag="Folder" ToolTip="Apri cartella Flow Client">
+                    <Path Data="M 22,19 A 2,2 0 0,1 20,21 L 4,21 A 2,2 0 0,1 2,19 L 2,5 A 2,2 0 0,1 4,3 L 9,3 L 11,6 L 20,6 A 2,2 0 0,1 22,8 Z"
+                          StrokeThickness="1.6" Fill="Transparent"
+                          Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                          Width="18" Height="18" Stretch="Uniform"/>
+                </Button>
+
                 <!-- Update -->
-                <Button x:Name="BtnUpdate" Grid.Row="1"
+                <Button x:Name="BtnUpdate" Grid.Row="4"
                         Style="{StaticResource MiniSidebarButtonStyle}"
                         HorizontalAlignment="Stretch"
                         Click="Update_Click" Tag="Update" ToolTip="Controlla aggiornamenti">
@@ -253,7 +384,7 @@
                 </Button>
 
                 <!-- Quit/Power -->
-                <Button Grid.Row="3"
+                <Button Grid.Row="6"
                         Style="{StaticResource MiniSidebarButtonStyle}"
                         HorizontalAlignment="Stretch"
                         Click="Quit_Click" Tag="Quit" ToolTip="Quit">
@@ -270,6 +401,104 @@
         <Border x:Name="ContentBorder" Grid.Column="2" Background="#131114">
             <ContentControl x:Name="MainContentControl"/>
         </Border>
+
+        <!-- ═══ INFO MODAL OVERLAY ═══ -->
+        <Grid x:Name="InfoModalOverlay" Grid.ColumnSpan="3" Panel.ZIndex="999"
+              Background="#80000000" Visibility="Collapsed" Opacity="0"
+              MouseDown="InfoOverlay_MouseDown">
+            <Border Width="380" Background="#1B1619" BorderBrush="#2E2830" BorderThickness="1"
+                    CornerRadius="14" Padding="24" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    MouseDown="InfoCard_MouseDown">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="28" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.7"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header -->
+                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="/flowm.ico" Width="28" Height="28" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Flow Client" Foreground="#FFFFFF" FontSize="16" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                <TextBlock Text="Informazioni sul launcher" Foreground="#8E8E93" FontSize="11.5" FontFamily="{StaticResource NunitoFont}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Button HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Width="26" Height="26" Style="{StaticResource MiniSidebarButtonStyle}"
+                                Click="CloseInfoModal_Click" Cursor="Hand" ToolTip="Chiudi">
+                            <Path Data="M6,6 L18,18 M18,6 L6,18"
+                                  Stroke="#8E8E93" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Width="12" Height="12" Stretch="Uniform"/>
+                        </Button>
+                    </Grid>
+
+                    <!-- Divider -->
+                    <Rectangle Grid.Row="1" Height="1" Fill="#262228" Margin="0,0,0,16"/>
+
+                    <!-- Info Rows -->
+                    <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                        <!-- Row 1: Launcher Version -->
+                        <Border Background="#141113" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#242026" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="VERSIONE LAUNCHER" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Versione corrente installata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="#0A6FCB" CornerRadius="5" Padding="8,4" VerticalAlignment="Center">
+                                    <TextBlock x:Name="TxtInfoVersion" Text="v1.0.3" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Row 2: Release Date -->
+                        <Border Background="#141113" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#242026" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="DATA DI RILASCIO" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Quando è stata pubblicata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                                </StackPanel>
+                                <TextBlock x:Name="TxtInfoReleaseDate" Grid.Column="1" Text="11 Settembre 2026" Foreground="#E0E0E0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Row 3: Download Date -->
+                        <Border Background="#141113" CornerRadius="8" Padding="12,10" BorderBrush="#242026" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="DATA DI DOWNLOAD" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Quando l'hai scaricata" Foreground="#8E8E93" FontSize="11" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                                </StackPanel>
+                                <TextBlock x:Name="TxtInfoDownloadDate" Grid.Column="1" Text="11/09/2026 alle 03:25" Foreground="#30D158" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Close button -->
+                    <Button Grid.Row="3" Content="Chiudi" Height="34"
+                            Background="#242026" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12.5"
+                            FontFamily="{StaticResource NunitoFont}" Click="CloseInfoModal_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
     </Border>
 </Window>

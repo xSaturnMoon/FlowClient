@@ -1,4 +1,4 @@
-﻿# Build results
+# Build results
 [Bb]in/
 [Oo]bj/
 dist/
@@ -14,3 +14,5 @@ testjson/
 mc_methods.txt
 flowclient-branding-1.0.0.jar
 FlowClient-*.zip
+installer-output/
+upload_url.txt

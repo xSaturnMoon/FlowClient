@@ -25,6 +25,17 @@ namespace Launcher.ViewModels
             }
         }
 
+        private System.Collections.ObjectModel.ObservableCollection<InstanceListItemViewModel> _installedVersions = new();
+
+        public System.Collections.ObjectModel.ObservableCollection<InstanceListItemViewModel> InstalledVersions => _installedVersions;
+
+        public bool HasInstalledVersions => _installedVersions.Count > 0;
+
+        public void NotifyInstalledVersionsChanged()
+        {
+            OnPropertyChanged(nameof(HasInstalledVersions));
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {

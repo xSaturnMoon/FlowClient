@@ -76,6 +76,16 @@ namespace Launcher.Services
             get { lock (_lock) return _launchStatusMessage; }
         }
 
+        public Process? CurrentProcess
+        {
+            get { lock (_lock) return _process; }
+        }
+
+        public LaunchMetadata? CurrentLaunchMetadata
+        {
+            get { lock (_lock) return _launchMetadata; }
+        }
+
         public event Action? ProcessExited;
         public event Action? ProcessStarted;
         public event Action? LaunchStateChanged;

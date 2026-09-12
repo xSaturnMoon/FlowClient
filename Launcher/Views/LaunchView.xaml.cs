@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,13 +18,15 @@ namespace Launcher.Views
     {
         private static readonly CultureInfo EnUs = new("en-US");
 
+        private static readonly string MinecraftRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            ".minecraft");
+
         private readonly InstanceService _instances = new();
         private readonly MinecraftAuthService _auth = new();
         private readonly MinecraftLaunchService _launch = new();
         private readonly ServerFavoritesService _favorites = ServerFavoritesService.Instance;
         private readonly MinecraftProcessTracker _tracker = MinecraftProcessTracker.Instance;
-
-        private bool _serversAnimating;
 
         public LaunchView()
         {
@@ -35,19 +40,19 @@ namespace Launcher.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ServersDrawer.Opacity = 0;
-            ServersDrawer.Visibility = Visibility.Collapsed;
-            ServersDrawer.IsHitTestVisible = false;
-            ServersChevronRotate.Angle = 180;
-            Vm.IsServersExpanded = false;
-
             // Hook tracker events so we update UI even when navigated away and back
             _tracker.ProcessStarted += OnProcessStarted;
             _tracker.ProcessExited += OnProcessExited;
             _tracker.LaunchStateChanged += OnLaunchStateChanged;
+            InstanceSelectionService.SelectedInstanceChanged += OnInstanceSelectionChanged;
+            InstanceService.InstancesChanged += OnInstancesChanged;
+
+            // Hook Discord RPC events
+            DiscordRpcService.Instance.ConnectionChanged += OnDiscordRpcConnectionChanged;
+            Vm.IsDiscordRpcConnected = DiscordRpcService.Instance.IsConnected;
+            Vm.DiscordRpcStatus = DiscordRpcService.Instance.IsConnected ? "Connesso a Discord" : "In attesa di Discord";
 
             Refresh();
-            _ = SetServersExpandedAsync(true);
 
             // Sync UI with the current tracker state (game might already be running)
             SyncRunningState();
@@ -58,6 +63,31 @@ namespace Launcher.Views
             _tracker.ProcessStarted -= OnProcessStarted;
             _tracker.ProcessExited -= OnProcessExited;
             _tracker.LaunchStateChanged -= OnLaunchStateChanged;
+            InstanceSelectionService.SelectedInstanceChanged -= OnInstanceSelectionChanged;
+            InstanceService.InstancesChanged -= OnInstancesChanged;
+            DiscordRpcService.Instance.ConnectionChanged -= OnDiscordRpcConnectionChanged;
+        }
+
+        private void OnDiscordRpcConnectionChanged(bool connected)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                Vm.IsDiscordRpcConnected = connected;
+                Vm.DiscordRpcStatus = connected ? "Connesso a Discord" : "In attesa di Discord";
+            });
+        }
+
+        private void OnInstancesChanged()
+        {
+            Dispatcher.BeginInvoke(() => Refresh());
+        }
+
+        private void OnInstanceSelectionChanged(string id)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                SelectInstance(id, refreshList: true);
+            });
         }
 
         private void OnLaunchStateChanged()
@@ -86,7 +116,7 @@ namespace Launcher.Views
             {
                 Vm.IsRunning = true;
                 Vm.CanPlay = true;
-                Vm.StatusMessage = "Minecraft is running.";
+                Vm.StatusMessage = "Minecraft in esecuzione.";
             });
         }
 
@@ -107,7 +137,7 @@ namespace Launcher.Views
             {
                 Vm.IsRunning = true;
                 Vm.CanPlay = true;
-                Vm.StatusMessage = "Minecraft is running.";
+                Vm.StatusMessage = "Minecraft in esecuzione.";
             }
             else if (_tracker.IsLaunching)
             {
@@ -127,9 +157,7 @@ namespace Launcher.Views
         {
             var vm = Vm;
             var account = _auth.LoadSavedAccount();
-            vm.Greeting = account != null && !string.IsNullOrEmpty(account.MinecraftUsername)
-                ? $"Hey, {account.MinecraftUsername}"
-                : "Ready to play";
+            _ = LoadPlayerAvatarAsync(account);
 
             var all = _instances.GetAll()
                 .OrderByDescending(i => i.IsFavorite)
@@ -169,12 +197,45 @@ namespace Launcher.Views
             SelectInstance(selectedId, refreshList: true);
         }
 
+        private async Task LoadPlayerAvatarAsync(SavedAccount? account)
+        {
+            if (account == null)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Vm.PlayerAvatar = null;
+                    Vm.PlayerName = "Ospite";
+                    Vm.Greeting = "Benvenuto in Flow Client";
+                    Vm.IsAuthenticated = false;
+                });
+                return;
+            }
+
+            var username = string.IsNullOrWhiteSpace(account.MinecraftUsername) ? "Player" : account.MinecraftUsername;
+            Dispatcher.Invoke(() =>
+            {
+                Vm.PlayerName = username;
+                Vm.Greeting = $"Bentornato, {username}";
+                Vm.IsAuthenticated = true;
+            });
+
+            try
+            {
+                var head = await SkinAvatarService.LoadHeadAsync(account.SkinTextureUrl, account.MinecraftUsername, account.MinecraftUuid);
+                if (head != null)
+                {
+                    Dispatcher.Invoke(() => Vm.PlayerAvatar = head);
+                }
+            }
+            catch { }
+        }
+
         private void RefreshServers()
         {
             var vm = Vm;
             vm.FavoriteServers.Clear();
 
-            foreach (var server in _favorites.GetFavorites(5))
+            foreach (var server in _favorites.GetFavorites(4))
             {
                 vm.FavoriteServers.Add(new ServerListItemViewModel
                 {
@@ -190,12 +251,12 @@ namespace Launcher.Views
             _ = FetchMissingIconsAsync();
         }
 
-        private async System.Threading.Tasks.Task FetchMissingIconsAsync()
+        private async Task FetchMissingIconsAsync()
         {
             var pending = Vm.FavoriteServers.Where(s => s.Icon == null).ToList();
             if (pending.Count == 0) return;
 
-            await System.Threading.Tasks.Task.Run(() =>
+            await Task.Run(() =>
             {
                 foreach (var item in pending)
                 {
@@ -236,12 +297,6 @@ namespace Launcher.Views
             }
         }
 
-        private void Instance_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is not FrameworkElement fe || fe.Tag is not string id) return;
-            SelectInstance(id, refreshList: true);
-        }
-
         private async void Play_Click(object sender, RoutedEventArgs e)
         {
             await LaunchSelectedAsync(null);
@@ -261,7 +316,7 @@ namespace Launcher.Views
             });
         }
 
-        private async System.Threading.Tasks.Task LaunchSelectedAsync(LaunchServerTarget? server)
+        private async Task LaunchSelectedAsync(LaunchServerTarget? server)
         {
             // If game is running, the button acts as Stop
             if (_tracker.IsRunning)
@@ -269,8 +324,8 @@ namespace Launcher.Views
                 if (LauncherSettingsService.Instance.Current.ConfirmBeforeStop)
                 {
                     var confirm = MessageBox.Show(
-                        "Stop Minecraft and close the game?",
-                        "Stop game",
+                        "Vuoi chiudere Minecraft ed interrompere la sessione?",
+                        "Chiudi gioco",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Question);
                     if (confirm != MessageBoxResult.Yes)
@@ -288,9 +343,9 @@ namespace Launcher.Views
             if (string.IsNullOrEmpty(id)) return;
 
             var initialMsg = server != null
-                ? $"Connecting to {server.Host}…"
-                : "Preparing launch…";
-                
+                ? $"Connessione a {server.Host}…"
+                : "Preparazione avvio…";
+
             _tracker.SetLaunching(true, initialMsg);
             LauncherLogService.Instance.Info(initialMsg);
 
@@ -302,24 +357,23 @@ namespace Launcher.Views
                     if (_tracker.IsLaunching)
                         _tracker.SetLaunching(true, msg);
                 });
-                var result = await System.Threading.Tasks.Task.Run(async () =>
+                var result = await Task.Run(async () =>
                     await _launch.LaunchAsync(id, progress, server: server));
 
                 if (!result.Success)
                 {
                     _tracker.SetLaunching(false, result.Message);
                     LauncherLogService.Instance.Error(result.Message);
-                    MessageBox.Show(result.Message, "Launch failed",
+                    MessageBox.Show(result.Message, "Avvio fallito",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else if (result.Process != null)
                 {
                     _tracker.SetLaunching(false, null);
-                    LauncherLogService.Instance.Info("Minecraft process started.");
+                    LauncherLogService.Instance.Info("Processo Minecraft avviato con successo.");
                 }
                 else
                 {
-                    // No process returned (shouldn't happen), just reset
                     _tracker.SetLaunching(false, null);
                 }
             }
@@ -327,51 +381,76 @@ namespace Launcher.Views
             {
                 _tracker.SetLaunching(false, ex.Message);
                 LauncherLogService.Instance.Error(ex.Message);
-                MessageBox.Show(ex.Message, "Launch failed",
+                MessageBox.Show(ex.Message, "Avvio fallito",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void ToggleFavorite_Click(object sender, RoutedEventArgs e)
+        private void PlayerCard_Click(object sender, MouseButtonEventArgs e)
         {
-            if (sender is not FrameworkElement { Tag: ServerListItemViewModel server })
-                return;
-
-            e.Handled = true;
-            _favorites.ToggleFavorite(server.Host, server.Port);
-            RefreshServers();
+            if (Window.GetWindow(this) is MainWindow window)
+                window.NavigateTo("Account");
         }
 
-        private async void ToggleServers_Click(object sender, MouseButtonEventArgs e)
+        private void OpenModsFolder_Click(object sender, RoutedEventArgs e)
         {
-            if (_serversAnimating) return;
-            await SetServersExpandedAsync(!Vm.IsServersExpanded);
+            var id = Vm.SelectedInstanceId;
+            if (string.IsNullOrEmpty(id)) return;
+            var inst = _instances.GetById(id);
+            if (inst == null) return;
+            var gameDir = ResolveGameDirectory(inst);
+            OpenFolderSafe(Path.Combine(gameDir, "mods"));
         }
 
-        private async System.Threading.Tasks.Task SetServersExpandedAsync(bool expanded)
+        private void OpenScreenshotsFolder_Click(object sender, RoutedEventArgs e)
         {
-            _serversAnimating = true;
-            Vm.IsServersExpanded = expanded;
+            var id = Vm.SelectedInstanceId;
+            if (string.IsNullOrEmpty(id)) return;
+            var inst = _instances.GetById(id);
+            if (inst == null) return;
+            var gameDir = ResolveGameDirectory(inst);
+            OpenFolderSafe(Path.Combine(gameDir, "screenshots"));
+        }
 
-            const int duration = 220;
-            _ = UiTransitions.AnimateRotationAsync(ServersChevronRotate, expanded ? 0 : 180, duration);
+        private void OpenGameFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var id = Vm.SelectedInstanceId;
+            if (string.IsNullOrEmpty(id)) return;
+            var inst = _instances.GetById(id);
+            if (inst == null) return;
+            var gameDir = ResolveGameDirectory(inst);
+            OpenFolderSafe(gameDir);
+        }
 
-            if (expanded)
+        private static string ResolveGameDirectory(MinecraftInstance instance)
+        {
+            var loader = instance.Loader?.Trim() ?? "Vanilla";
+            var isVanilla = loader.Equals("Vanilla", StringComparison.OrdinalIgnoreCase);
+            var hasFlowMods = instance.Mods.Count > 0;
+
+            if (isVanilla && !hasFlowMods)
+                return MinecraftRoot;
+
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "FlowLauncher", "FlowVersions", instance.Id);
+        }
+
+        private static void OpenFolderSafe(string path)
+        {
+            try
             {
-                ServersDrawer.Visibility = Visibility.Visible;
-                ServersDrawer.IsHitTestVisible = true;
-                UiTransitions.AnimateOpacity(ServersDrawer, 1, duration);
+                Directory.CreateDirectory(path);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                });
             }
-            else
+            catch (Exception ex)
             {
-                UiTransitions.AnimateOpacity(ServersDrawer, 0, duration);
-                await System.Threading.Tasks.Task.Delay(duration + 30);
-                ServersDrawer.IsHitTestVisible = false;
-                ServersDrawer.Visibility = Visibility.Collapsed;
+                LauncherLogService.Instance.Error($"Impossibile aprire la cartella {path}: {ex.Message}");
             }
-
-            await System.Threading.Tasks.Task.Delay(duration);
-            _serversAnimating = false;
         }
 
         private void GoToExplore_Click(object sender, RoutedEventArgs e)
@@ -382,12 +461,12 @@ namespace Launcher.Views
 
         private static string FormatLastPlayed(DateTime? dt)
         {
-            if (dt == null) return "Never";
+            if (dt == null) return "Mai giocato";
             var local = dt.Value.ToLocalTime();
             var diff = DateTime.Now - local;
-            if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
-            if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h ago";
-            if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}d ago";
+            if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m fa";
+            if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h fa";
+            if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}g fa";
             return local.ToString("MMM dd", EnUs);
         }
     }
