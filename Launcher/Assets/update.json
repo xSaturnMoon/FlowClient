@@ -1,8 +1,8 @@
 {
-  "version": "1.0.8",
+  "version": "1.0.9",
   "releaseDate": "12 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Discord Rich Presence nativo (stato in-launcher, server, versione & loader in-game), nuovo design artigianale della schermata principale con avatar del giocatore, server preferiti ad avvio rapido e pulsanti cartelle istantanei.",
+  "releaseNotes": "Redesign Luxury completo del client: unificazione del sidebar in un unico pannello ergonomico con dock strumenti inferiore (info, cartella, update con animazione morphing, quit), nuova dashboard gaming a tutto schermo per l'avvio con avatar skin HD, server multiplayer ad avvio rapido, palette cosmica unificata su tutte le schermate e Discord RPC nativo.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
   "downloadUrl": null
