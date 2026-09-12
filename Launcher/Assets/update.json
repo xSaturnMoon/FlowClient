@@ -1,9 +1,9 @@
 {
-  "version": "1.1.2",
-  "releaseDate": "12 Settembre 2026",
+  "version": "1.1.3",
+  "releaseDate": "September 12, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.1.2: Raffinamento layout. Branding FLOW in alto a sinistra, sezioni [News - Account - Home - Versions - Settings], account pill in alto a destra, rimosso Java/Bedrock toggle, rimosse le pubblicità laterali e testo sotto a LAUNCH.",
+  "releaseNotes": "Flow Client v1.1.3: Interactive account dropdown menu, directional sliding tab transitions, full News changelog section, comprehensive English localization, and Settings update checker.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.2/FlowClient-v1.1.2.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.3/FlowClient-v1.1.3.zip"
 }

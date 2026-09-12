@@ -142,7 +142,7 @@ namespace Launcher.ViewModels
             }
         }
 
-        public string PlayButtonText => _isRunning ? "CHIUDI GIOCO" : "LAUNCH";
+        public string PlayButtonText => _isRunning ? "STOP GAME" : "LAUNCH";
 
         public string? StatusMessage
         {

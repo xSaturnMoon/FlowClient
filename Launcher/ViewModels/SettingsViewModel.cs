@@ -19,7 +19,7 @@ namespace Launcher.ViewModels
         private int _defaultRamMb = 4096;
         private string? _customJvmArgs;
 
-        private string _javaPath = "Rilevamento in corso…";
+        private string _javaPath = "Detecting…";
         private string _javaVersion = "—";
         private string _totalRam = "—";
         private string _cpuName = "—";
@@ -306,15 +306,15 @@ namespace Launcher.ViewModels
         public string LaunchBehaviorSummary =>
             PostLaunchAction switch
             {
-                LaunchPostAction.Minimize => "Riduci a icona",
-                LaunchPostAction.HideWhilePlaying => "Nascondi mentre giochi",
-                LaunchPostAction.CloseWhenGameReady => "Chiudi ad avvio pronto",
-                _ => "Resta aperto"
+                LaunchPostAction.Minimize => "Minimize to taskbar",
+                LaunchPostAction.HideWhilePlaying => "Hide while playing",
+                LaunchPostAction.CloseWhenGameReady => "Close when game is ready",
+                _ => "Keep open"
             };
 
-        public string FlowClientModSummary => EnableFlowClientMod ? "Attivo" : "Disattivato";
-        public string VoiceChatSummary => EnableVoiceChatMod ? "Installazione automatica" : "Disattivato";
-        public string DiscordRpcSummary => EnableDiscordRpc ? "Rich Presence attiva" : "Disattivata";
+        public string FlowClientModSummary => EnableFlowClientMod ? "Active" : "Disabled";
+        public string VoiceChatSummary => EnableVoiceChatMod ? "Automatic install" : "Disabled";
+        public string DiscordRpcSummary => EnableDiscordRpc ? "Rich Presence active" : "Disabled";
 
         public void LoadSystemInfo()
         {

@@ -14,8 +14,8 @@ public partial class App : Application
         DispatcherUnhandledException += (_, args) =>
         {
             LauncherLogService.Instance.Error(args.Exception.Message);
-            MessageBox.Show($"Errore imprevisto:\n{args.Exception.Message}\n\n{args.Exception.StackTrace}",
-                "Flow", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Unexpected error:\n{args.Exception.Message}\n\n{args.Exception.StackTrace}",
+                "Flow Client", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
         base.OnStartup(e);

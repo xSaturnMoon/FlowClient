@@ -53,9 +53,9 @@ namespace Launcher.Views
                 if (res.UpdateAvailable)
                 {
                     _latestUpdateResult = res;
-                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
+                    Vm.LatestVersion = res.LatestVersion ?? "New version";
                     Vm.IsUpdateAvailable = true;
-                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
+                    Vm.UpdateCheckMessage = $"New version available: v{res.LatestVersion}!";
                 }
             }
             catch { }
@@ -163,7 +163,7 @@ namespace Launcher.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Impossibile aprire la cartella:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Unable to open folder:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -172,11 +172,11 @@ namespace Launcher.Views
             try
             {
                 UpdateService.CleanOldUpdates();
-                Vm.MaintenanceMessage = "Cartelle temporanee e vecchi aggiornamenti rimossi con successo!";
+                Vm.MaintenanceMessage = "Temporary folders and old updates removed successfully!";
             }
             catch (Exception ex)
             {
-                Vm.MaintenanceMessage = $"Errore durante la pulizia: {ex.Message}";
+                Vm.MaintenanceMessage = $"Cleanup failed: {ex.Message}";
             }
         }
 
@@ -187,7 +187,7 @@ namespace Launcher.Views
             if (Vm.IsCheckingUpdate || Vm.IsUpdating) return;
 
             Vm.IsCheckingUpdate = true;
-            Vm.UpdateCheckMessage = "Controllo aggiornamenti in corso…";
+            Vm.UpdateCheckMessage = "Checking for updates…";
 
             try
             {
@@ -196,20 +196,20 @@ namespace Launcher.Views
                 if (res.UpdateAvailable)
                 {
                     _latestUpdateResult = res;
-                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
+                    Vm.LatestVersion = res.LatestVersion ?? "New version";
                     Vm.IsUpdateAvailable = true;
-                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
+                    Vm.UpdateCheckMessage = $"New version available: v{res.LatestVersion}!";
                 }
                 else
                 {
                     _latestUpdateResult = null;
                     Vm.IsUpdateAvailable = false;
-                    Vm.UpdateCheckMessage = "Stai già utilizzando l'ultima versione disponibile!";
+                    Vm.UpdateCheckMessage = "Flow Client is up to date!";
                 }
             }
             catch (Exception ex)
             {
-                Vm.UpdateCheckMessage = $"Controllo non riuscito: {ex.Message}";
+                Vm.UpdateCheckMessage = $"Check failed: {ex.Message}";
             }
             finally
             {
@@ -223,15 +223,15 @@ namespace Launcher.Views
                 return;
 
             var confirm = MessageBox.Show(
-                $"Vuoi scaricare ed installare la nuova versione {_latestUpdateResult.LatestVersion} di Flow Client adesso?",
-                "Aggiornamento Flow Client",
+                $"Do you want to download and install Flow Client v{_latestUpdateResult.LatestVersion} now?",
+                "Flow Client Update",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
             if (confirm != MessageBoxResult.Yes) return;
 
             Vm.IsUpdating = true;
-            Vm.UpdateCheckMessage = "Scaricamento aggiornamento in corso…";
+            Vm.UpdateCheckMessage = "Downloading update…";
 
             try
             {
@@ -250,9 +250,9 @@ namespace Launcher.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Download o installazione fallita:\n{ex.Message}", "Errore Aggiornamento",
+                MessageBox.Show($"Download or installation failed:\n{ex.Message}", "Update Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
-                Vm.UpdateCheckMessage = "Aggiornamento fallito.";
+                Vm.UpdateCheckMessage = "Update failed.";
                 Vm.IsUpdating = false;
             }
         }

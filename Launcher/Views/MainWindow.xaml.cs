@@ -103,7 +103,7 @@ namespace Launcher.Views
                 "Home" or "Launch"      => new LaunchView(),
                 "Versions" or "Explore" => new ExploreView(),
                 "Cosmetics" or "Account"=> new AccountView(),
-                "News"                  => new ExploreView(),
+                "News"                  => new NewsView(),
                 "Settings"              => new SettingsView(),
                 "Stats"                 => new StatsView(),
                 "Console"               => new ConsoleView(),
@@ -122,8 +122,9 @@ namespace Launcher.Views
             {
                 try
                 {
-                    _ = GetOrCreateView("Explore");
+                    _ = GetOrCreateView("News");
                     _ = GetOrCreateView("Account");
+                    _ = GetOrCreateView("Versions");
                     _ = GetOrCreateView("Settings");
                 }
                 catch { }
@@ -254,12 +255,57 @@ namespace Launcher.Views
             });
         }
 
+        private static readonly string[] NavigationOrder = ["News", "Account", "Home", "Versions", "Settings"];
+        private string _currentDisplayedSection = "Home";
+
         private void SwapContent(string activeButton)
         {
             try
             {
                 var view = GetOrCreateView(activeButton);
+                if (MainContentControl.Content == view) return;
+
+                int oldIndex = Array.IndexOf(NavigationOrder, _currentDisplayedSection);
+                int newIndex = Array.IndexOf(NavigationOrder, activeButton);
+
+                if (oldIndex < 0) oldIndex = 2; // Default to Home
+                if (newIndex < 0) newIndex = 2;
+
+                double fromX = 0;
+                if (newIndex > oldIndex)
+                {
+                    // Target is to the right: slide in from right (+65 to 0)
+                    fromX = 65;
+                }
+                else if (newIndex < oldIndex)
+                {
+                    // Target is to the left: slide in from left (-65 to 0)
+                    fromX = -65;
+                }
+
+                _currentDisplayedSection = activeButton;
                 MainContentControl.Content = view;
+
+                if (fromX != 0)
+                {
+                    var slideAnim = new DoubleAnimation
+                    {
+                        From = fromX,
+                        To = 0,
+                        Duration = TimeSpan.FromMilliseconds(240),
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    ContentTranslate.BeginAnimation(TranslateTransform.XProperty, slideAnim);
+
+                    var fadeAnim = new DoubleAnimation
+                    {
+                        From = 0.35,
+                        To = 1.0,
+                        Duration = TimeSpan.FromMilliseconds(200),
+                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    MainContentControl.BeginAnimation(OpacityProperty, fadeAnim);
+                }
             }
             catch (Exception ex)
             {
@@ -284,7 +330,7 @@ namespace Launcher.Views
                 var account = new MinecraftAuthService().LoadSavedAccount();
                 if (account == null)
                 {
-                    _viewModel.PlayerName = "Ospite";
+                    _viewModel.PlayerName = "Guest";
                     _viewModel.PlayerAvatar = null;
                     _viewModel.IsAuthenticated = false;
                     return;
@@ -339,8 +385,49 @@ namespace Launcher.Views
         private void News_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "News";
 
-        private void AccountPill_Click(object sender, MouseButtonEventArgs e) =>
-            _viewModel.ActiveButton = "Cosmetics";
+        private void AccountPill_Click(object sender, MouseButtonEventArgs e)
+        {
+            AccountPopup.IsOpen = !AccountPopup.IsOpen;
+            e.Handled = true;
+        }
+
+        private void AccountMenu_Manage_Click(object sender, RoutedEventArgs e)
+        {
+            AccountPopup.IsOpen = false;
+            _viewModel.ActiveButton = "Account";
+        }
+
+        private void AccountMenu_AddAccount_Click(object sender, RoutedEventArgs e)
+        {
+            AccountPopup.IsOpen = false;
+            _viewModel.ActiveButton = "Account";
+        }
+
+        private void AccountMenu_SignOut_Click(object sender, RoutedEventArgs e)
+        {
+            AccountPopup.IsOpen = false;
+            var confirm = MessageBox.Show(
+                $"Are you sure you want to sign out of your Microsoft account ({_viewModel.PlayerName})?",
+                "Sign Out",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (confirm == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    new MinecraftAuthService().DeleteSavedAccount();
+                    _viewModel.PlayerName = "Guest";
+                    _viewModel.PlayerAvatar = null;
+                    _viewModel.IsAuthenticated = false;
+                    MessageBox.Show("You have been signed out successfully.", "Signed Out", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to sign out: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
 
         private void Launch_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "Home";

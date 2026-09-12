@@ -117,17 +117,17 @@
 
                 <!-- Header -->
                 <StackPanel Grid.Row="0" Margin="0,0,0,24">
-                    <TextBlock Text="Impostazioni" Foreground="#FFFFFF" FontSize="24" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                    <TextBlock Text="Configurazione di Flow Client" Foreground="#6E6E73" FontSize="12" Margin="0,3,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                    <TextBlock Text="Settings" Foreground="#FFFFFF" FontSize="24" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                    <TextBlock Text="Flow Client configuration" Foreground="#6E6E73" FontSize="12" Margin="0,3,0,0" FontFamily="{StaticResource NunitoFont}"/>
                 </StackPanel>
 
                 <!-- Categories list -->
                 <StackPanel Grid.Row="1">
-                    <!-- Avvio -->
+                    <!-- Launch -->
                     <Button Style="{StaticResource SettingsCategoryTab}" Click="CategoryTab_Click" Tag="Launch">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="🎮" FontSize="14" Margin="0,0,10,0"/>
-                            <TextBlock Text="Avvio &amp; Gioco" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
+                            <TextBlock Text="Game &amp; Launch" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -141,11 +141,11 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Java & Sistema -->
+                    <!-- Java & Performance -->
                     <Button Style="{StaticResource SettingsCategoryTab}" Click="CategoryTab_Click" Tag="Performance">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="⚡" FontSize="14" Margin="0,0,10,0"/>
-                            <TextBlock Text="Java &amp; Sistema" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
+                            <TextBlock Text="Java &amp; System" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -159,11 +159,11 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Mod & Integrazioni -->
+                    <!-- Mods & Features -->
                     <Button Style="{StaticResource SettingsCategoryTab}" Click="CategoryTab_Click" Tag="Mods">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="🧩" FontSize="14" Margin="0,0,10,0"/>
-                            <TextBlock Text="Mod &amp; Funzioni" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
+                            <TextBlock Text="Mods &amp; Features" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -177,11 +177,11 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Interfaccia -->
+                    <!-- Launcher & Appearance -->
                     <Button Style="{StaticResource SettingsCategoryTab}" Click="CategoryTab_Click" Tag="Appearance">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="🎨" FontSize="14" Margin="0,0,10,0"/>
-                            <TextBlock Text="Launcher &amp; Aspetto" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
+                            <TextBlock Text="Launcher &amp; Appearance" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -195,11 +195,11 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Cartelle & Dati -->
+                    <!-- Folders & Cache -->
                     <Button Style="{StaticResource SettingsCategoryTab}" Click="CategoryTab_Click" Tag="Storage">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="📁" FontSize="14" Margin="0,0,10,0"/>
-                            <TextBlock Text="Cartelle &amp; Cache" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
+                            <TextBlock Text="Folders &amp; Cache" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -215,7 +215,7 @@
                 </StackPanel>
 
                 <!-- Back button -->
-                <Button Grid.Row="2" Content="Torna a Launch" Style="{StaticResource ExploreBtnGhost}"
+                <Button Grid.Row="2" Content="Back to Launch" Style="{StaticResource ExploreBtnGhost}"
                         Click="BackToLaunch_Click" Margin="0,0,0,8" HorizontalAlignment="Left"
                         FontFamily="{StaticResource NunitoFont}" FontSize="12.5"/>
             </Grid>
@@ -224,16 +224,16 @@
             <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <Grid Margin="0,0,12,0">
 
-                    <!-- 1. CATEGORIA: AVVIO & GIOCO -->
+                    <!-- 1. CATEGORIA: GAME & LAUNCH -->
                     <StackPanel Visibility="{Binding IsLaunchCategory, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Avvio &amp; Gioco" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                        <TextBlock Text="Determina cosa succede a Flow Client non appena avvii una sessione di Minecraft."
+                        <TextBlock Text="Game &amp; Launch" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Configure Flow Client behavior when launching a Minecraft session."
                                    Foreground="#7E7E84" FontSize="13" Margin="0,0,0,20" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
 
-                        <!-- Selettore Comportamento Post-Avvio -->
-                        <TextBlock Text="COMPORTAMENTO DOPO IL LANCIO" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
+                        <!-- Post-Launch Selector -->
+                        <TextBlock Text="POST-LAUNCH BEHAVIOR" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
 
-                        <!-- Opzione 1: Nascondi mentre giochi (Consigliato) -->
+                        <!-- Option 1: Hide while playing (Recommended) -->
                         <Button Style="{StaticResource LaunchActionCard}" Click="LaunchAction_Click" Tag="2">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -242,19 +242,19 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="⭐ Nascondi mentre giochi" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                        <TextBlock Text="⭐ Hide while playing" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                         <Border Background="#1C3829" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                            <TextBlock Text="CONSIGLIATO" Foreground="#30D158" FontSize="9.5" FontWeight="Bold"/>
+                                            <TextBlock Text="RECOMMENDED" Foreground="#30D158" FontSize="9.5" FontWeight="Bold"/>
                                         </Border>
                                     </StackPanel>
-                                    <TextBlock Text="Nasconde il launcher mentre giochi liberando risorse. Si riapre da solo quando chiudi Minecraft, senza rischiare crash."
+                                    <TextBlock Text="Hides the launcher while playing to free up system resources. Reopens automatically when Minecraft closes."
                                                Foreground="#8E8E93" FontSize="11.5" Margin="0,4,0,0" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <RadioButton Grid.Column="1" IsChecked="{Binding IsActionHide}" IsHitTestVisible="False" VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
 
-                        <!-- Opzione 2: Riduci a icona -->
+                        <!-- Option 2: Minimize to taskbar -->
                         <Button Style="{StaticResource LaunchActionCard}" Click="LaunchAction_Click" Tag="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -262,15 +262,15 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="Riduci a icona" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Minimizza Flow Client nella barra delle applicazioni durante il gioco."
+                                    <TextBlock Text="Minimize to taskbar" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Minimizes Flow Client to the Windows taskbar during gameplay."
                                                Foreground="#8E8E93" FontSize="11.5" Margin="0,4,0,0" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <RadioButton Grid.Column="1" IsChecked="{Binding IsActionMinimize}" IsHitTestVisible="False" VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
 
-                        <!-- Opzione 3: Resta aperto -->
+                        <!-- Option 3: Keep open -->
                         <Button Style="{StaticResource LaunchActionCard}" Click="LaunchAction_Click" Tag="0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -278,15 +278,15 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="Resta aperto" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Lascia la finestra del launcher visibile sullo schermo in background."
+                                    <TextBlock Text="Keep open" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Keeps the launcher window visible on screen in the background."
                                                Foreground="#8E8E93" FontSize="11.5" Margin="0,4,0,0" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <RadioButton Grid.Column="1" IsChecked="{Binding IsActionKeepOpen}" IsHitTestVisible="False" VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
 
-                        <!-- Opzione 4: Chiudi ad avvio completato -->
+                        <!-- Option 4: Close when game is ready -->
                         <Button Style="{StaticResource LaunchActionCard}" Click="LaunchAction_Click" Tag="3">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -294,22 +294,22 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="Chiudi quando il gioco è pronto" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Attende che la finestra di Minecraft sia effettivamente avviata e visibile a schermo prima di chiudere il client."
+                                    <TextBlock Text="Close when game is ready" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Waits until the Minecraft window is fully initialized and visible before closing."
                                                Foreground="#8E8E93" FontSize="11.5" Margin="0,4,0,0" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <RadioButton Grid.Column="1" IsChecked="{Binding IsActionClose}" IsHitTestVisible="False" VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
 
-                        <!-- Altre opzioni avvio -->
-                        <TextBlock Text="SICUREZZA &amp; CONTROLLO" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <!-- Safety & Control -->
+                        <TextBlock Text="SAFETY &amp; CONTROL" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
 
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Chiedi conferma prima di arrestare il gioco" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Mostra una richiesta di conferma prima di forzare la chiusura di Minecraft."
+                                    <TextBlock Text="Ask confirmation before stopping the game" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Shows a confirmation prompt before terminating the running Minecraft instance."
                                                Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <CheckBox Style="{StaticResource ExploreToggle}" HorizontalAlignment="Right"
@@ -318,7 +318,7 @@
                         </Border>
 
                         <!-- Discord RPC -->
-                        <TextBlock Text="INTEGRAZIONI &amp; GAMING" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <TextBlock Text="INTEGRATIONS &amp; GAMING" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
 
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
@@ -329,7 +329,7 @@
                                             <TextBlock Text="DISCORD" Foreground="#5865F2" FontSize="9.5" FontWeight="Bold"/>
                                         </Border>
                                     </StackPanel>
-                                    <TextBlock Text="Mostra su Discord il tuo stato in-launcher e dettagli in-game (versione, modloader, tempo di gioco, server)."
+                                    <TextBlock Text="Displays your Flow Client status and in-game details (version, mod loader, playtime, server) on Discord."
                                                Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <CheckBox Style="{StaticResource ExploreToggle}" HorizontalAlignment="Right"
@@ -338,23 +338,23 @@
                         </Border>
                     </StackPanel>
 
-                    <!-- 2. CATEGORIA: JAVA & PRESTAZIONI -->
+                    <!-- 2. CATEGORIA: JAVA & PERFORMANCE -->
                     <StackPanel Visibility="{Binding IsPerformanceCategory, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Java &amp; Prestazioni" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                        <TextBlock Text="Gestione dell'ambiente Java e dell'allocazione di memoria per le istanze."
+                        <TextBlock Text="Java &amp; System" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Manage Java runtime environment and memory allocation for instances."
                                    Foreground="#7E7E84" FontSize="13" Margin="0,0,0,20" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
 
                         <!-- Java Runtime Card -->
-                        <TextBlock Text="JAVA RUNTIME RILEVATO" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
+                        <TextBlock Text="DETECTED JAVA RUNTIME" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <StackPanel>
                                 <Grid>
                                     <StackPanel>
-                                        <TextBlock Text="Eseguibile Java principale" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                        <TextBlock Text="Primary Java executable" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
                                         <TextBlock Text="{Binding JavaVersion}" Foreground="#30D158" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                     </StackPanel>
                                     <Border Background="#122A44" CornerRadius="5" Padding="8,3" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                        <TextBlock Text="AUTOMATICO" Foreground="#2563EB" FontSize="10" FontWeight="Bold"/>
+                                        <TextBlock Text="AUTOMATIC" Foreground="#2563EB" FontSize="10" FontWeight="Bold"/>
                                     </Border>
                                 </Grid>
                                 <Border Background="#0C0C0E" CornerRadius="6" Padding="10,7" Margin="0,10,0,0">
@@ -364,7 +364,7 @@
                         </Border>
 
                         <!-- Hardware Info Card -->
-                        <TextBlock Text="SPECIFICHE HARDWARE DEL SISTEMA" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <TextBlock Text="SYSTEM HARDWARE SPECS" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -375,32 +375,32 @@
 
                                 <!-- CPU -->
                                 <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                    <TextBlock Text="PROCESSORE (CPU)" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="PROCESSOR (CPU)" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="{Binding CpuName}" Foreground="#FFFFFF" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
 
                                 <!-- GPU -->
                                 <StackPanel Grid.Column="1" Margin="4,0,8,0">
-                                    <TextBlock Text="SCHEDA VIDEO (GPU)" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="GRAPHICS CARD (GPU)" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="{Binding GpuName}" Foreground="#FFFFFF" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
 
                                 <!-- RAM -->
                                 <StackPanel Grid.Column="2" Margin="4,0,0,0">
-                                    <TextBlock Text="RAM TOTALE PC" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="TOTAL SYSTEM RAM" Foreground="#6E6E73" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="{Binding TotalRam}" Foreground="#2563EB" FontSize="13" FontWeight="Bold" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
                         <!-- Default RAM Selector -->
-                        <TextBlock Text="RAM PREDEFINITA PER LE ISTANZE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <TextBlock Text="DEFAULT INSTANCE RAM" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <StackPanel>
                                 <Grid>
                                     <StackPanel>
-                                        <TextBlock Text="Memoria consigliata" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                        <TextBlock Text="Seleziona la RAM iniziale da assegnare quando crei nuove versioni." Foreground="#7E7E84" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                                        <TextBlock Text="Allocated memory" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                        <TextBlock Text="Select the initial RAM allocated when creating new installations." Foreground="#7E7E84" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                     </StackPanel>
                                     <TextBlock Text="{Binding DefaultRamGbText}" Foreground="#2563EB" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </Grid>
@@ -416,20 +416,20 @@
                         </Border>
                     </StackPanel>
 
-                    <!-- 3. CATEGORIA: MOD & FUNZIONI -->
+                    <!-- 3. CATEGORIA: MODS & FEATURES -->
                     <StackPanel Visibility="{Binding IsModsCategory, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Mod &amp; Funzioni" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                        <TextBlock Text="Moduli integrati e compatibilità estesa per le tue istanze di gioco."
+                        <TextBlock Text="Mods &amp; Features" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Integrated modules and enhanced compatibility for your game instances."
                                    Foreground="#7E7E84" FontSize="13" Margin="0,0,0,20" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
 
-                        <TextBlock Text="MOD UFFICIALI INTEGRATE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
+                        <TextBlock Text="BUILT-IN OFFICIAL MODS" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
 
                         <!-- FlowClient Mod -->
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,24,0">
                                     <TextBlock Text="FlowClient In-Game Mod" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Inietta automaticamente il modulo ufficiale FlowClient (branding in-game, ottimizzazioni e overlay personalizzato)."
+                                    <TextBlock Text="Automatically injects the official FlowClient mod (in-game branding, optimizations, and custom HUD)."
                                                Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,0" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <CheckBox Style="{StaticResource ExploreToggle}" HorizontalAlignment="Right"
@@ -442,7 +442,7 @@
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,24,0">
                                     <TextBlock Text="Simple Voice Chat" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Installa automaticamente la mod di chat vocale di prossimità per i server multiplayer supportati."
+                                    <TextBlock Text="Automatically installs the proximity voice chat mod for supported multiplayer servers."
                                                Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,0" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <CheckBox Style="{StaticResource ExploreToggle}" HorizontalAlignment="Right"
@@ -451,20 +451,20 @@
                         </Border>
                     </StackPanel>
 
-                    <!-- 4. CATEGORIA: LAUNCHER & ASPETTO -->
+                    <!-- 4. CATEGORIA: LAUNCHER & APPEARANCE -->
                     <StackPanel Visibility="{Binding IsAppearanceCategory, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Launcher &amp; Aspetto" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                        <TextBlock Text="Personalizzazione visiva e aggiornamenti dell'applicazione."
+                        <TextBlock Text="Launcher &amp; Appearance" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Visual customization and application updates."
                                    Foreground="#7E7E84" FontSize="13" Margin="0,0,0,20" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
 
-                        <TextBlock Text="INTERFACCIA" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
+                        <TextBlock Text="INTERFACE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
 
                         <!-- UI Animations -->
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Animazioni e transizioni fluide" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Attiva gli effetti di animazione all'apertura del client e al cambio pagina."
+                                    <TextBlock Text="Smooth animations &amp; transitions" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Enables fluid motion effects when navigating between tabs and launching."
                                                Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <CheckBox Style="{StaticResource ExploreToggle}" HorizontalAlignment="Right"
@@ -476,8 +476,8 @@
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Controllo aggiornamenti all'avvio" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                    <TextBlock Text="Cerca automaticamente nuove versioni di Flow Client all'avvio dell'applicazione."
+                                    <TextBlock Text="Check for updates on startup" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Automatically checks for newer versions of Flow Client when starting up."
                                                Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                 </StackPanel>
                                 <CheckBox Style="{StaticResource ExploreToggle}" HorizontalAlignment="Right"
@@ -486,13 +486,13 @@
                         </Border>
 
                         <!-- Info Versione & Verifica Manuale -->
-                        <TextBlock Text="AGGIORNAMENTI &amp; RELEASE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <TextBlock Text="UPDATES &amp; RELEASES" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <StackPanel>
                                 <Grid>
                                     <StackPanel>
                                         <TextBlock Text="Flow Client" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                        <TextBlock Text="{Binding ReleaseDate, StringFormat='Rilasciata il {0}'}" Foreground="#7E7E84" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
+                                        <TextBlock Text="{Binding ReleaseDate, StringFormat='Released on {0}'}" Foreground="#7E7E84" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
                                     </StackPanel>
                                     <Border Background="#2563EB" CornerRadius="5" Padding="9,3" HorizontalAlignment="Right" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding CurrentVersion}" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
@@ -504,7 +504,7 @@
                                 <Grid>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                         <!-- Verifica Button -->
-                                        <Button Style="{StaticResource ExploreBtnPrimary}" Content="Verifica aggiornamenti"
+                                        <Button Style="{StaticResource ExploreBtnPrimary}" Content="Check for updates"
                                                 Click="CheckUpdatesNow_Click" Padding="14,8" FontSize="12"/>
 
                                         <!-- Scarica ed Aggiorna Button (Visible when update found) -->
@@ -512,7 +512,7 @@
                                                 Margin="12,0,0,0" Padding="16,8" FontSize="12" FontWeight="Bold"
                                                 Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVis}}">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="⚡ Scarica ed Installa v" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"/>
+                                                <TextBlock Text="⚡ Download &amp; Install v" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"/>
                                                 <TextBlock Text="{Binding LatestVersion}" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"/>
                                             </StackPanel>
                                         </Button>
@@ -528,22 +528,22 @@
                         </Border>
                     </StackPanel>
 
-                    <!-- 5. CATEGORIA: CARTELLE & CACHE -->
+                    <!-- 5. CATEGORIA: FOLDERS & CACHE -->
                     <StackPanel Visibility="{Binding IsStorageCategory, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Cartelle &amp; Cache" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                        <TextBlock Text="Accedi rapidamente ai percorsi di sistema e mantieni pulito lo spazio su disco."
+                        <TextBlock Text="Folders &amp; Cache" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Quick access to local directories and disk cleanup tools."
                                    Foreground="#7E7E84" FontSize="13" Margin="0,0,0,20" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
 
-                        <TextBlock Text="ACCESSO RAPIDO CARTELLE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
+                        <TextBlock Text="QUICK DIRECTORY ACCESS" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,8"/>
 
                         <!-- Instances Folder -->
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                    <TextBlock Text="Cartella Istanze Minecraft (.minecraft)" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Minecraft Instances Directory (.minecraft)" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="{Binding InstancesDirectory}" Foreground="#7E7E84" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
-                                <Button Style="{StaticResource ExploreBtnGhost}" Content="Apri" Click="OpenInstancesDir_Click"
+                                <Button Style="{StaticResource ExploreBtnGhost}" Content="Open" Click="OpenInstancesDir_Click"
                                         HorizontalAlignment="Right" VerticalAlignment="Center" Padding="14,6" FontSize="12"/>
                             </Grid>
                         </Border>
@@ -552,10 +552,10 @@
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                    <TextBlock Text="Cartella Dati Launcher (FlowLauncher)" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Launcher Data Directory (FlowLauncher)" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="{Binding LauncherDataDirectory}" Foreground="#7E7E84" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
-                                <Button Style="{StaticResource ExploreBtnGhost}" Content="Apri" Click="OpenDataDir_Click"
+                                <Button Style="{StaticResource ExploreBtnGhost}" Content="Open" Click="OpenDataDir_Click"
                                         HorizontalAlignment="Right" VerticalAlignment="Center" Padding="14,6" FontSize="12"/>
                             </Grid>
                         </Border>
@@ -564,23 +564,23 @@
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                    <TextBlock Text="Cartella Installazione Flow Client" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                    <TextBlock Text="Flow Client Installation Directory" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
                                     <TextBlock Text="{Binding OfficialInstallDirectory}" Foreground="#7E7E84" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
-                                <Button Style="{StaticResource ExploreBtnGhost}" Content="Apri" Click="OpenInstallDir_Click"
+                                <Button Style="{StaticResource ExploreBtnGhost}" Content="Open" Click="OpenInstallDir_Click"
                                         HorizontalAlignment="Right" VerticalAlignment="Center" Padding="14,6" FontSize="12"/>
                             </Grid>
                         </Border>
 
                         <!-- Maintenance & Cleanup -->
-                        <TextBlock Text="MANUTENZIONE &amp; PULIZIA" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <TextBlock Text="MAINTENANCE &amp; CLEANUP" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <StackPanel>
-                                <TextBlock Text="Pulisci file temporanei e vecchi pacchetti di update" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                                <TextBlock Text="Elimina pacchetti ZIP scaricati in precedenza, cartelle di staging e file di log obsoleti per liberare spazio su disco."
+                                <TextBlock Text="Clean temporary files and cached updates" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
+                                <TextBlock Text="Deletes leftover downloaded update archives, staging folders, and stale log files to free up disk space."
                                            Foreground="#7E7E84" FontSize="11.5" Margin="0,3,0,12" TextWrapping="Wrap" FontFamily="{StaticResource NunitoFont}"/>
                                 <Grid>
-                                    <Button Style="{StaticResource ExploreBtnGhost}" Content="🧹 Pulisci adesso"
+                                    <Button Style="{StaticResource ExploreBtnGhost}" Content="🧹 Clean now"
                                             Click="CleanTempFiles_Click" HorizontalAlignment="Left" Padding="14,6" FontSize="12"/>
                                     <TextBlock Text="{Binding MaintenanceMessage}" Foreground="#30D158" FontSize="12"
                                                VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" FontFamily="{StaticResource NunitoFont}"/>

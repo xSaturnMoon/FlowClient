@@ -161,31 +161,103 @@
                     </Button>
                 </StackPanel>
 
-                <!-- RIGHT: Account Profile Dropdown Pill (No - or X buttons!) -->
-                <Border Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0"
-                        Background="#151622" BorderBrush="#222434" BorderThickness="1" CornerRadius="12"
-                        Padding="8,5" Cursor="Hand" MouseLeftButtonDown="AccountPill_Click"
-                        ToolTip="Gestisci profilo Microsoft e skin">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Avatar Head -->
-                        <Border Width="26" Height="26" CornerRadius="6" Background="#1D1E2B" ClipToBounds="True" Margin="0,0,8,0">
-                            <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
-                                   RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
+                <!-- RIGHT: Account Profile Dropdown Pill (Crisp corners & border) -->
+                <Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,22,0">
+                    <Border x:Name="AccountPillBorder"
+                            Background="#13141F" BorderBrush="#25273A" BorderThickness="1" CornerRadius="7"
+                            Padding="8,5" Cursor="Hand" MouseLeftButtonDown="AccountPill_Click"
+                            SnapsToDevicePixels="True" UseLayoutRounding="True"
+                            ToolTip="Account Menu">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Avatar Head -->
+                            <Border Width="24" Height="24" CornerRadius="5" Background="#1D1E2B" ClipToBounds="True" Margin="0,0,8,0"
+                                    SnapsToDevicePixels="True">
+                                <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
+                                       RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
+                            </Border>
+                            <!-- Player Name -->
+                            <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="12.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                       MaxWidth="110" TextTrimming="CharacterEllipsis"/>
+                            <!-- Chevron Dropdown Arrow -->
+                            <Path Data="M 0,0 L 4,4 L 8,0" Stroke="#8E8E98" StrokeThickness="1.5"
+                                  VerticalAlignment="Center" Width="8" Height="4" Margin="0,1,3,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Dropdown Menu Popup -->
+                    <Popup x:Name="AccountPopup" PlacementTarget="{Binding ElementName=AccountPillBorder}"
+                           Placement="Bottom" VerticalOffset="8" HorizontalOffset="-70"
+                           AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade">
+                        <Border Width="240" Background="#12131D" BorderBrush="#25273A" BorderThickness="1"
+                                CornerRadius="10" Padding="14,14" SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="20" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.6"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <!-- Current Account Info -->
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="7" Background="#1D1E2B" ClipToBounds="True" Margin="0,0,10,0">
+                                        <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold"
+                                                   FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="Microsoft Account" Foreground="#3B82F6" FontSize="11" FontWeight="SemiBold"
+                                                   FontFamily="{StaticResource NunitoFont}" Margin="0,1,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Separator -->
+                                <Rectangle Height="1" Fill="#202232" Margin="0,0,0,8"/>
+
+                                <!-- Option 1: Manage Cosmetics -->
+                                <Button Style="{StaticResource DropdownMenuItem}" Click="AccountMenu_Manage_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="M12,12 C14.21,12 16,10.21 16,8 C16,5.79 14.21,4 12,4 C9.79,4 8,5.79 8,8 C8,10.21 9.79,12 12,12 Z M12,14 C8.13,14 5,15.79 5,18 V20 H19 V18 C19,15.79 15.87,14 12,14 Z"
+                                              Stroke="#A0A5B5" StrokeThickness="1.6" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Manage Skin &amp; Cosmetics" Foreground="#E2E8F0" FontSize="12.5" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Option 2: Add Account -->
+                                <Button Style="{StaticResource DropdownMenuItem}" Click="AccountMenu_AddAccount_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="M12,5 V19 M5,12 H19" Stroke="#3B82F6" StrokeThickness="2" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Add Microsoft Account" Foreground="#E2E8F0" FontSize="12.5" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Separator -->
+                                <Rectangle Height="1" Fill="#202232" Margin="0,6,0,8"/>
+
+                                <!-- Option 3: Sign Out -->
+                                <Button Style="{StaticResource DropdownMenuItemDanger}" Click="AccountMenu_SignOut_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="M9,21 H5 A2,2 0 0,1 3,19 V5 A2,2 0 0,1 5,3 H9 M16,17 L21,12 L16,7 M21,12 H9"
+                                              Stroke="#EF4444" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                              Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Sign Out" Foreground="#EF4444" FontSize="12.5" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
                         </Border>
-                        <!-- Player Name -->
-                        <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
-                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="0,0,6,0"
-                                   MaxWidth="110" TextTrimming="CharacterEllipsis"/>
-                        <!-- Chevron Dropdown Arrow -->
-                        <Path Data="M 0,0 L 4,4 L 8,0" Stroke="#8E8E98" StrokeThickness="1.6"
-                              VerticalAlignment="Center" Width="8" Height="4" Margin="0,1,4,0"/>
-                    </StackPanel>
-                </Border>
+                    </Popup>
+                </Grid>
             </Grid>
 
-            <!-- ══════ MAIN CONTENT STAGE ══════ -->
-            <Border x:Name="ContentBorder" Grid.Row="1" Background="#0C0D14">
-                <ContentControl x:Name="MainContentControl"/>
+            <!-- ══════ MAIN CONTENT STAGE WITH DIRECTIONAL SLIDE ══════ -->
+            <Border x:Name="ContentBorder" Grid.Row="1" Background="#0C0D14" ClipToBounds="True">
+                <ContentControl x:Name="MainContentControl">
+                    <ContentControl.RenderTransform>
+                        <TranslateTransform x:Name="ContentTranslate" X="0" Y="0"/>
+                    </ContentControl.RenderTransform>
+                </ContentControl>
             </Border>
         </Grid>
     </Border>

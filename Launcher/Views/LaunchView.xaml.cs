@@ -204,8 +204,8 @@ namespace Launcher.Views
                 Dispatcher.Invoke(() =>
                 {
                     Vm.PlayerAvatar = null;
-                    Vm.PlayerName = "Ospite";
-                    Vm.Greeting = "Benvenuto in Flow Client";
+                    Vm.PlayerName = "Guest";
+                    Vm.Greeting = "Welcome to Flow Client";
                     Vm.IsAuthenticated = false;
                 });
                 return;
@@ -215,7 +215,7 @@ namespace Launcher.Views
             Dispatcher.Invoke(() =>
             {
                 Vm.PlayerName = username;
-                Vm.Greeting = $"Bentornato, {username}";
+                Vm.Greeting = $"Welcome back, {username}";
                 Vm.IsAuthenticated = true;
             });
 
@@ -324,8 +324,8 @@ namespace Launcher.Views
                 if (LauncherSettingsService.Instance.Current.ConfirmBeforeStop)
                 {
                     var confirm = MessageBox.Show(
-                        "Vuoi chiudere Minecraft ed interrompere la sessione?",
-                        "Chiudi gioco",
+                        "Are you sure you want to stop Minecraft and close the session?",
+                        "Stop Game",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Question);
                     if (confirm != MessageBoxResult.Yes)
@@ -343,8 +343,8 @@ namespace Launcher.Views
             if (string.IsNullOrEmpty(id)) return;
 
             var initialMsg = server != null
-                ? $"Connessione a {server.Host}…"
-                : "Preparazione avvio…";
+                ? $"Connecting to {server.Host}…"
+                : "Preparing launch…";
 
             _tracker.SetLaunching(true, initialMsg);
             LauncherLogService.Instance.Info(initialMsg);
@@ -364,13 +364,13 @@ namespace Launcher.Views
                 {
                     _tracker.SetLaunching(false, result.Message);
                     LauncherLogService.Instance.Error(result.Message);
-                    MessageBox.Show(result.Message, "Avvio fallito",
+                    MessageBox.Show(result.Message, "Launch Failed",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else if (result.Process != null)
                 {
                     _tracker.SetLaunching(false, null);
-                    LauncherLogService.Instance.Info("Processo Minecraft avviato con successo.");
+                    LauncherLogService.Instance.Info("Minecraft process started successfully.");
                 }
                 else
                 {
@@ -381,7 +381,7 @@ namespace Launcher.Views
             {
                 _tracker.SetLaunching(false, ex.Message);
                 LauncherLogService.Instance.Error(ex.Message);
-                MessageBox.Show(ex.Message, "Avvio fallito",
+                MessageBox.Show(ex.Message, "Launch Failed",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
