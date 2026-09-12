@@ -362,16 +362,25 @@ namespace Launcher.Views
             }
         }
 
+        private DateTime _lastRenderTime = DateTime.MinValue;
+
         private void OnRendering3D(object? sender, EventArgs e)
         {
-            if (!_isDragging3D)
-            {
-                _yaw = (_yaw + 0.35) % 360;
-                YawRotation.Angle = _yaw;
-            }
+            // Delta-time based bobbing — frame-rate independent, slow & soothing
+            var now = DateTime.UtcNow;
+            double delta = _lastRenderTime == DateTime.MinValue
+                ? 0.0
+                : (now - _lastRenderTime).TotalSeconds;
+            _lastRenderTime = now;
 
-            _bobTime += 0.032;
-            BobTranslate.OffsetY = Math.Sin(_bobTime) * 0.09;
+            // Clamp delta to avoid huge jumps on lag/focus restore
+            delta = Math.Min(delta, 0.1);
+
+            // Slow bob: period ~3.5 seconds → angular speed = 2π / 3.5 ≈ 1.795 rad/s
+            _bobTime += delta * 1.795;
+            BobTranslate.OffsetY = Math.Sin(_bobTime) * 0.07;
+
+            // No auto-spin — user controls yaw exclusively via mouse drag
         }
 
         #endregion

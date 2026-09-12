@@ -10,6 +10,7 @@ namespace Launcher.Helpers
     /// <summary>
     /// Builds authentic Minecraft 3D voxel models (Grass Block, Paper, Fox Head, Anvil)
     /// rendered inside WPF Viewport3D with sharp NearestNeighbor pixel-art textures.
+    /// Each fox face uses a pre-cropped, upscaled per-face texture for accurate UV rendering.
     /// </summary>
     public static class Minecraft3DModelBuilder
     {
@@ -17,23 +18,60 @@ namespace Launcher.Helpers
         private static Material? _grassSideMat;
         private static Material? _dirtMat;
         private static Material? _paperMat;
-        private static Material? _paperEdgeMat;
-        private static Material? _foxMat;
         private static Material? _anvilTopMat;
         private static Material? _anvilSideMat;
 
+        // Fox head per-face materials (pre-cropped textures)
+        private static Material? _foxHeadFront;
+        private static Material? _foxHeadBack;
+        private static Material? _foxHeadTop;
+        private static Material? _foxHeadBottom;
+        private static Material? _foxHeadLeft;
+        private static Material? _foxHeadRight;
+
+        // Fox snout per-face materials
+        private static Material? _foxSnoutFront;
+        private static Material? _foxSnoutTop;
+        private static Material? _foxSnoutBottom;
+        private static Material? _foxSnoutLeft;
+        private static Material? _foxSnoutRight;
+
+        // Fox ear materials
+        private static Material? _foxEarFront;
+        private static Material? _foxEarBack;
+        private static Material? _foxEarSide;
+
+        private static bool _materialsLoaded = false;
+
         private static void EnsureMaterials()
         {
-            if (_grassTopMat != null) return;
+            if (_materialsLoaded) return;
+            _materialsLoaded = true;
 
-            _grassTopMat = LoadMaterial("grass_top.png");
+            _grassTopMat  = LoadMaterial("grass_top.png");
             _grassSideMat = LoadMaterial("grass_side.png");
-            _dirtMat = LoadMaterial("dirt.png");
-            _paperMat = LoadMaterial("paper.png");
-            _paperEdgeMat = new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(220, 215, 202)));
-            _foxMat = LoadMaterial("fox.png");
-            _anvilTopMat = LoadMaterial("anvil_top.png");
+            _dirtMat      = LoadMaterial("dirt.png");
+            _paperMat     = LoadMaterial("paper.png");
+            _anvilTopMat  = LoadMaterial("anvil_top.png");
             _anvilSideMat = LoadMaterial("anvil_side.png");
+
+            // Fox face materials
+            _foxHeadFront  = LoadMaterial("fox_head_front.png");
+            _foxHeadBack   = LoadMaterial("fox_head_back.png");
+            _foxHeadTop    = LoadMaterial("fox_head_top.png");
+            _foxHeadBottom = LoadMaterial("fox_head_bottom.png");
+            _foxHeadLeft   = LoadMaterial("fox_head_left.png");
+            _foxHeadRight  = LoadMaterial("fox_head_right.png");
+
+            _foxSnoutFront  = LoadMaterial("fox_snout_front.png");
+            _foxSnoutTop    = LoadMaterial("fox_snout_top.png");
+            _foxSnoutBottom = LoadMaterial("fox_snout_bottom.png");
+            _foxSnoutLeft   = LoadMaterial("fox_snout_left.png");
+            _foxSnoutRight  = LoadMaterial("fox_snout_right.png");
+
+            _foxEarFront = LoadMaterial("fox_ear_right.png");
+            _foxEarBack  = LoadMaterial("fox_ear_back.png");
+            _foxEarSide  = LoadMaterial("fox_ear_side.png");
         }
 
         private static Material LoadMaterial(string filename)
@@ -61,9 +99,7 @@ namespace Launcher.Helpers
                 {
                     var localPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "3d", filename);
                     if (!File.Exists(localPath))
-                    {
                         localPath = Path.Combine(Directory.GetCurrentDirectory(), "Launcher", "Assets", "3d", filename);
-                    }
 
                     if (File.Exists(localPath))
                     {
@@ -109,7 +145,7 @@ namespace Launcher.Helpers
             EnsureMaterials();
             var group = new Model3DGroup();
 
-            const double s = 0.95; // half size -> 1.9 total cube
+            const double s = 0.95; // half size → 1.9 total cube
 
             // Top (+Y)
             AddFace(group,
@@ -121,7 +157,6 @@ namespace Launcher.Helpers
                 new Point3D(-s, -s, -s), new Point3D(s, -s, -s), new Point3D(s, -s, s), new Point3D(-s, -s, s),
                 _dirtMat!);
 
-            // 4 Sides with grass_side
             // Front (+Z)
             AddFace(group,
                 new Point3D(-s, -s, s), new Point3D(s, -s, s), new Point3D(s, s, s), new Point3D(-s, s, s),
@@ -147,47 +182,28 @@ namespace Launcher.Helpers
 
         #endregion
 
-        #region Paper Item Sheet (Fabric)
+        #region Paper Item Sheet (Fabric/Quilt)
+        // A clean double-sided flat quad — no extruded prism edges, no side lines.
+        // Slightly tilted towards the camera using a very thin depth so WPF renders both sides.
 
         public static Model3D CreatePaperModel()
         {
             EnsureMaterials();
             var group = new Model3DGroup();
 
-            const double hw = 0.95;  // half width
-            const double hh = 1.25;  // half height
-            const double hd = 0.025; // thin sheet depth
+            const double hw = 1.05; // half width
+            const double hh = 1.05; // half height
+            const double hd = 0.001; // essentially zero depth — completely flat, no visible edge
 
-            // Front (+Z)
+            // Front face (+Z)
             AddFace(group,
                 new Point3D(-hw, -hh, hd), new Point3D(hw, -hh, hd), new Point3D(hw, hh, hd), new Point3D(-hw, hh, hd),
                 _paperMat!);
 
-            // Back (-Z)
+            // Back face (-Z) — same texture, flipped winding
             AddFace(group,
                 new Point3D(hw, -hh, -hd), new Point3D(-hw, -hh, -hd), new Point3D(-hw, hh, -hd), new Point3D(hw, hh, -hd),
                 _paperMat!);
-
-            // Thin Edges
-            // Top (+Y)
-            AddFace(group,
-                new Point3D(-hw, hh, hd), new Point3D(hw, hh, hd), new Point3D(hw, hh, -hd), new Point3D(-hw, hh, -hd),
-                _paperEdgeMat!);
-
-            // Bottom (-Y)
-            AddFace(group,
-                new Point3D(-hw, -hh, -hd), new Point3D(hw, -hh, -hd), new Point3D(hw, -hh, hd), new Point3D(-hw, -hh, hd),
-                _paperEdgeMat!);
-
-            // Left (-X)
-            AddFace(group,
-                new Point3D(-hw, -hh, -hd), new Point3D(-hw, -hh, hd), new Point3D(-hw, hh, hd), new Point3D(-hw, hh, -hd),
-                _paperEdgeMat!);
-
-            // Right (+X)
-            AddFace(group,
-                new Point3D(hw, -hh, hd), new Point3D(hw, -hh, -hd), new Point3D(hw, hh, -hd), new Point3D(hw, hh, hd),
-                _paperEdgeMat!);
 
             return group;
         }
@@ -195,68 +211,101 @@ namespace Launcher.Helpers
         #endregion
 
         #region Fox Head (NeoForge)
+        // Uses per-face pre-cropped textures for pixel-perfect UV mapping.
+        // No full-texture UV slicing → no repetition/tiling artifacts.
 
         public static Model3D CreateFoxHeadModel()
         {
             EnsureMaterials();
             var group = new Model3DGroup();
-            var mat = _foxMat!;
 
-            const double tw = 48.0;
-            const double th = 32.0;
             const double sc = 0.22;
 
-            // 1. Head Box: 8 x 6 x 6
-            AddBoxUV(group,
-                -4 * sc, -3 * sc, -3 * sc,
-                 4 * sc,  3 * sc,  3 * sc,
-                mat,
-                new Rect(7 / tw, 5 / th, 8 / tw, 6 / th),     // Top
-                new Rect(15 / tw, 5 / th, 8 / tw, 6 / th),    // Bottom
-                new Rect(7 / tw, 11 / th, 8 / tw, 6 / th),    // Front (+Z)
-                new Rect(21 / tw, 11 / th, 8 / tw, 6 / th),   // Back (-Z)
-                new Rect(1 / tw, 11 / th, 6 / tw, 6 / th),    // Left (-X)
-                new Rect(15 / tw, 11 / th, 6 / tw, 6 / th)    // Right (+X)
-            );
+            // ── 1. HEAD BOX: 8w × 6h × 6d (in Minecraft pixels × sc) ──
+            double hx = 4 * sc, hy = 3 * sc, hz = 3 * sc;
 
-            // 2. Snout Box: 4 x 2 x 3
-            AddBoxUV(group,
-                -2 * sc, -3 * sc,  3 * sc,
-                 2 * sc, -1 * sc,  6 * sc,
-                mat,
-                new Rect(9 / tw, 18 / th, 4 / tw, 3 / th),
-                new Rect(13 / tw, 18 / th, 4 / tw, 3 / th),
-                new Rect(9 / tw, 21 / th, 4 / tw, 2 / th),
-                new Rect(16 / tw, 21 / th, 4 / tw, 2 / th),
-                new Rect(6 / tw, 21 / th, 3 / tw, 2 / th),
-                new Rect(13 / tw, 21 / th, 3 / tw, 2 / th)
-            );
+            // Front (+Z)
+            AddFace(group,
+                new Point3D(-hx, -hy, hz), new Point3D(hx, -hy, hz), new Point3D(hx, hy, hz), new Point3D(-hx, hy, hz),
+                _foxHeadFront!);
+            // Back (-Z)
+            AddFace(group,
+                new Point3D(hx, -hy, -hz), new Point3D(-hx, -hy, -hz), new Point3D(-hx, hy, -hz), new Point3D(hx, hy, -hz),
+                _foxHeadBack!);
+            // Top (+Y)
+            AddFace(group,
+                new Point3D(-hx, hy, hz), new Point3D(hx, hy, hz), new Point3D(hx, hy, -hz), new Point3D(-hx, hy, -hz),
+                _foxHeadTop!);
+            // Bottom (-Y)
+            AddFace(group,
+                new Point3D(-hx, -hy, -hz), new Point3D(hx, -hy, -hz), new Point3D(hx, -hy, hz), new Point3D(-hx, -hy, hz),
+                _foxHeadBottom!);
+            // Left (-X)
+            AddFace(group,
+                new Point3D(-hx, -hy, -hz), new Point3D(-hx, -hy, hz), new Point3D(-hx, hy, hz), new Point3D(-hx, hy, -hz),
+                _foxHeadLeft!);
+            // Right (+X)
+            AddFace(group,
+                new Point3D(hx, -hy, hz), new Point3D(hx, -hy, -hz), new Point3D(hx, hy, -hz), new Point3D(hx, hy, hz),
+                _foxHeadRight!);
 
-            // 3. Right Ear: 2 x 2 x 1 (+X, +Y)
-            AddBoxUV(group,
-                 2 * sc, 3 * sc, 0 * sc,
-                 4 * sc, 5 * sc, 1 * sc,
-                mat,
-                new Rect(9 / tw, 1 / th, 2 / tw, 1 / th),
-                new Rect(11 / tw, 1 / th, 2 / tw, 1 / th),
-                new Rect(9 / tw, 2 / th, 2 / tw, 2 / th),
-                new Rect(12 / tw, 2 / th, 2 / tw, 2 / th),
-                new Rect(8 / tw, 2 / th, 1 / tw, 2 / th),
-                new Rect(11 / tw, 2 / th, 1 / tw, 2 / th)
-            );
+            // ── 2. SNOUT BOX: 4w × 2h × 3d — protrudes forward from face ──
+            double sx = 2 * sc, sy_bot = -3 * sc, sy_top = -1 * sc, sz_back = 3 * sc, sz_front = 6 * sc;
 
-            // 4. Left Ear: 2 x 2 x 1 (-X, +Y)
-            AddBoxUV(group,
-                -4 * sc, 3 * sc, 0 * sc,
-                -2 * sc, 5 * sc, 1 * sc,
-                mat,
-                new Rect(16 / tw, 1 / th, 2 / tw, 1 / th),
-                new Rect(18 / tw, 1 / th, 2 / tw, 1 / th),
-                new Rect(16 / tw, 2 / th, 2 / tw, 2 / th),
-                new Rect(19 / tw, 2 / th, 2 / tw, 2 / th),
-                new Rect(15 / tw, 2 / th, 1 / tw, 2 / th),
-                new Rect(18 / tw, 2 / th, 1 / tw, 2 / th)
-            );
+            AddFace(group,
+                new Point3D(-sx, sy_bot, sz_front), new Point3D(sx, sy_bot, sz_front), new Point3D(sx, sy_top, sz_front), new Point3D(-sx, sy_top, sz_front),
+                _foxSnoutFront!);
+            AddFace(group,
+                new Point3D(sx, sy_bot, sz_back), new Point3D(-sx, sy_bot, sz_back), new Point3D(-sx, sy_top, sz_back), new Point3D(sx, sy_top, sz_back),
+                _foxSnoutBottom!); // back face (connects to head)
+            AddFace(group,
+                new Point3D(-sx, sy_top, sz_front), new Point3D(sx, sy_top, sz_front), new Point3D(sx, sy_top, sz_back), new Point3D(-sx, sy_top, sz_back),
+                _foxSnoutTop!);
+            AddFace(group,
+                new Point3D(-sx, sy_bot, sz_back), new Point3D(sx, sy_bot, sz_back), new Point3D(sx, sy_bot, sz_front), new Point3D(-sx, sy_bot, sz_front),
+                _foxSnoutBottom!);
+            AddFace(group,
+                new Point3D(-sx, sy_bot, sz_back), new Point3D(-sx, sy_bot, sz_front), new Point3D(-sx, sy_top, sz_front), new Point3D(-sx, sy_top, sz_back),
+                _foxSnoutLeft!);
+            AddFace(group,
+                new Point3D(sx, sy_bot, sz_front), new Point3D(sx, sy_bot, sz_back), new Point3D(sx, sy_top, sz_back), new Point3D(sx, sy_top, sz_front),
+                _foxSnoutRight!);
+
+            // ── 3. RIGHT EAR: 2w × 2h × 1d (+X side) ──
+            double erx0 = 2 * sc, erx1 = 4 * sc;
+            double ery0 = 3 * sc, ery1 = 5 * sc;
+            double erz0 = -0.5 * sc, erz1 = 0.5 * sc;
+
+            AddFace(group,
+                new Point3D(erx0, ery0, erz1), new Point3D(erx1, ery0, erz1), new Point3D(erx1, ery1, erz1), new Point3D(erx0, ery1, erz1),
+                _foxEarFront!);
+            AddFace(group,
+                new Point3D(erx1, ery0, erz0), new Point3D(erx0, ery0, erz0), new Point3D(erx0, ery1, erz0), new Point3D(erx1, ery1, erz0),
+                _foxEarBack!);
+            AddFace(group,
+                new Point3D(erx0, ery0, erz0), new Point3D(erx0, ery0, erz1), new Point3D(erx0, ery1, erz1), new Point3D(erx0, ery1, erz0),
+                _foxEarSide!);
+            AddFace(group,
+                new Point3D(erx1, ery0, erz1), new Point3D(erx1, ery0, erz0), new Point3D(erx1, ery1, erz0), new Point3D(erx1, ery1, erz1),
+                _foxEarSide!);
+
+            // ── 4. LEFT EAR: 2w × 2h × 1d (-X side) ──
+            double elx0 = -4 * sc, elx1 = -2 * sc;
+            double ely0 = 3 * sc, ely1 = 5 * sc;
+            double elz0 = -0.5 * sc, elz1 = 0.5 * sc;
+
+            AddFace(group,
+                new Point3D(elx0, ely0, elz1), new Point3D(elx1, ely0, elz1), new Point3D(elx1, ely1, elz1), new Point3D(elx0, ely1, elz1),
+                _foxEarFront!);
+            AddFace(group,
+                new Point3D(elx1, ely0, elz0), new Point3D(elx0, ely0, elz0), new Point3D(elx0, ely1, elz0), new Point3D(elx1, ely1, elz0),
+                _foxEarBack!);
+            AddFace(group,
+                new Point3D(elx0, ely0, elz0), new Point3D(elx0, ely0, elz1), new Point3D(elx0, ely1, elz1), new Point3D(elx0, ely1, elz0),
+                _foxEarSide!);
+            AddFace(group,
+                new Point3D(elx1, ely0, elz1), new Point3D(elx1, ely0, elz0), new Point3D(elx1, ely1, elz0), new Point3D(elx1, ely1, elz1),
+                _foxEarSide!);
 
             return group;
         }
@@ -341,30 +390,6 @@ namespace Launcher.Helpers
             group.Children.Add(new GeometryModel3D(mesh, mat));
         }
 
-        private static void AddFaceUV(Model3DGroup group, Point3D p0, Point3D p1, Point3D p2, Point3D p3, Material mat, Rect uv)
-        {
-            var mesh = new MeshGeometry3D();
-            mesh.Positions.Add(p0);
-            mesh.Positions.Add(p1);
-            mesh.Positions.Add(p2);
-            mesh.Positions.Add(p3);
-
-            mesh.TextureCoordinates.Add(new Point(uv.Left, uv.Bottom));
-            mesh.TextureCoordinates.Add(new Point(uv.Right, uv.Bottom));
-            mesh.TextureCoordinates.Add(new Point(uv.Right, uv.Top));
-            mesh.TextureCoordinates.Add(new Point(uv.Left, uv.Top));
-
-            mesh.TriangleIndices.Add(0);
-            mesh.TriangleIndices.Add(1);
-            mesh.TriangleIndices.Add(2);
-
-            mesh.TriangleIndices.Add(0);
-            mesh.TriangleIndices.Add(2);
-            mesh.TriangleIndices.Add(3);
-
-            group.Children.Add(new GeometryModel3D(mesh, mat));
-        }
-
         private static void AddBoxSimple(Model3DGroup group, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Material mat)
         {
             AddFace(group, new Point3D(minX, maxY, maxZ), new Point3D(maxX, maxY, maxZ), new Point3D(maxX, maxY, minZ), new Point3D(minX, maxY, minZ), mat);
@@ -373,20 +398,6 @@ namespace Launcher.Helpers
             AddFace(group, new Point3D(maxX, minY, minZ), new Point3D(minX, minY, minZ), new Point3D(minX, maxY, minZ), new Point3D(maxX, maxY, minZ), mat);
             AddFace(group, new Point3D(minX, minY, minZ), new Point3D(minX, minY, maxZ), new Point3D(minX, maxY, maxZ), new Point3D(minX, maxY, minZ), mat);
             AddFace(group, new Point3D(maxX, minY, maxZ), new Point3D(maxX, minY, minZ), new Point3D(maxX, maxY, minZ), new Point3D(maxX, maxY, maxZ), mat);
-        }
-
-        private static void AddBoxUV(Model3DGroup group,
-            double minX, double minY, double minZ,
-            double maxX, double maxY, double maxZ,
-            Material mat,
-            Rect topUV, Rect bottomUV, Rect frontUV, Rect backUV, Rect leftUV, Rect rightUV)
-        {
-            AddFaceUV(group, new Point3D(minX, maxY, maxZ), new Point3D(maxX, maxY, maxZ), new Point3D(maxX, maxY, minZ), new Point3D(minX, maxY, minZ), mat, topUV);
-            AddFaceUV(group, new Point3D(minX, minY, minZ), new Point3D(maxX, minY, minZ), new Point3D(maxX, minY, maxZ), new Point3D(minX, minY, maxZ), mat, bottomUV);
-            AddFaceUV(group, new Point3D(minX, minY, maxZ), new Point3D(maxX, minY, maxZ), new Point3D(maxX, maxY, maxZ), new Point3D(minX, maxY, maxZ), mat, frontUV);
-            AddFaceUV(group, new Point3D(maxX, minY, minZ), new Point3D(minX, minY, minZ), new Point3D(minX, maxY, minZ), new Point3D(maxX, maxY, minZ), mat, backUV);
-            AddFaceUV(group, new Point3D(minX, minY, minZ), new Point3D(minX, minY, maxZ), new Point3D(minX, maxY, maxZ), new Point3D(minX, maxY, minZ), mat, leftUV);
-            AddFaceUV(group, new Point3D(maxX, minY, maxZ), new Point3D(maxX, minY, minZ), new Point3D(maxX, maxY, minZ), new Point3D(maxX, maxY, maxZ), mat, rightUV);
         }
 
         #endregion

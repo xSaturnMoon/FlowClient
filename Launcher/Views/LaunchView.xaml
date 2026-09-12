@@ -11,7 +11,7 @@
             <conv:StringNotEmptyToVisibilityConverter x:Key="StrVis"/>
             <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
 
-            <!-- Sleek Edge Navigation Arrow Buttons (< and >) -->
+            <!-- Sleek Edge Navigation Arrow Buttons (< and >) — transparent, no plate -->
             <Style x:Key="HomeNavArrowButton" TargetType="Button">
                 <Setter Property="Width" Value="46"/>
                 <Setter Property="Height" Value="46"/>
@@ -20,21 +20,15 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="#16171D" BorderBrush="#252632" BorderThickness="1"
-                                    CornerRadius="23" SnapsToDevicePixels="True">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="14" Direction="270" ShadowDepth="3" Color="#000000" Opacity="0.35"/>
-                                </Border.Effect>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
+                            <Grid x:Name="root" Background="Transparent">
+                                <ContentPresenter x:Name="icon" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+                            </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#252736"/>
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#3E425A"/>
+                                    <Setter TargetName="icon" Property="Opacity" Value="1.0"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#1C1D26"/>
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#2F3244"/>
+                                    <Setter TargetName="icon" Property="Opacity" Value="0.7"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -42,7 +36,7 @@
                 </Setter>
             </Style>
 
-            <!-- Sleek Bottom Corner Action Button Style (Quit & Update) -->
+            <!-- Update Button Style — transparent, no plate -->
             <Style x:Key="HomeCornerActionButton" TargetType="Button">
                 <Setter Property="Width" Value="42"/>
                 <Setter Property="Height" Value="42"/>
@@ -51,21 +45,15 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="#181920" BorderBrush="#272834" BorderThickness="1"
-                                    CornerRadius="11" SnapsToDevicePixels="True">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="3" Color="#000000" Opacity="0.3"/>
-                                </Border.Effect>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
+                            <Grid Background="Transparent">
+                                <ContentPresenter x:Name="icon" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.55"/>
+                            </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#22242E"/>
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#383A4A"/>
+                                    <Setter TargetName="icon" Property="Opacity" Value="1.0"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#14151B"/>
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#20212B"/>
+                                    <Setter TargetName="icon" Property="Opacity" Value="0.7"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -73,7 +61,7 @@
                 </Setter>
             </Style>
 
-            <!-- Quit Button Specific Style with Red Hover Glow -->
+            <!-- Quit Button Style — transparent, red glow on hover -->
             <Style x:Key="HomeQuitButton" TargetType="Button">
                 <Setter Property="Width" Value="42"/>
                 <Setter Property="Height" Value="42"/>
@@ -82,21 +70,15 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="#181920" BorderBrush="#272834" BorderThickness="1"
-                                    CornerRadius="11" SnapsToDevicePixels="True">
-                                <Border.Effect>
-                                    <DropShadowEffect x:Name="shadow" BlurRadius="12" Direction="270" ShadowDepth="3" Color="#000000" Opacity="0.3"/>
-                                </Border.Effect>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
+                            <Grid Background="Transparent">
+                                <ContentPresenter x:Name="icon" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.55"/>
+                            </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#261719"/>
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#EF4444"/>
+                                    <Setter TargetName="icon" Property="Opacity" Value="1.0"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#1E1214"/>
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#B91C1C"/>
+                                    <Setter TargetName="icon" Property="Opacity" Value="0.6"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -110,13 +92,6 @@
 
         <!-- ══════ CENTRAL STAGE: INTERACTIVE 3D MINECRAFT OBJECT ══════ -->
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <!-- Subtle Atmospheric Depth Ring (Behind 3D Voxel) -->
-            <Canvas HorizontalAlignment="Center" VerticalAlignment="Center" Width="0" Height="0">
-                <Ellipse Canvas.Left="-160" Canvas.Top="-175" Width="320" Height="320"
-                         Fill="#121319" Opacity="0.75"/>
-                <Ellipse Canvas.Left="-120" Canvas.Top="-135" Width="240" Height="240"
-                         Stroke="#1F212C" StrokeThickness="1.5" StrokeDashArray="4 4" Opacity="0.5"/>
-            </Canvas>
 
             <!-- Real Hardware-Accelerated 3D Viewport with Drag-to-Rotate -->
             <Viewport3D x:Name="ModelViewport" HorizontalAlignment="Center" VerticalAlignment="Center"

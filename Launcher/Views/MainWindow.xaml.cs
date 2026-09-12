@@ -258,6 +258,16 @@ namespace Launcher.Views
         private static readonly string[] NavigationOrder = ["News", "Account", "Home", "Versions", "Settings"];
         private string _currentDisplayedSection = "Home";
 
+        private static int GetNavIndex(string? s) => (s ?? "").ToLowerInvariant() switch
+        {
+            "news"                  => 0,
+            "account" or "cosmetics"=> 1,
+            "home" or "launch"      => 2,
+            "versions" or "explore" => 3,
+            "settings"              => 4,
+            _                       => 2
+        };
+
         private void SwapContent(string activeButton)
         {
             try
@@ -265,11 +275,8 @@ namespace Launcher.Views
                 var view = GetOrCreateView(activeButton);
                 if (MainContentControl.Content == view) return;
 
-                int oldIndex = Array.IndexOf(NavigationOrder, _currentDisplayedSection);
-                int newIndex = Array.IndexOf(NavigationOrder, activeButton);
-
-                if (oldIndex < 0) oldIndex = 2; // Default to Home
-                if (newIndex < 0) newIndex = 2;
+                int oldIndex = GetNavIndex(_currentDisplayedSection);
+                int newIndex = GetNavIndex(activeButton);
 
                 double fromX = 0;
                 if (newIndex > oldIndex)
@@ -443,7 +450,7 @@ namespace Launcher.Views
             _viewModel.ActiveButton = "Versions";
 
         private void Account_Click(object sender, RoutedEventArgs e) =>
-            _viewModel.ActiveButton = "Cosmetics";
+            _viewModel.ActiveButton = "Account";
 
         private void Stats_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "Stats";
