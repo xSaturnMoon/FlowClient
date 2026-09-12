@@ -13,323 +13,245 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <!-- Canvas: Solid, deep, matte neutral obsidian. Zero tacky gradients. -->
-    <Grid Background="#0C0C10">
-        <Grid Margin="32,24,32,24">
+    <Grid Background="#0C0D14" ClipToBounds="True">
+        <!-- ══════ CENTRAL STAGE: FLOATING GEOMETRY & 3D MASCOT ══════ -->
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!-- Floating Geometric Accent Frames (Behind Mascot) -->
+            <Canvas HorizontalAlignment="Center" VerticalAlignment="Center" Width="0" Height="0">
+                <!-- Frame 1: Top-Left Large -->
+                <Border Canvas.Left="-230" Canvas.Top="-150" Width="135" Height="135"
+                        BorderBrush="#1E273A" BorderThickness="4" Background="#0A111E" Opacity="0.8"/>
+
+                <!-- Frame 2: Mid-Left -->
+                <Border Canvas.Left="-270" Canvas.Top="35" Width="100" Height="100"
+                        BorderBrush="#1B2334" BorderThickness="3" Background="#0A111E" Opacity="0.75"/>
+
+                <!-- Tile 3: Small Left-Bottom -->
+                <Border Canvas.Left="-130" Canvas.Top="140" Width="40" Height="40"
+                        Background="#172030" Opacity="0.6"/>
+
+                <!-- Tile 4: Top-Center Small -->
+                <Border Canvas.Left="70" Canvas.Top="-175" Width="68" Height="68"
+                        Background="#1A2436" Opacity="0.65"/>
+
+                <!-- Frame 5: Top-Right -->
+                <Border Canvas.Left="155" Canvas.Top="-115" Width="95" Height="95"
+                        BorderBrush="#1C2436" BorderThickness="3" Background="#0A111E" Opacity="0.75"/>
+
+                <!-- Tile 6: Middle-Right -->
+                <Border Canvas.Left="125" Canvas.Top="15" Width="65" Height="65"
+                        Background="#182132" Opacity="0.6"/>
+
+                <!-- Frame 7: Right-Center -->
+                <Border Canvas.Left="235" Canvas.Top="45" Width="80" Height="80"
+                        BorderBrush="#1D2638" BorderThickness="3" Background="#0A111E" Opacity="0.7"/>
+
+                <!-- Tile 8: Far-Right Small -->
+                <Border Canvas.Left="330" Canvas.Top="-15" Width="36" Height="36"
+                        Background="#172030" Opacity="0.55"/>
+            </Canvas>
+
+            <!-- ─── 3D CUBIC MASCOT HEAD WITH CUTE EYES & IDLE BOBBING ─── -->
+            <Grid Width="260" Height="260" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-45,0,0">
+                <Grid.RenderTransform>
+                    <TranslateTransform x:Name="MascotFloat" Y="0"/>
+                </Grid.RenderTransform>
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="MascotFloat"
+                                                 Storyboard.TargetProperty="Y"
+                                                 From="-8" To="8" Duration="0:0:3"
+                                                 AutoReverse="True" RepeatBehavior="Forever">
+                                    <DoubleAnimation.EasingFunction>
+                                        <SineEase EasingMode="EaseInOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+
+                <!-- Mascot Isometric Cube -->
+                <Canvas Width="220" Height="220" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <!-- Top Face (Perspective light slate) -->
+                    <Polygon Points="38,45 68,15 208,15 178,45" Fill="#6F727D"/>
+
+                    <!-- Left Side Face (Perspective shaded slate) -->
+                    <Polygon Points="38,45 68,15 68,155 38,185" Fill="#484B54"/>
+
+                    <!-- Top-Left Tuft Accent -->
+                    <Border Canvas.Left="58" Canvas.Top="9" Width="20" Height="8" Background="#6F727D"/>
+
+                    <!-- Front Face (Main cubic face with block eyes) -->
+                    <Border Canvas.Left="38" Canvas.Top="45" Width="140" Height="140" Background="#5B5D67" CornerRadius="1">
+                        <Grid>
+                            <!-- Stone Texture pixel patches -->
+                            <Canvas Width="140" Height="140">
+                                <Border Canvas.Left="12" Canvas.Top="12" Width="18" Height="18" Background="#4F515B"/>
+                                <Border Canvas.Left="80" Canvas.Top="8" Width="24" Height="16" Background="#666874"/>
+                                <Border Canvas.Left="10" Canvas.Top="115" Width="22" Height="16" Background="#4E5059"/>
+                                <Border Canvas.Left="60" Canvas.Top="122" Width="28" Height="12" Background="#636571"/>
+                                <Border Canvas.Left="115" Canvas.Top="110" Width="16" Height="20" Background="#4E5059"/>
+                            </Canvas>
+
+                            <!-- Left Eye (Big cartoon block eye) -->
+                            <Border Width="34" Height="58" Background="#FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                    Margin="24,38,0,0">
+                                <Border Width="18" Height="40" Background="#111216" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                        Margin="0,0,0,0"/>
+                            </Border>
+
+                            <!-- Right Eye (Big cartoon block eye) -->
+                            <Border Width="34" Height="58" Background="#FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Margin="0,38,24,0">
+                                <Border Width="18" Height="40" Background="#111216" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                        Margin="0,0,0,0"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Canvas>
+            </Grid>
+        </Grid>
+
+        <!-- ══════ BOTTOM LAUNCH DOCK & FOOTER BRANDING ══════ -->
+        <Grid VerticalAlignment="Bottom" Margin="28,0,28,14">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- ══════ TOP HEADER BAR (MINIMAL & SPACIOUS) ══════ -->
-            <Grid Grid.Row="0" Margin="0,0,0,24">
+            <!-- Row 0: 3 Cards / Widgets -->
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="280"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="280"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: Player Profile Capsule -->
-                <Border Grid.Column="0" Background="#13131A" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="10"
-                        Padding="8,5" Cursor="Hand" MouseLeftButtonDown="PlayerCard_Click"
-                        ToolTip="Gestisci account Microsoft e skin">
+                <!-- Left Card: NEW CLOAKS / COSMETICS -->
+                <Border Grid.Column="0" Height="74" Background="#14151E" BorderBrush="#222332" BorderThickness="1"
+                        CornerRadius="12" Padding="14,10" Cursor="Hand" MouseLeftButtonDown="GoToCosmetics_Click"
+                        ToolTip="Personalizza skin, mantelli ed accessori">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Avatar Head -->
-                        <Border Width="34" Height="34" CornerRadius="6" Background="#181822" ClipToBounds="True" Margin="0,0,10,0">
-                            <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
-                                   RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
-                        </Border>
+                        <!-- Text details -->
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <Border Background="#2B1D3D" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" Margin="0,0,0,3">
+                                <TextBlock Text="COSMETICS TODAY" Foreground="#C084FC" FontSize="8.5" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Text="NEW CLOAKS" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}"/>
+                            <TextBlock Text="SHOP THE COLLECTION NOW!" Foreground="#FF79C6" FontSize="9.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0"/>
+                        </StackPanel>
 
-                        <!-- Player Name & Online Status -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,8,0">
-                            <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis" MaxWidth="150"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
-                                <TextBlock Text="●" Foreground="#22C55E" FontSize="8" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                <TextBlock Text="Online · Flow Client" Foreground="#22C55E" FontSize="10.5" FontWeight="SemiBold"
-                                           FontFamily="{StaticResource NunitoFont}"/>
-                            </StackPanel>
+                        <!-- Thumbnails -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,0,0">
+                            <Border Width="34" Height="48" CornerRadius="6" Background="#2A1B38" Margin="0,0,6,0" ClipToBounds="True">
+                                <Image Source="/Assets/cape_sample.png" Stretch="UniformToFill"/>
+                            </Border>
+                            <Border Width="34" Height="48" CornerRadius="6" Background="#222332" ClipToBounds="True">
+                                <Image Source="/Assets/cape_sample2.png" Stretch="UniformToFill"/>
+                            </Border>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Right: Utilities (Discord RPC + RAM Status) -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <!-- Discord RPC Pill -->
-                    <Border Background="#13131A" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="10"
-                            Padding="10,6" Margin="0,0,10,0">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Path Width="16" Height="13" Stretch="Uniform" Fill="#5865F2" Margin="0,0,8,0" VerticalAlignment="Center"
-                                  Data="M18.9,2.8 C17.4,2.1 15.9,1.6 14.3,1.5 C14.1,1.9 13.9,2.3 13.7,2.8 C12,2.5 10.3,2.5 8.6,2.8 C8.4,2.3 8.2,1.9 8,1.5 C6.4,1.6 4.9,2.1 3.4,2.8 C0.6,6.9 0,11.2 0.3,15.4 C2.2,16.8 4,17.7 5.7,18.2 C6.2,17.6 6.6,16.9 7,16.2 C6.3,15.9 5.7,15.6 5.1,15.2 C5.3,15.1 5.4,14.9 5.6,14.8 C9.1,16.4 12.9,16.4 16.4,14.8 C16.6,14.9 16.7,15.1 16.9,15.2 C16.3,15.6 15.7,15.9 15,16.2 C15.4,16.9 15.8,17.6 16.3,18.2 C18,17.7 19.8,16.8 21.7,15.4 C22.2,10.4 21,6.1 18.9,2.8 Z M7.5,12.7 C6.4,12.7 5.6,11.7 5.6,10.5 C5.6,9.3 6.4,8.3 7.5,8.3 C8.6,8.3 9.5,9.3 9.4,10.5 C9.4,11.7 8.6,12.7 7.5,12.7 Z M14.5,12.7 C13.4,12.7 12.6,11.7 12.6,10.5 C12.6,9.3 13.4,8.3 14.5,8.3 C15.6,8.3 16.5,9.3 16.4,10.5 C16.4,11.7 15.6,12.7 14.5,12.7 Z"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="DISCORD RPC" Foreground="#71717A" FontSize="8.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                <TextBlock Text="{Binding DiscordRpcStatus}" Foreground="#D4D4D8" FontSize="11" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- RAM Pill (Click to open Settings) -->
-                    <Border Background="#13131A" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="10"
-                            Padding="10,6" Cursor="Hand" MouseLeftButtonDown="GoToSettings_Click"
-                            ToolTip="Clicca per aprire le impostazioni RAM">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="💾" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="MEMORIA RAM" Foreground="#71717A" FontSize="8.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                <TextBlock Text="{Binding SelectedRamText}" Foreground="#FFFFFF" FontSize="11" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-            </Grid>
-
-            <!-- ══════ MAIN CONTENT STAGE ══════ -->
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- ─── ROW 0: HERO INSTANCE SHOWCASE (AIRY, LUXURY & FUNCTIONAL) ─── -->
-                <Grid Grid.Row="0" Margin="0,0,0,22">
-                    <!-- When an instance is selected -->
-                    <Border Background="#13131A" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="16" Padding="26,24"
-                            Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Left: Instance Details & Quick Actions -->
-                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,24,0">
-                                <!-- Loader Icon + Title + Status -->
-                                <Grid Margin="0,0,0,16">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- 3D Loader Badge -->
-                                    <Border Width="58" Height="58" CornerRadius="12" Background="#181824" BorderBrush="#262638" BorderThickness="1"
-                                            Margin="0,0,16,0" VerticalAlignment="Center" Padding="8">
-                                        <Image Source="{Binding SelectedLoaderIconUri, Converter={StaticResource ImgSrc}}"
-                                               Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                    </Border>
-
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding SelectedName}" Foreground="#FFFFFF" FontSize="22" FontWeight="Bold"
-                                                       FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis" MaxWidth="380"/>
-                                            <Border Background="#102619" CornerRadius="5" Padding="7,2" Margin="12,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="● PRONTO" Foreground="#22C55E" FontSize="9.5" FontWeight="Bold"/>
-                                            </Border>
-                                        </StackPanel>
-
-                                        <TextBlock Foreground="#A1A1AA" FontSize="12.5" Margin="0,4,0,0" FontFamily="{StaticResource NunitoFont}">
-                                            <Run Text="{Binding SelectedVersion}" FontWeight="SemiBold" Foreground="#FFFFFF"/>
-                                            <Run Text=" · "/>
-                                            <Run Text="{Binding SelectedLoader}"/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Grid>
-
-                                <!-- Specs Row -->
-                                <WrapPanel Margin="0,0,0,16">
-                                    <Border Background="#171722" BorderBrush="#242432" BorderThickness="1" CornerRadius="8" Padding="10,5" Margin="0,0,8,0">
-                                        <TextBlock Foreground="#CCCCCC" FontSize="11.5" FontFamily="{StaticResource NunitoFont}">
-                                            <Run Text="⚡ Modloader: " Foreground="#71717A"/><Run Text="{Binding SelectedLoader}" FontWeight="SemiBold" Foreground="#FFFFFF"/>
-                                        </TextBlock>
-                                    </Border>
-                                    <Border Background="#171722" BorderBrush="#242432" BorderThickness="1" CornerRadius="8" Padding="10,5" Margin="0,0,8,0">
-                                        <TextBlock Foreground="#CCCCCC" FontSize="11.5" FontFamily="{StaticResource NunitoFont}">
-                                            <Run Text="💾 Allocata: " Foreground="#71717A"/><Run Text="{Binding SelectedRamText}" FontWeight="SemiBold" Foreground="#FFFFFF"/>
-                                        </TextBlock>
-                                    </Border>
-                                    <Border Background="#171722" BorderBrush="#242432" BorderThickness="1" CornerRadius="8" Padding="10,5" Margin="0,0,8,0">
-                                        <TextBlock Foreground="#CCCCCC" FontSize="11.5" FontFamily="{StaticResource NunitoFont}">
-                                            <Run Text="⏱️ Ultimo Avvio: " Foreground="#71717A"/><Run Text="{Binding SelectedLastPlayed}" FontWeight="SemiBold" Foreground="#FFFFFF"/>
-                                        </TextBlock>
-                                    </Border>
-                                </WrapPanel>
-
-                                <!-- Quick Action Folders -->
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="📁 Cartella Mod" Style="{StaticResource ExploreActionPill}" Click="OpenModsFolder_Click" ToolTip="Apri la cartella mods"/>
-                                    <Button Content="📸 Screenshot" Style="{StaticResource ExploreActionPill}" Click="OpenScreenshotsFolder_Click" Margin="8,0,0,0" ToolTip="Apri la cartella screenshot"/>
-                                    <Button Content="📂 File Gioco" Style="{StaticResource ExploreActionPill}" Click="OpenGameFolder_Click" Margin="8,0,0,0" ToolTip="Apri la cartella principale del gioco"/>
-                                </StackPanel>
-                            </StackPanel>
-
-                            <!-- Right: Launch Dock (Play Button + Status) -->
-                            <StackPanel Grid.Column="1" Width="240" VerticalAlignment="Center">
-                                <!-- Status Capsule (visible when launching/downloading) -->
-                                <Border Background="#141926" BorderBrush="#1E2A42" BorderThickness="1" CornerRadius="8"
-                                        Padding="10,6" Margin="0,0,0,12" HorizontalAlignment="Stretch"
-                                        Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="●" Foreground="#3B82F6" FontSize="10" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold"
-                                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                    </Grid>
-                                </Border>
-
-                                <!-- Play Button -->
-                                <Button Click="Play_Click" IsEnabled="{Binding CanPlay}">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource ExplorePlayBtnGlow}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                                    <Setter Property="Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="b" CornerRadius="12" SnapsToDevicePixels="True" Background="#DC2626">
-                                                                    <Border.Effect>
-                                                                        <DropShadowEffect Color="#000000" BlurRadius="12" Opacity="0.25" Direction="270" ShadowDepth="2"/>
-                                                                    </Border.Effect>
-                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                                </Border>
-                                                                <ControlTemplate.Triggers>
-                                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                                        <Setter TargetName="b" Property="Background" Value="#EF4444"/>
-                                                                    </Trigger>
-                                                                    <Trigger Property="IsPressed" Value="True">
-                                                                        <Setter TargetName="b" Property="Background" Value="#B91C1C"/>
-                                                                    </Trigger>
-                                                                </ControlTemplate.Triggers>
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Path Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0" Fill="#FFFFFF">
-                                            <Path.Style>
-                                                <Style TargetType="Path">
-                                                    <Setter Property="Data" Value="M8,5 L22,13 L8,21 Z"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                                            <Setter Property="Data" Value="M6,6 H18 V18 H6 Z"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Path.Style>
-                                        </Path>
-                                        <TextBlock Text="{Binding PlayButtonText}" FontSize="15" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Empty State (No Instances) -->
-                    <Border Background="#13131A" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="16" Padding="36"
-                            Visibility="{Binding ShowEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="🚀" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,12"/>
-                            <TextBlock Text="Nessuna versione ancora installata" Foreground="#FFFFFF" FontSize="19" FontWeight="Bold"
-                                       HorizontalAlignment="Center" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,6"/>
-                            <TextBlock Text="Crea o installa subito versioni con Fabric, Forge, NeoForge o Vanilla."
-                                       Foreground="#71717A" FontSize="12.5" HorizontalAlignment="Center" Margin="0,0,0,20"
-                                       FontFamily="{StaticResource NunitoFont}"/>
-                            <Button Content="✨ Crea la tua prima versione" Style="{StaticResource ExploreNavChipActive}"
-                                    Height="38" Padding="20,0" FontSize="12.5" FontWeight="Bold"
-                                    HorizontalAlignment="Center" Click="GoToExplore_Click"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-
-                <!-- ─── ROW 1: QUICK-PLAY FAVORITE SERVERS (CLEAN & PRACTICAL) ─── -->
-                <Border Grid.Row="1" Background="#13131A" BorderBrush="#1F1F2A" BorderThickness="1" CornerRadius="16" Padding="22,18">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Header -->
-                        <Grid Grid.Row="0" Margin="0,0,0,14">
-                            <TextBlock Text="SERVER PREFERITI · AVVIO RAPIDO" Foreground="#71717A" FontSize="10.5" FontWeight="Bold"
+                <!-- Center: Giant LAUNCH Button + Status -->
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <!-- Status message capsule (visible when downloading or launching) -->
+                    <Border Background="#141926" BorderBrush="#1E2A42" BorderThickness="1" CornerRadius="8"
+                            Padding="12,5" Margin="0,0,0,8" HorizontalAlignment="Center"
+                            Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="●" Foreground="#3B82F6" FontSize="9" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold"
                                        FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
-                            <Button Content="Sfoglia server in Esplora →" Style="{StaticResource ExploreActionPill}"
-                                    Height="28" Padding="10,0" FontSize="11" FontWeight="SemiBold"
-                                    HorizontalAlignment="Right" VerticalAlignment="Center" Click="GoToExplore_Click"/>
-                        </Grid>
+                        </StackPanel>
+                    </Border>
 
-                        <!-- Empty Server State -->
-                        <StackPanel Grid.Row="1" Visibility="{Binding ShowServersEmpty, Converter={StaticResource BoolToVisibilityConverter}}"
-                                    VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="Nessun server nei preferiti" Foreground="#A1A1AA" FontSize="13" FontWeight="SemiBold"
-                                       HorizontalAlignment="Center" FontFamily="{StaticResource NunitoFont}"/>
-                            <TextBlock Text="Aggiungi i tuoi server preferiti dalla sezione Esplora per avviarli direttamente."
-                                       Foreground="#636370" FontSize="11.5" HorizontalAlignment="Center" Margin="0,4,0,14"
-                                       FontFamily="{StaticResource NunitoFont}"/>
-                            <Button Content="Sfoglia Server" Style="{StaticResource ExploreActionPill}"
-                                    Height="32" Padding="16,0" FontSize="11.5" FontWeight="SemiBold"
-                                    HorizontalAlignment="Center" Click="GoToExplore_Click"/>
+                    <!-- Big Blue LAUNCH Button -->
+                    <Button Width="360" Height="54" Click="Play_Click" IsEnabled="{Binding CanPlay}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource TopNavLaunchButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="b" CornerRadius="14" SnapsToDevicePixels="True" Background="#DC2626">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Color="#000000" BlurRadius="12" Opacity="0.25" Direction="270" ShadowDepth="2"/>
+                                                        </Border.Effect>
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="b" Property="Background" Value="#EF4444"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter TargetName="b" Property="Background" Value="#B91C1C"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <TextBlock Text="{Binding PlayButtonText}" FontSize="18" FontWeight="Bold"
+                                   FontFamily="{StaticResource NunitoFont}" Foreground="#FFFFFF"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Right Card: LATEST NEWS / TERMS OF SERVICE + SERVER -->
+                <Border Grid.Column="2" Height="74" Background="#14151E" BorderBrush="#222332" BorderThickness="1"
+                        CornerRadius="12" Padding="14,10" Cursor="Hand" MouseLeftButtonDown="QuickServerPlay_Click"
+                        ToolTip="Entra direttamente nel server">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Text details -->
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="LATEST NEWS" Foreground="#71717A" FontSize="8.5" FontWeight="Bold"
+                                       Margin="0,0,0,3" FontFamily="{StaticResource NunitoFont}"/>
+                            <TextBlock Text="TERMS OF SERVICE +" Foreground="#FFFFFF" FontSize="11.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="PRIVACY POLICY..." Foreground="#FFFFFF" FontSize="11.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="Update to Terms of Service and Privacy Policy" Foreground="#71717A" FontSize="9"
+                                       FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
                         </StackPanel>
 
-                        <!-- Server Grid (Clean 2-Column Responsive Layout) -->
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                                      Visibility="{Binding HasServers, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <ScrollViewer.Resources>
-                                <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
-                            </ScrollViewer.Resources>
-                            <ItemsControl ItemsSource="{Binding FavoriteServers}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="2"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{StaticResource ExploreServerCard}">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Icon -->
-                                                <Border Style="{StaticResource ExploreIconBadge}" Width="36" Height="36" CornerRadius="8" Margin="0,0,10,0">
-                                                    <Image Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                </Border>
-
-                                                <!-- Details -->
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="Bold"
-                                                               Foreground="#FFFFFF" TextTrimming="CharacterEllipsis" FontFamily="{StaticResource NunitoFont}"/>
-                                                    <TextBlock Text="{Binding Address}" FontSize="11" Foreground="#71717A"
-                                                               Margin="0,2,0,0" TextTrimming="CharacterEllipsis" FontFamily="{StaticResource NunitoFont}"/>
-                                                </StackPanel>
-
-                                                <!-- Instant Play Button -->
-                                                <Button Grid.Column="2" Content="⚡ Entra" Tag="{Binding}" Click="ServerPlay_Click"
-                                                        Style="{StaticResource ExploreNavChipActive}" Height="28" Padding="12,0" FontSize="11"
-                                                        FontWeight="Bold" VerticalAlignment="Center" Margin="8,0,0,0"
-                                                        ToolTip="Avvia Minecraft ed entra direttamente in questo server"/>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
+                        <!-- Grass block thumbnail -->
+                        <Border Grid.Column="1" Width="44" Height="44" CornerRadius="8" Background="#181924"
+                                VerticalAlignment="Center" Margin="8,0,0,0" ClipToBounds="True">
+                            <Image Source="/Assets/grass_block.png" Stretch="Uniform"
+                                   RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        </Border>
                     </Grid>
                 </Border>
             </Grid>
+
+            <!-- Row 1: Centered Branding Footer (Identical to Blueberry Client) -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,2">
+                <!-- Two overlapping squares icon -->
+                <Path Data="M0,0 H10 V10 H0 Z M6,6 H16 V16 H6 Z"
+                      Stroke="#FFFFFF" StrokeThickness="1.5" Fill="Transparent"
+                      Width="14" Height="14" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Flow Client" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
+                           FontFamily="{StaticResource FlowBrandFont}" VerticalAlignment="Center"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

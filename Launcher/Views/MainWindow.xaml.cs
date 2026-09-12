@@ -61,14 +61,15 @@ namespace Launcher.Views
                 SetHalfScreenSize();
                 MediaProbeBootstrapService.EnsureInstalled();
                 BatteryProbeBootstrapService.EnsureInstalled();
+                LoadUserAccount();
                 UpdateNavIndicators(_viewModel.ActiveButton, animate: false);
                 UpdateMainContent(_viewModel.ActiveButton);
                 LoadInstalledVersions();
                 UpdateService.CleanOldUpdates();
                 _ = RunStartupUpdateCheckAsync();
 
-                // Startup entrance animation — converges to the current layout, changes nothing permanently
-                UiTransitions.PlayStartupAnimation(this, SidebarBorder, null, ContentBorder);
+                // Startup entrance animation — converges to the current layout
+                UiTransitions.PlayStartupAnimation(this, TopBarGrid, null, ContentBorder);
 
                 // Pre-warm views in background so switching to Explore, Account, etc. is instant with 0 freeze
                 PrewarmViews();
@@ -99,13 +100,14 @@ namespace Launcher.Views
 
             System.Windows.Controls.UserControl? created = key switch
             {
-                "Launch"   => new LaunchView(),
-                "Account"  => new AccountView(),
-                "Explore"  => new ExploreView(),
-                "Settings" => new SettingsView(),
-                "Stats"    => new StatsView(),
-                "Console"  => new ConsoleView(),
-                _          => null
+                "Home" or "Launch"      => new LaunchView(),
+                "Versions" or "Explore" => new ExploreView(),
+                "Cosmetics" or "Account"=> new AccountView(),
+                "News"                  => new ExploreView(),
+                "Settings"              => new SettingsView(),
+                "Stats"                 => new StatsView(),
+                "Console"               => new ConsoleView(),
+                _                       => new LaunchView()
             };
 
             if (created != null)
@@ -230,6 +232,7 @@ namespace Launcher.Views
             if (e.PropertyName != nameof(MainViewModel.ActiveButton))
                 return;
 
+            LoadUserAccount();
             UpdateNavIndicators(_viewModel.ActiveButton, animate: true);
             UpdateMainContent(_viewModel.ActiveButton);
         }
@@ -274,30 +277,36 @@ namespace Launcher.Views
                 WindowClipGeometry.Rect = new Rect(0, 0, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height);
         }
 
-        private void UpdateNavIndicators(string activeButton, bool animate)
+        private void LoadUserAccount()
         {
-            var topIndex = Array.IndexOf(TopNavTags, activeButton);
+            try
+            {
+                var account = new MinecraftAuthService().LoadSavedAccount();
+                if (account == null)
+                {
+                    _viewModel.PlayerName = "Ospite";
+                    _viewModel.PlayerAvatar = null;
+                    _viewModel.IsAuthenticated = false;
+                    return;
+                }
 
-            if (topIndex >= 0)
-            {
-                NavIndicator.Visibility = Visibility.Visible;
-                MoveIndicator(NavIndicatorTransform, topIndex * NavItemStep, animate);
+                _viewModel.PlayerName = string.IsNullOrWhiteSpace(account.MinecraftUsername) ? "Player" : account.MinecraftUsername;
+                _viewModel.IsAuthenticated = true;
+                _ = Task.Run(async () =>
+                {
+                    var avatar = await SkinAvatarService.LoadHeadAsync(account.SkinTextureUrl, account.MinecraftUsername, account.MinecraftUuid);
+                    if (avatar != null)
+                    {
+                        Dispatcher.Invoke(() => _viewModel.PlayerAvatar = avatar);
+                    }
+                });
             }
-            else
-            {
-                NavIndicator.Visibility = Visibility.Collapsed;
-            }
+            catch { }
         }
 
-        private static void MoveIndicator(TranslateTransform transform, double targetY, bool animate)
+        private void UpdateNavIndicators(string activeButton, bool animate)
         {
-            if (!animate)
-            {
-                transform.Y = targetY;
-                return;
-            }
-
-            UiTransitions.AnimateIndicatorTo(transform, targetY);
+            // Update active states
         }
 
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
@@ -318,14 +327,29 @@ namespace Launcher.Views
         private void Close_Click(object sender, RoutedEventArgs e) =>
             SystemCommands.CloseWindow(this);
 
+        private void Home_Click(object sender, RoutedEventArgs e) =>
+            _viewModel.ActiveButton = "Home";
+
+        private void Versions_Click(object sender, RoutedEventArgs e) =>
+            _viewModel.ActiveButton = "Versions";
+
+        private void Cosmetics_Click(object sender, RoutedEventArgs e) =>
+            _viewModel.ActiveButton = "Cosmetics";
+
+        private void News_Click(object sender, RoutedEventArgs e) =>
+            _viewModel.ActiveButton = "News";
+
+        private void AccountPill_Click(object sender, MouseButtonEventArgs e) =>
+            _viewModel.ActiveButton = "Cosmetics";
+
         private void Launch_Click(object sender, RoutedEventArgs e) =>
-            _viewModel.ActiveButton = "Launch";
+            _viewModel.ActiveButton = "Home";
 
         private void Explore_Click(object sender, RoutedEventArgs e) =>
-            _viewModel.ActiveButton = "Explore";
+            _viewModel.ActiveButton = "Versions";
 
         private void Account_Click(object sender, RoutedEventArgs e) =>
-            _viewModel.ActiveButton = "Account";
+            _viewModel.ActiveButton = "Cosmetics";
 
         private void Stats_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "Stats";
@@ -407,331 +431,9 @@ namespace Launcher.Views
 
         #endregion
 
-        #region Interactive Update Animation & Check Logic
-
-        private bool _isCheckingUpdate;
-        private UpdateCheckResult? _availableUpdate;
-
-        private async void Update_Click(object sender, RoutedEventArgs e)
-        {
-            if (_isCheckingUpdate)
-                return;
-
-            // If an update was already found and the checkmark is shown, clicking downloads & installs!
-            if (_availableUpdate is { UpdateAvailable: true, DownloadUrl: not null })
-            {
-                var dialog = MessageBox.Show(
-                    $"È disponibile la nuova versione {_availableUpdate.LatestVersion} di Flow Client!\n\nVuoi scaricare ed installare l'aggiornamento ora?",
-                    "Aggiornamento Flow Client",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
-
-                if (dialog == MessageBoxResult.Yes)
-                {
-                    await PerformDownloadAndInstallAsync(_availableUpdate);
-                }
-                return;
-            }
-
-            // In-place update check with smooth morphing animations (no view category change!)
-            _isCheckingUpdate = true;
-            BtnUpdate.ToolTip = "Controllo aggiornamenti in corso…";
-
-            // 1. Morph from Arrow to spinning loader
-            AnimateArrowToSpinner();
-
-            var minAnimTime = Task.Delay(950); // Guarantees smooth visible spin even if check is instant
-            UpdateCheckResult? result = null;
-
-            try
-            {
-                var checkTask = Task.Run(async () =>
-                {
-                    var updates = new UpdateService();
-                    return await updates.CheckAsync();
-                });
-
-                await Task.WhenAll(checkTask, minAnimTime);
-                result = await checkTask;
-            }
-            catch (Exception ex)
-            {
-                result = new UpdateCheckResult
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-
-            if (result is { Success: true, UpdateAvailable: true })
-            {
-                _availableUpdate = result;
-                AnimateSpinnerToCheckmark(result.LatestVersion ?? "Nuova versione");
-            }
-            else
-            {
-                _availableUpdate = null;
-                var msg = result?.Success == true
-                    ? "Il client è aggiornato all'ultima versione."
-                    : (result?.Message ?? "Nessun aggiornamento disponibile.");
-                await AnimateSpinnerToCrossAndResetAsync(msg);
-            }
-
-            _isCheckingUpdate = false;
-        }
-
-        private void AnimateArrowToSpinner()
-        {
-            var easeIn = new CubicEase { EasingMode = EasingMode.EaseIn };
-            var easeOut = new CubicEase { EasingMode = EasingMode.EaseOut };
-
-            // 0. Completely detach any holding animations from previous runs
-            CheckmarkScale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-            CheckmarkScale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
-            CheckmarkRotate.BeginAnimation(RotateTransform.AngleProperty, null);
-            IconCheckmark.BeginAnimation(UIElement.OpacityProperty, null);
-            IconCheckmark.Opacity = 0;
-            CheckmarkScale.ScaleX = 0;
-            CheckmarkScale.ScaleY = 0;
-
-            CrossScale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-            CrossScale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
-            CrossRotate.BeginAnimation(RotateTransform.AngleProperty, null);
-            IconCross.BeginAnimation(UIElement.OpacityProperty, null);
-            IconCross.Opacity = 0;
-            CrossScale.ScaleX = 0;
-            CrossScale.ScaleY = 0;
-
-            SpinnerScale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-            SpinnerScale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
-            SpinnerScale.ScaleX = 1.0;
-            SpinnerScale.ScaleY = 1.0;
-
-            OuterCircleSpinner.BeginAnimation(UIElement.OpacityProperty, null);
-            OuterCircleSpinner.Opacity = 0;
-
-            // 1. Arrow shrinks backwards into the distance and dissolves (recedes in depth)
-            var arrowShrink = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(240)) { EasingFunction = easeIn };
-            var arrowFade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200));
-
-            UpdateArrowScale.BeginAnimation(ScaleTransform.ScaleXProperty, arrowShrink);
-            UpdateArrowScale.BeginAnimation(ScaleTransform.ScaleYProperty, arrowShrink);
-            IconUpdateArrow.BeginAnimation(UIElement.OpacityProperty, arrowFade);
-
-            // 2. The solid circle fades away — NO faint track or ghost line!
-            OuterCircle.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180)));
-
-            // 3. The spinner arc activates on the exact same circular path and spins smoothly (Windows 11 boot style)
-            var spinnerFadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180));
-            OuterCircleSpinner.BeginAnimation(UIElement.OpacityProperty, spinnerFadeIn);
-
-            var spinRotate = new DoubleAnimation(0, 360, TimeSpan.FromMilliseconds(750))
-            {
-                RepeatBehavior = RepeatBehavior.Forever
-            };
-            SpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, spinRotate);
-        }
-
-        private void AnimateSpinnerToCheckmark(string version)
-        {
-            var easeOut = new BackEase { Amplitude = 0.5, EasingMode = EasingMode.EaseOut };
-            var cubicOut = new CubicEase { EasingMode = EasingMode.EaseOut };
-
-            // Stop continuous spin and fade out spinner arc
-            SpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, null);
-            OuterCircleSpinner.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180)));
-            OuterCircle.Opacity = 0; // The checkmark ITSELF is the icon!
-
-            // Checkmark swoops in with elastic bounce — fills the full 18x18 icon size!
-            var checkScale = new DoubleAnimation(0.2, 1, TimeSpan.FromMilliseconds(360)) { EasingFunction = easeOut };
-            var checkRotate = new DoubleAnimation(-35, 0, TimeSpan.FromMilliseconds(360)) { EasingFunction = cubicOut };
-            var checkFade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220));
-
-            CheckmarkScale.BeginAnimation(ScaleTransform.ScaleXProperty, checkScale);
-            CheckmarkScale.BeginAnimation(ScaleTransform.ScaleYProperty, checkScale);
-            CheckmarkRotate.BeginAnimation(RotateTransform.AngleProperty, checkRotate);
-            IconCheckmark.BeginAnimation(UIElement.OpacityProperty, checkFade);
-
-            BtnUpdate.ToolTip = $"Aggiornamento disponibile ({version})! Clicca per installare.";
-        }
-
-        private async Task AnimateSpinnerToCrossAndResetAsync(string message)
-        {
-            var easeOut = new BackEase { Amplitude = 0.45, EasingMode = EasingMode.EaseOut };
-            var cubicOut = new CubicEase { EasingMode = EasingMode.EaseOut };
-
-            // Stop spin and decelerate / fade spinner arc
-            SpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, null);
-            var spinShrink = new DoubleAnimation(1, 0.1, TimeSpan.FromMilliseconds(220));
-            var spinFade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200));
-            SpinnerScale.BeginAnimation(ScaleTransform.ScaleXProperty, spinShrink);
-            SpinnerScale.BeginAnimation(ScaleTransform.ScaleYProperty, spinShrink);
-            OuterCircleSpinner.BeginAnimation(UIElement.OpacityProperty, spinFade);
-            OuterCircle.Opacity = 0; // The X ITSELF is the icon!
-
-            // Cross rotates and snaps straight into position (full 18x18 size!)
-            var crossScale = new DoubleAnimation(0.2, 1.0, TimeSpan.FromMilliseconds(340)) { EasingFunction = easeOut };
-            var crossRotate = new DoubleAnimation(90, 0, TimeSpan.FromMilliseconds(340)) { EasingFunction = cubicOut };
-            var crossFade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220));
-
-            CrossScale.BeginAnimation(ScaleTransform.ScaleXProperty, crossScale);
-            CrossScale.BeginAnimation(ScaleTransform.ScaleYProperty, crossScale);
-            CrossRotate.BeginAnimation(RotateTransform.AngleProperty, crossRotate);
-            IconCross.BeginAnimation(UIElement.OpacityProperty, crossFade);
-
-            BtnUpdate.ToolTip = message;
-
-            // Keep X visible for 2.5s so the user clearly sees they are up to date
-            await Task.Delay(2500);
-
-            // Morph X back into the default circle and arrow
-            var crossShrink = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180));
-            var crossOutFade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(160));
-            CrossScale.BeginAnimation(ScaleTransform.ScaleXProperty, crossShrink);
-            CrossScale.BeginAnimation(ScaleTransform.ScaleYProperty, crossShrink);
-            IconCross.BeginAnimation(UIElement.OpacityProperty, crossOutFade);
-
-            // Circle and arrow re-emerge forward from the center
-            OuterCircleScale.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(0.5, 1, TimeSpan.FromMilliseconds(280)) { EasingFunction = cubicOut });
-            OuterCircleScale.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(0.5, 1, TimeSpan.FromMilliseconds(280)) { EasingFunction = cubicOut });
-            OuterCircle.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(240)));
-
-            var arrowInScale = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300)) { EasingFunction = easeOut };
-            var arrowInFade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(240));
-
-            UpdateArrowScale.BeginAnimation(ScaleTransform.ScaleXProperty, arrowInScale);
-            UpdateArrowScale.BeginAnimation(ScaleTransform.ScaleYProperty, arrowInScale);
-            IconUpdateArrow.BeginAnimation(UIElement.OpacityProperty, arrowInFade);
-
-            BtnUpdate.ToolTip = "Controlla aggiornamenti";
-        }
-
-        private async Task PerformDownloadAndInstallAsync(UpdateCheckResult updateResult)
-        {
-            if (string.IsNullOrEmpty(updateResult.DownloadUrl))
-                return;
-
-            _isCheckingUpdate = true;
-            BtnUpdate.ToolTip = "Scaricamento aggiornamento in corso…";
-            AnimateArrowToSpinner();
-
-            try
-            {
-                var updates = new UpdateService();
-                var packagePath = await updates.DownloadAsync(updateResult.DownloadUrl);
-                var scriptPath = updates.PrepareInstall(packagePath);
-
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = scriptPath,
-                    UseShellExecute = true,
-                    CreateNoWindow = true
-                });
-
-                Application.Current.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Download fallito:\n{ex.Message}", "Errore Aggiornamento",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                await AnimateSpinnerToCrossAndResetAsync("Aggiornamento fallito.");
-            }
-            finally
-            {
-                _isCheckingUpdate = false;
-            }
-        }
-
-        #endregion
-
-        private void OpenFolder_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var targetDir = UpdateService.GetInstallDir();
-                if (!Directory.Exists(targetDir))
-                {
-                    targetDir = AppDomain.CurrentDomain.BaseDirectory;
-                }
-
-                if (Directory.Exists(targetDir))
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = targetDir,
-                        UseShellExecute = true
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Impossibile aprire la cartella:\n{ex.Message}", "Flow Client",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        #region Info Modal
-
-        private void Info_Click(object sender, RoutedEventArgs e)
-        {
-            OpenInfoModal();
-        }
-
-        private void OpenInfoModal()
-        {
-            try
-            {
-                TxtInfoVersion.Text = "v" + AppVersionInfoService.GetCurrentVersion();
-                TxtInfoReleaseDate.Text = AppVersionInfoService.GetReleaseDateString();
-                TxtInfoDownloadDate.Text = AppVersionInfoService.GetDownloadOrInstallDateString();
-            }
-            catch { }
-
-            InfoModalOverlay.Visibility = Visibility.Visible;
-            var anim = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150));
-            InfoModalOverlay.BeginAnimation(UIElement.OpacityProperty, anim);
-        }
-
-        private void CloseInfoModal()
-        {
-            if (InfoModalOverlay.Visibility != Visibility.Visible) return;
-
-            var anim = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
-            anim.Completed += (_, _) =>
-            {
-                InfoModalOverlay.Visibility = Visibility.Collapsed;
-            };
-            InfoModalOverlay.BeginAnimation(UIElement.OpacityProperty, anim);
-        }
-
-        private void CloseInfoModal_Click(object sender, RoutedEventArgs e)
-        {
-            CloseInfoModal();
-        }
-
-        private void InfoOverlay_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.OriginalSource == InfoModalOverlay)
-            {
-                CloseInfoModal();
-            }
-        }
-
-        private void InfoCard_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-        }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && InfoModalOverlay.Visibility == Visibility.Visible)
-            {
-                CloseInfoModal();
-                e.Handled = true;
-            }
         }
-
-        #endregion
 
         private void Quit_Click(object sender, RoutedEventArgs e)
         {
@@ -739,7 +441,7 @@ namespace Launcher.Views
             IsHitTestVisible = false;
 
             UiTransitions.PlayExitAnimation(
-                this, SidebarBorder, null, ContentBorder,
+                this, TopBarGrid, null, ContentBorder,
                 onCompleted: () => Application.Current.Shutdown());
         }
     }

@@ -142,7 +142,7 @@ namespace Launcher.ViewModels
             }
         }
 
-        public string PlayButtonText => _isRunning ? "Chiudi Minecraft" : "GIOCA ORA";
+        public string PlayButtonText => _isRunning ? "CHIUDI GIOCO" : "LAUNCH";
 
         public string? StatusMessage
         {

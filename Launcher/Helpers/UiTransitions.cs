@@ -134,7 +134,7 @@ namespace Launcher.Helpers
         /// </summary>
         public static void PlayStartupAnimation(
             Window window,
-            FrameworkElement sidebar,
+            FrameworkElement? sidebar,
             FrameworkElement? miniSidebar,
             FrameworkElement content)
         {
@@ -167,21 +167,28 @@ namespace Launcher.Helpers
             }
 
             // ── 3. Sidebar slide in ──
-            var sidebarSlideIn = new DoubleAnimation(-22, 0, TimeSpan.FromMilliseconds(500))
+            if (sidebar != null)
             {
-                EasingFunction = ease,
-                BeginTime = TimeSpan.FromMilliseconds(30)
-            };
+                var sidebarSlideIn = new DoubleAnimation(-22, 0, TimeSpan.FromMilliseconds(500))
+                {
+                    EasingFunction = ease,
+                    BeginTime = TimeSpan.FromMilliseconds(30)
+                };
 
-            var sidebarT = new TranslateTransform(-22, 0);
-            sidebar.RenderTransform = sidebarT;
-            sidebarT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideIn);
+                var sidebarT = new TranslateTransform(-22, 0);
+                sidebar.RenderTransform = sidebarT;
+                sidebarT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideIn);
+            }
 
             if (miniSidebar != null)
             {
                 var miniT = new TranslateTransform(-22, 0);
                 miniSidebar.RenderTransform = miniT;
-                miniT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideIn);
+                miniT.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(-22, 0, TimeSpan.FromMilliseconds(500))
+                {
+                    EasingFunction = ease,
+                    BeginTime = TimeSpan.FromMilliseconds(30)
+                });
             }
 
             // ── 4. Content: slide from right + fade in ──────────────────────
@@ -205,7 +212,7 @@ namespace Launcher.Helpers
 
         public static void PlayExitAnimation(
             Window window,
-            FrameworkElement sidebar,
+            FrameworkElement? sidebar,
             FrameworkElement? miniSidebar,
             FrameworkElement content,
             Action onCompleted)
@@ -234,9 +241,12 @@ namespace Launcher.Helpers
                 BeginTime = TimeSpan.FromMilliseconds(30)
             };
 
-            var sidebarT = sidebar.RenderTransform as TranslateTransform ?? new TranslateTransform();
-            sidebar.RenderTransform = sidebarT;
-            sidebarT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideOut);
+            if (sidebar != null)
+            {
+                var sidebarT = sidebar.RenderTransform as TranslateTransform ?? new TranslateTransform();
+                sidebar.RenderTransform = sidebarT;
+                sidebarT.BeginAnimation(TranslateTransform.XProperty, sidebarSlideOut);
+            }
 
             if (miniSidebar != null)
             {

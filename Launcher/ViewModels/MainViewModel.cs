@@ -1,12 +1,15 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Launcher.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private string _activeButton = "Launch";
+        private string _activeButton = "Home";
+        private string _playerName = "Player";
+        private ImageSource? _playerAvatar;
+        private bool _isAuthenticated;
 
         public MainViewModel()
         {
@@ -20,6 +23,59 @@ namespace Launcher.ViewModels
                 if (_activeButton != value)
                 {
                     _activeButton = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsHomeActive));
+                    OnPropertyChanged(nameof(IsVersionsActive));
+                    OnPropertyChanged(nameof(IsCosmeticsActive));
+                    OnPropertyChanged(nameof(IsNewsActive));
+                    OnPropertyChanged(nameof(IsSettingsActive));
+                }
+            }
+        }
+
+        public bool IsHomeActive => _activeButton is "Home" or "Launch";
+        public bool IsVersionsActive => _activeButton is "Versions" or "Explore";
+        public bool IsCosmeticsActive => _activeButton is "Cosmetics" or "Account";
+        public bool IsNewsActive => _activeButton is "News";
+        public bool IsSettingsActive => _activeButton is "Settings";
+
+        public string PlayerName
+        {
+            get => _playerName;
+            set
+            {
+                if (_playerName != value)
+                {
+                    _playerName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ImageSource? PlayerAvatar
+        {
+            get => _playerAvatar;
+            set
+            {
+                if (_playerAvatar != value)
+                {
+                    _playerAvatar = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(HasPlayerAvatar));
+                }
+            }
+        }
+
+        public bool HasPlayerAvatar => _playerAvatar != null;
+
+        public bool IsAuthenticated
+        {
+            get => _isAuthenticated;
+            set
+            {
+                if (_isAuthenticated != value)
+                {
+                    _isAuthenticated = value;
                     OnPropertyChanged();
                 }
             }

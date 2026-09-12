@@ -465,6 +465,35 @@ namespace Launcher.Views
                 window.NavigateTo("Settings");
         }
 
+        private void GoToCosmetics_Click(object sender, RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is MainWindow window)
+                window.NavigateTo("Cosmetics");
+        }
+
+        private async void QuickServerPlay_Click(object sender, RoutedEventArgs e)
+        {
+            var firstServer = Vm.FavoriteServers.FirstOrDefault();
+            if (firstServer != null)
+            {
+                await LaunchSelectedAsync(new LaunchServerTarget
+                {
+                    Host = firstServer.Host,
+                    Port = firstServer.Port,
+                    Name = firstServer.Name
+                });
+            }
+            else
+            {
+                await LaunchSelectedAsync(new LaunchServerTarget
+                {
+                    Host = "mc.coralmc.it",
+                    Port = 25565,
+                    Name = "CoralMC"
+                });
+            }
+        }
+
         private static string FormatLastPlayed(DateTime? dt)
         {
             if (dt == null) return "Mai giocato";
