@@ -486,7 +486,7 @@
                         </Border>
 
                         <!-- Info Versione & Verifica Manuale -->
-                        <TextBlock Text="INFORMAZIONI RELEASE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
+                        <TextBlock Text="AGGIORNAMENTI &amp; RELEASE" Foreground="#6E6E73" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,16,0,8"/>
                         <Border Style="{StaticResource ExploreSettingCard}">
                             <StackPanel>
                                 <Grid>
@@ -502,10 +502,27 @@
                                 <Rectangle Height="1" Fill="#1E1E22" Margin="0,12,0,12"/>
 
                                 <Grid>
-                                    <Button Style="{StaticResource ExploreBtnPrimary}" Content="Verifica aggiornamenti ora"
-                                            Click="CheckUpdatesNow_Click" HorizontalAlignment="Left" Padding="14,6" FontSize="12"/>
-                                    <TextBlock Text="{Binding UpdateCheckMessage}" Foreground="#E0E0E0" FontSize="12"
-                                               VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                        <!-- Verifica Button -->
+                                        <Button Style="{StaticResource ExploreBtnPrimary}" Content="Verifica aggiornamenti"
+                                                Click="CheckUpdatesNow_Click" Padding="14,8" FontSize="12"/>
+
+                                        <!-- Scarica ed Aggiorna Button (Visible when update found) -->
+                                        <Button Style="{StaticResource ExploreBtnPlay}" Click="InstallUpdateNow_Click"
+                                                Margin="12,0,0,0" Padding="16,8" FontSize="12" FontWeight="Bold"
+                                                Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVis}}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="⚡ Scarica ed Installa v" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding LatestVersion}" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <!-- Status Message -->
+                                    <TextBlock Text="{Binding UpdateCheckMessage}" Foreground="#93C5FD" FontSize="12"
+                                               FontFamily="{StaticResource NunitoFont}" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"
+                                               MaxWidth="280" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </StackPanel>
                         </Border>

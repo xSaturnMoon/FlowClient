@@ -266,6 +266,28 @@ namespace Launcher.ViewModels
             set { _updateCheckMessage = value; OnPropertyChanged(); }
         }
 
+        private bool _isUpdateAvailable;
+        private string _latestVersion = "";
+        private bool _isUpdating;
+
+        public bool IsUpdateAvailable
+        {
+            get => _isUpdateAvailable;
+            set { _isUpdateAvailable = value; OnPropertyChanged(); }
+        }
+
+        public string LatestVersion
+        {
+            get => _latestVersion;
+            set { _latestVersion = value; OnPropertyChanged(); }
+        }
+
+        public bool IsUpdating
+        {
+            get => _isUpdating;
+            set { _isUpdating = value; OnPropertyChanged(); }
+        }
+
         public bool IsCheckingUpdate
         {
             get => _isCheckingUpdate;

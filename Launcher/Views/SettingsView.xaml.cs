@@ -39,8 +39,26 @@ namespace Launcher.Views
             Vm.DefaultRamMb = settings.DefaultRamMb > 0 ? settings.DefaultRamMb : 4096;
 
             Vm.LoadSystemInfo();
+            _ = AutoCheckUpdateSilentlyAsync();
 
             _loading = false;
+        }
+
+        private async Task AutoCheckUpdateSilentlyAsync()
+        {
+            try
+            {
+                var updates = new UpdateService();
+                var res = await updates.CheckAsync();
+                if (res.UpdateAvailable)
+                {
+                    _latestUpdateResult = res;
+                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
+                    Vm.IsUpdateAvailable = true;
+                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
+                }
+            }
+            catch { }
         }
 
         private void OnSettingPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -162,9 +180,11 @@ namespace Launcher.Views
             }
         }
 
+        private UpdateCheckResult? _latestUpdateResult;
+
         private async void CheckUpdatesNow_Click(object sender, RoutedEventArgs e)
         {
-            if (Vm.IsCheckingUpdate) return;
+            if (Vm.IsCheckingUpdate || Vm.IsUpdating) return;
 
             Vm.IsCheckingUpdate = true;
             Vm.UpdateCheckMessage = "Controllo aggiornamenti in corso…";
@@ -175,10 +195,15 @@ namespace Launcher.Views
                 var res = await updates.CheckAsync();
                 if (res.UpdateAvailable)
                 {
-                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}! Clicca l'icona aggiornamento nella barra laterale.";
+                    _latestUpdateResult = res;
+                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
+                    Vm.IsUpdateAvailable = true;
+                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
                 }
                 else
                 {
+                    _latestUpdateResult = null;
+                    Vm.IsUpdateAvailable = false;
                     Vm.UpdateCheckMessage = "Stai già utilizzando l'ultima versione disponibile!";
                 }
             }
@@ -189,6 +214,46 @@ namespace Launcher.Views
             finally
             {
                 Vm.IsCheckingUpdate = false;
+            }
+        }
+
+        private async void InstallUpdateNow_Click(object sender, RoutedEventArgs e)
+        {
+            if (Vm.IsUpdating || _latestUpdateResult == null || string.IsNullOrEmpty(_latestUpdateResult.DownloadUrl))
+                return;
+
+            var confirm = MessageBox.Show(
+                $"Vuoi scaricare ed installare la nuova versione {_latestUpdateResult.LatestVersion} di Flow Client adesso?",
+                "Aggiornamento Flow Client",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (confirm != MessageBoxResult.Yes) return;
+
+            Vm.IsUpdating = true;
+            Vm.UpdateCheckMessage = "Scaricamento aggiornamento in corso…";
+
+            try
+            {
+                var updates = new UpdateService();
+                var packagePath = await updates.DownloadAsync(_latestUpdateResult.DownloadUrl);
+                var scriptPath = updates.PrepareInstall(packagePath);
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = scriptPath,
+                    UseShellExecute = true,
+                    CreateNoWindow = true
+                });
+
+                Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Download o installazione fallita:\n{ex.Message}", "Errore Aggiornamento",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                Vm.UpdateCheckMessage = "Aggiornamento fallito.";
+                Vm.IsUpdating = false;
             }
         }
 
