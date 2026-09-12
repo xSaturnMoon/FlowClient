@@ -1,8 +1,8 @@
-﻿{
-  "version": "1.0.7",
+{
+  "version": "1.0.8",
   "releaseDate": "12 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Icone loader 3D ufficiali colorate, nuova sezione Impostazioni moderna a schede, fix definitivo chiusura/crash post-avvio e pulizia automatica vecchi aggiornamenti.",
+  "releaseNotes": "Discord Rich Presence nativo (stato in-launcher, server, versione & loader in-game), nuovo design artigianale della schermata principale con avatar del giocatore, server preferiti ad avvio rapido e pulsanti cartelle istantanei.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
   "downloadUrl": null
