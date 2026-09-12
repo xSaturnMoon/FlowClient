@@ -48,45 +48,61 @@
             <!-- ══════ TOP NAVIGATION BAR (IDENTICAL TO BLUEBERRY CLIENT) ══════ -->
             <Grid x:Name="TopBarGrid" Grid.Row="0" Background="#0C0D14" MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- LEFT: Account Dropdown Pill + Gear Settings -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
-                    <!-- Account Dropdown Pill -->
-                    <Border Background="#151622" BorderBrush="#222434" BorderThickness="1" CornerRadius="12"
-                            Padding="8,5" Cursor="Hand" MouseLeftButtonDown="AccountPill_Click"
-                            ToolTip="Gestisci profilo Microsoft e skin">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <!-- Avatar Head -->
-                            <Border Width="26" Height="26" CornerRadius="6" Background="#1D1E2B" ClipToBounds="True" Margin="0,0,8,0">
-                                <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
-                                       RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
-                            </Border>
-                            <!-- Player Name -->
-                            <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="0,0,6,0"
-                                       MaxWidth="130" TextTrimming="CharacterEllipsis"/>
-                            <!-- Chevron Dropdown Arrow -->
-                            <Path Data="M 0,0 L 4,4 L 8,0" Stroke="#8E8E98" StrokeThickness="1.6"
-                                  VerticalAlignment="Center" Width="8" Height="4" Margin="0,1,4,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Settings Gear Button -->
-                    <Button Style="{StaticResource TopNavGearButton}" Margin="10,0,0,0" Click="Settings_Click" ToolTip="Impostazioni">
-                        <Path Data="M12,15 A3,3 0 1,0 12,9 A3,3 0 1,0 12,15 Z M19.4,13 L21.7,9.2 L19.1,4.6 L16.4,5.7 C15.8,5.3 15.2,4.9 14.5,4.6 L14.1,1.7 L9.5,1.7 L9.1,4.6 C8.4,4.9 7.8,5.3 7.2,5.7 L4.5,4.6 L1.9,9.2 L4.2,11 C4.1,11.3 4.1,11.7 4.1,12 C4.1,12.3 4.1,12.7 4.2,13 L1.9,14.8 L4.5,19.4 L7.2,18.3 C7.8,18.7 8.4,19.1 9.1,19.4 L9.5,22.3 L14.1,22.3 L14.5,19.4 C15.2,19.1 15.8,18.7 16.4,18.3 L19.1,19.4 L21.7,14.8 Z"
-                              StrokeThickness="1.6" Fill="Transparent" Stroke="#8E8E98"
-                              Width="18" Height="18" Stretch="Uniform" VerticalAlignment="Center"/>
-                    </Button>
+                <!-- LEFT: Flow Branding Logo + Text -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="22,0,0,0">
+                    <Image Source="/flowm.ico" Width="26" Height="26" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="FLOW" Foreground="#FFFFFF" FontSize="16" FontWeight="ExtraBold"
+                               FontFamily="{StaticResource FlowBrandFont}" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- CENTER: Navigation Menu (Home, Versions, Toggle Capsule, Cosmetics, News) -->
+                <!-- CENTER: Navigation Menu (News, Account, Home, Versions, Settings) -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <!-- Home Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Home" Click="Home_Click">
+                    <!-- 1. News Tab -->
+                    <Button Style="{StaticResource TopNavTabButton}" Tag="News" Click="News_Click" Margin="4,0">
+                        <Button.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsNewsActive}" Value="True">
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Resources>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path Data="M18,11 V4 C18,2.9 17.1,2 16,2 H8 C6.9,2 6,2.9 6,4 V11 L3,14 V16 H21 V14 L18,11 Z M12,22 A2,2 0 0,0 14,20 H10 A2,2 0 0,0 12,22 Z"
+                                  Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                            <TextBlock Text="News" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- 2. Account Tab -->
+                    <Button Style="{StaticResource TopNavTabButton}" Tag="Account" Click="Account_Click" Margin="4,0">
+                        <Button.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAccountActive}" Value="True">
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Resources>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path Data="M12,12 C14.21,12 16,10.21 16,8 C16,5.79 14.21,4 12,4 C9.79,4 8,5.79 8,8 C8,10.21 9.79,12 12,12 Z M12,14 C8.13,14 5,15.79 5,18 V20 H19 V18 C19,15.79 15.87,14 12,14 Z"
+                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                            <TextBlock Text="Account" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- 3. Home Tab (Center) -->
+                    <Button Style="{StaticResource TopNavTabButton}" Tag="Home" Click="Home_Click" Margin="4,0">
                         <Button.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
                                 <Style.Triggers>
@@ -104,8 +120,8 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Versions Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Versions" Click="Versions_Click" Margin="16,0,0,0">
+                    <!-- 4. Versions Tab -->
+                    <Button Style="{StaticResource TopNavTabButton}" Tag="Versions" Click="Versions_Click" Margin="4,0">
                         <Button.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
                                 <Style.Triggers>
@@ -124,61 +140,47 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Edition Toggle Capsule (Java | Bedrock) -->
-                    <Border Background="#141520" BorderBrush="#202230" BorderThickness="1" CornerRadius="15"
-                            Padding="3" Margin="24,0,24,0" VerticalAlignment="Center" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <Border Background="Transparent" CornerRadius="12" Padding="12,0" VerticalAlignment="Center">
-                                <TextBlock Text="Java" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                            </Border>
-                            <Border Background="#252636" CornerRadius="12" Padding="12,0" VerticalAlignment="Center" Height="24">
-                                <TextBlock Text="Bedrock" Foreground="#8E8E98" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                            </Border>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Cosmetics Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Cosmetics" Click="Cosmetics_Click" Margin="0,0,16,0">
+                    <!-- 5. Settings Tab -->
+                    <Button Style="{StaticResource TopNavTabButton}" Tag="Settings" Click="Settings_Click" Margin="4,0">
                         <Button.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsCosmeticsActive}" Value="True">
+                                    <DataTrigger Binding="{Binding IsSettingsActive}" Value="True">
                                         <Setter Property="Foreground" Value="#FFFFFF"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Resources>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M12,12 C14.21,12 16,10.21 16,8 C16,5.79 14.21,4 12,4 C9.79,4 8,5.79 8,8 C8,10.21 9.79,12 12,12 Z M12,14 C8.13,14 5,15.79 5,18 V20 H19 V18 C19,15.79 15.87,14 12,14 Z"
+                            <Path Data="M12,15 A3,3 0 1,0 12,9 A3,3 0 1,0 12,15 Z M19.4,13 L21.7,9.2 L19.1,4.6 L16.4,5.7 C15.8,5.3 15.2,4.9 14.5,4.6 L14.1,1.7 L9.5,1.7 L9.1,4.6 C8.4,4.9 7.8,5.3 7.2,5.7 L4.5,4.6 L1.9,9.2 L4.2,11 C4.1,11.3 4.1,11.7 4.1,12 C4.1,12.3 4.1,12.7 4.2,13 L1.9,14.8 L4.5,19.4 L7.2,18.3 C7.8,18.7 8.4,19.1 9.1,19.4 L9.5,22.3 L14.1,22.3 L14.5,19.4 C15.2,19.1 15.8,18.7 16.4,18.3 L19.1,19.4 L21.7,14.8 Z"
                                   Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  StrokeThickness="1.6" Fill="Transparent"
                                   Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="Cosmetics" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-
-                    <!-- News Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="News" Click="News_Click">
-                        <Button.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsNewsActive}" Value="True">
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Resources>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M18,11 V4 C18,2.9 17.1,2 16,2 H8 C6.9,2 6,2.9 6,4 V11 L3,14 V16 H21 V14 L18,11 Z M12,22 A2,2 0 0,0 14,20 H10 A2,2 0 0,0 12,22 Z"
-                                  Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="News" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Settings" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
 
-                <!-- RIGHT: Clean space without - and X buttons (per user specification) -->
-                <Border Grid.Column="2" Background="Transparent" IsHitTestVisible="False"/>
+                <!-- RIGHT: Account Profile Dropdown Pill (No - or X buttons!) -->
+                <Border Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0"
+                        Background="#151622" BorderBrush="#222434" BorderThickness="1" CornerRadius="12"
+                        Padding="8,5" Cursor="Hand" MouseLeftButtonDown="AccountPill_Click"
+                        ToolTip="Gestisci profilo Microsoft e skin">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Avatar Head -->
+                        <Border Width="26" Height="26" CornerRadius="6" Background="#1D1E2B" ClipToBounds="True" Margin="0,0,8,0">
+                            <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
+                                   RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
+                        </Border>
+                        <!-- Player Name -->
+                        <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
+                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                   MaxWidth="110" TextTrimming="CharacterEllipsis"/>
+                        <!-- Chevron Dropdown Arrow -->
+                        <Path Data="M 0,0 L 4,4 L 8,0" Stroke="#8E8E98" StrokeThickness="1.6"
+                              VerticalAlignment="Center" Width="8" Height="4" Margin="0,1,4,0"/>
+                    </StackPanel>
+                </Border>
             </Grid>
 
             <!-- ══════ MAIN CONTENT STAGE ══════ -->

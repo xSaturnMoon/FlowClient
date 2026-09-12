@@ -1,9 +1,9 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "releaseDate": "12 Settembre 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.1.1: Layout 1:1 Blueberry Client Redesign. Barra superiore con profilo pillola, menu centrale (Home, Versions, Toggle Java/Bedrock, Cosmetics, News) senza tasti - e X, mascotte 3D isometrica bobbing con texture pietra, dock di lancio con card mantelli, pulsante gigante LAUNCH blu/rosso e card news con blocco d'erba.",
+  "releaseNotes": "Flow Client v1.1.2: Raffinamento layout. Branding FLOW in alto a sinistra, sezioni [News - Account - Home - Versions - Settings], account pill in alto a destra, rimosso Java/Bedrock toggle, rimosse le pubblicità laterali e testo sotto a LAUNCH.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.1/FlowClient-v1.1.1.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.2/FlowClient-v1.1.2.zip"
 }

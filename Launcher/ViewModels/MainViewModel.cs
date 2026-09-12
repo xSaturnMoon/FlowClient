@@ -27,6 +27,7 @@ namespace Launcher.ViewModels
                     OnPropertyChanged(nameof(IsHomeActive));
                     OnPropertyChanged(nameof(IsVersionsActive));
                     OnPropertyChanged(nameof(IsCosmeticsActive));
+                    OnPropertyChanged(nameof(IsAccountActive));
                     OnPropertyChanged(nameof(IsNewsActive));
                     OnPropertyChanged(nameof(IsSettingsActive));
                 }
@@ -36,6 +37,7 @@ namespace Launcher.ViewModels
         public bool IsHomeActive => _activeButton is "Home" or "Launch";
         public bool IsVersionsActive => _activeButton is "Versions" or "Explore";
         public bool IsCosmeticsActive => _activeButton is "Cosmetics" or "Account";
+        public bool IsAccountActive => _activeButton is "Account" or "Cosmetics";
         public bool IsNewsActive => _activeButton is "News";
         public bool IsSettingsActive => _activeButton is "Settings";
 
