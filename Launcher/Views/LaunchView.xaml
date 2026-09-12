@@ -10,114 +10,198 @@
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <conv:StringNotEmptyToVisibilityConverter x:Key="StrVis"/>
             <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
+
+            <!-- Sleek Edge Navigation Arrow Buttons (< and >) -->
+            <Style x:Key="HomeNavArrowButton" TargetType="Button">
+                <Setter Property="Width" Value="46"/>
+                <Setter Property="Height" Value="46"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="#16171D" BorderBrush="#252632" BorderThickness="1"
+                                    CornerRadius="23" SnapsToDevicePixels="True">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="14" Direction="270" ShadowDepth="3" Color="#000000" Opacity="0.35"/>
+                                </Border.Effect>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#252736"/>
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#3E425A"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#1C1D26"/>
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#2F3244"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Sleek Bottom Corner Action Button Style (Quit & Update) -->
+            <Style x:Key="HomeCornerActionButton" TargetType="Button">
+                <Setter Property="Width" Value="42"/>
+                <Setter Property="Height" Value="42"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="#181920" BorderBrush="#272834" BorderThickness="1"
+                                    CornerRadius="11" SnapsToDevicePixels="True">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="3" Color="#000000" Opacity="0.3"/>
+                                </Border.Effect>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#22242E"/>
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#383A4A"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#14151B"/>
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#20212B"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Quit Button Specific Style with Red Hover Glow -->
+            <Style x:Key="HomeQuitButton" TargetType="Button">
+                <Setter Property="Width" Value="42"/>
+                <Setter Property="Height" Value="42"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="#181920" BorderBrush="#272834" BorderThickness="1"
+                                    CornerRadius="11" SnapsToDevicePixels="True">
+                                <Border.Effect>
+                                    <DropShadowEffect x:Name="shadow" BlurRadius="12" Direction="270" ShadowDepth="3" Color="#000000" Opacity="0.3"/>
+                                </Border.Effect>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#261719"/>
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#EF4444"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#1E1214"/>
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#B91C1C"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="#0C0D14" ClipToBounds="True">
-        <!-- ══════ CENTRAL STAGE: FLOATING GEOMETRY & 3D MASCOT ══════ -->
+    <Grid Background="#141416" ClipToBounds="True">
+
+        <!-- ══════ CENTRAL STAGE: INTERACTIVE 3D MINECRAFT OBJECT ══════ -->
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <!-- Floating Geometric Accent Frames (Behind Mascot) -->
+            <!-- Subtle Atmospheric Depth Ring (Behind 3D Voxel) -->
             <Canvas HorizontalAlignment="Center" VerticalAlignment="Center" Width="0" Height="0">
-                <!-- Frame 1: Top-Left Large -->
-                <Border Canvas.Left="-230" Canvas.Top="-150" Width="135" Height="135"
-                        BorderBrush="#1E273A" BorderThickness="4" Background="#0A111E" Opacity="0.8"/>
-
-                <!-- Frame 2: Mid-Left -->
-                <Border Canvas.Left="-270" Canvas.Top="35" Width="100" Height="100"
-                        BorderBrush="#1B2334" BorderThickness="3" Background="#0A111E" Opacity="0.75"/>
-
-                <!-- Tile 3: Small Left-Bottom -->
-                <Border Canvas.Left="-130" Canvas.Top="140" Width="40" Height="40"
-                        Background="#172030" Opacity="0.6"/>
-
-                <!-- Tile 4: Top-Center Small -->
-                <Border Canvas.Left="70" Canvas.Top="-175" Width="68" Height="68"
-                        Background="#1A2436" Opacity="0.65"/>
-
-                <!-- Frame 5: Top-Right -->
-                <Border Canvas.Left="155" Canvas.Top="-115" Width="95" Height="95"
-                        BorderBrush="#1C2436" BorderThickness="3" Background="#0A111E" Opacity="0.75"/>
-
-                <!-- Tile 6: Middle-Right -->
-                <Border Canvas.Left="125" Canvas.Top="15" Width="65" Height="65"
-                        Background="#182132" Opacity="0.6"/>
-
-                <!-- Frame 7: Right-Center -->
-                <Border Canvas.Left="235" Canvas.Top="45" Width="80" Height="80"
-                        BorderBrush="#1D2638" BorderThickness="3" Background="#0A111E" Opacity="0.7"/>
-
-                <!-- Tile 8: Far-Right Small -->
-                <Border Canvas.Left="330" Canvas.Top="-15" Width="36" Height="36"
-                        Background="#172030" Opacity="0.55"/>
+                <Ellipse Canvas.Left="-160" Canvas.Top="-175" Width="320" Height="320"
+                         Fill="#121319" Opacity="0.75"/>
+                <Ellipse Canvas.Left="-120" Canvas.Top="-135" Width="240" Height="240"
+                         Stroke="#1F212C" StrokeThickness="1.5" StrokeDashArray="4 4" Opacity="0.5"/>
             </Canvas>
 
-            <!-- ─── 3D CUBIC MASCOT HEAD WITH CUTE EYES & IDLE BOBBING ─── -->
-            <Grid Width="260" Height="260" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-45,0,0">
-                <Grid.RenderTransform>
-                    <TranslateTransform x:Name="MascotFloat" Y="0"/>
-                </Grid.RenderTransform>
-                <Grid.Triggers>
-                    <EventTrigger RoutedEvent="Loaded">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="MascotFloat"
-                                                 Storyboard.TargetProperty="Y"
-                                                 From="-8" To="8" Duration="0:0:3"
-                                                 AutoReverse="True" RepeatBehavior="Forever">
-                                    <DoubleAnimation.EasingFunction>
-                                        <SineEase EasingMode="EaseInOut"/>
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Grid.Triggers>
+            <!-- Real Hardware-Accelerated 3D Viewport with Drag-to-Rotate -->
+            <Viewport3D x:Name="ModelViewport" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Width="440" Height="440" Margin="0,-50,0,0"
+                        MouseDown="Viewport_MouseDown" MouseMove="Viewport_MouseMove"
+                        MouseUp="Viewport_MouseUp" Cursor="Hand"
+                        ToolTip="Click and drag to rotate in 3D">
+                <Viewport3D.Camera>
+                    <PerspectiveCamera Position="0, 0.45, 5.4" LookDirection="0, -0.1, -5.4" UpDirection="0, 1, 0" FieldOfView="40"/>
+                </Viewport3D.Camera>
 
-                <!-- Mascot Isometric Cube -->
-                <Canvas Width="220" Height="220" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <!-- Top Face (Perspective light slate) -->
-                    <Polygon Points="38,45 68,15 208,15 178,45" Fill="#6F727D"/>
+                <ModelVisual3D>
+                    <ModelVisual3D.Content>
+                        <Model3DGroup>
+                            <!-- Voxel Lighting -->
+                            <AmbientLight Color="#909090"/>
+                            <DirectionalLight Color="#FFFFFF" Direction="-1.2, -2.5, -2.0"/>
+                            <DirectionalLight Color="#4A4A4A" Direction="1.2, 1.2, 2.0"/>
 
-                    <!-- Left Side Face (Perspective shaded slate) -->
-                    <Polygon Points="38,45 68,15 68,155 38,185" Fill="#484B54"/>
-
-                    <!-- Top-Left Tuft Accent -->
-                    <Border Canvas.Left="58" Canvas.Top="9" Width="20" Height="8" Background="#6F727D"/>
-
-                    <!-- Front Face (Main cubic face with block eyes) -->
-                    <Border Canvas.Left="38" Canvas.Top="45" Width="140" Height="140" Background="#5B5D67" CornerRadius="1">
-                        <Grid>
-                            <!-- Stone Texture pixel patches -->
-                            <Canvas Width="140" Height="140">
-                                <Border Canvas.Left="12" Canvas.Top="12" Width="18" Height="18" Background="#4F515B"/>
-                                <Border Canvas.Left="80" Canvas.Top="8" Width="24" Height="16" Background="#666874"/>
-                                <Border Canvas.Left="10" Canvas.Top="115" Width="22" Height="16" Background="#4E5059"/>
-                                <Border Canvas.Left="60" Canvas.Top="122" Width="28" Height="12" Background="#636571"/>
-                                <Border Canvas.Left="115" Canvas.Top="110" Width="16" Height="20" Background="#4E5059"/>
-                            </Canvas>
-
-                            <!-- Left Eye (Big cartoon block eye) -->
-                            <Border Width="34" Height="58" Background="#FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top"
-                                    Margin="24,38,0,0">
-                                <Border Width="18" Height="40" Background="#111216" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                        Margin="0,0,0,0"/>
-                            </Border>
-
-                            <!-- Right Eye (Big cartoon block eye) -->
-                            <Border Width="34" Height="58" Background="#FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                    Margin="0,38,24,0">
-                                <Border Width="18" Height="40" Background="#111216" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                                        Margin="0,0,0,0"/>
-                            </Border>
-                        </Grid>
-                    </Border>
-                </Canvas>
-            </Grid>
+                            <!-- Dynamic 3D Model with Pitch, Yaw, Bobbing & Scale transforms -->
+                            <Model3DGroup x:Name="Mascot3DGroup">
+                                <Model3DGroup.Transform>
+                                    <Transform3DGroup>
+                                        <ScaleTransform3D x:Name="ModelScale" ScaleX="1" ScaleY="1" ScaleZ="1"/>
+                                        <RotateTransform3D>
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D x:Name="PitchRotation" Axis="1,0,0" Angle="20"/>
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                        <RotateTransform3D>
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D x:Name="YawRotation" Axis="0,1,0" Angle="35"/>
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                        <TranslateTransform3D x:Name="BobTranslate" OffsetX="0" OffsetY="0" OffsetZ="0"/>
+                                    </Transform3DGroup>
+                                </Model3DGroup.Transform>
+                            </Model3DGroup>
+                        </Model3DGroup>
+                    </ModelVisual3D.Content>
+                </ModelVisual3D>
+            </Viewport3D>
         </Grid>
 
-        <!-- ══════ BOTTOM LAUNCH DOCK ══════ -->
-        <Grid VerticalAlignment="Bottom" Margin="0,0,0,42">
+        <!-- ══════ NAVIGATION ARROWS AT SCREEN EDGES (< and >) ══════ -->
+        <!-- Left Arrow (Previous Version) -->
+        <Button Style="{StaticResource HomeNavArrowButton}" Click="PreviousVersion_Click"
+                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="26,0,0,30"
+                ToolTip="Previous Version">
+            <Path Data="M 15,10 L 9,16 L 15,22" Stroke="#8E92A4" StrokeThickness="2.2"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Width="12" Height="14" Stretch="Uniform"/>
+        </Button>
+
+        <!-- Right Arrow (Next Version) -->
+        <Button Style="{StaticResource HomeNavArrowButton}" Click="NextVersion_Click"
+                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,26,30"
+                ToolTip="Next Version">
+            <Path Data="M 9,10 L 15,16 L 9,22" Stroke="#8E92A4" StrokeThickness="2.2"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Width="12" Height="14" Stretch="Uniform"/>
+        </Button>
+
+        <!-- ══════ BOTTOM LAUNCH DOCK & VERSION DISPLAY ══════ -->
+        <Grid VerticalAlignment="Bottom" Margin="0,0,0,36">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                <!-- Current Selected Version Card -->
+                <Border Background="#161720" BorderBrush="#252735" BorderThickness="1" CornerRadius="10"
+                        Padding="14,6" Margin="0,0,0,12" HorizontalAlignment="Center" SnapsToDevicePixels="True">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Loader Badge -->
+                        <Border x:Name="LoaderBadgeBorder" Background="#2563EB" CornerRadius="5" Padding="7,2" Margin="0,0,9,0">
+                            <TextBlock x:Name="TxtLoaderBadge" Text="VANILLA" Foreground="#FFFFFF" FontSize="10.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}"/>
+                        </Border>
+                        <!-- Instance / Version Title -->
+                        <TextBlock Text="{Binding SelectedName}" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold"
+                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                        <TextBlock Text=" · " Foreground="#525464" FontSize="13.5" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding SelectedVersion}" Foreground="#9AA0B4" FontSize="13" FontWeight="SemiBold"
+                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
                 <!-- Status message capsule (visible when downloading or launching) -->
                 <Border Background="#141926" BorderBrush="#1E2A42" BorderThickness="1" CornerRadius="8"
                         Padding="12,5" Margin="0,0,0,10" HorizontalAlignment="Center"
@@ -129,7 +213,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Big Blue LAUNCH Button -->
+                <!-- Big Vibrant LAUNCH Button -->
                 <Button Width="380" Height="56" Click="Play_Click" IsEnabled="{Binding CanPlay}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource TopNavLaunchButton}">
@@ -164,5 +248,96 @@
                 </Button>
             </StackPanel>
         </Grid>
+
+        <!-- ══════ BOTTOM-LEFT: QUIT LAUNCHER BUTTON ══════ -->
+        <Button Style="{StaticResource HomeQuitButton}" Click="Quit_Click"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="26,0,0,26"
+                ToolTip="Quit Flow Client">
+            <Path Data="M12,3 L12,12 M6.34,5.64 A8,8 0 1,0 17.66,5.64"
+                  Stroke="#8E92A4" StrokeThickness="1.7" Fill="Transparent"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                  Width="17" Height="17" Stretch="Uniform"/>
+        </Button>
+
+        <!-- ══════ BOTTOM-RIGHT: ANIMATED UPDATE BUTTON ══════ -->
+        <Button x:Name="BtnUpdate" Style="{StaticResource HomeCornerActionButton}" Click="Update_Click"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,26,26"
+                ToolTip="Check for Updates">
+            <Grid Width="18" Height="18">
+                <!-- 1. Outer Circle of Update Icon -->
+                <Path x:Name="OuterCircle"
+                      Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z"
+                      StrokeThickness="1.6" Fill="Transparent"
+                      Stroke="#8E92A4"
+                      Width="18" Height="18" Stretch="Uniform"
+                      RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <ScaleTransform x:Name="OuterCircleScale" ScaleX="1" ScaleY="1"/>
+                    </Path.RenderTransform>
+                </Path>
+
+                <!-- 2. Inner Down Arrow -->
+                <Path x:Name="IconUpdateArrow"
+                      Data="M2,2 M22,22 M12,8.5 L12,14.5 M9,12.5 L12,15.5 L15,12.5"
+                      StrokeThickness="1.6" Fill="Transparent"
+                      Stroke="#8E92A4"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                      Width="18" Height="18" Stretch="Uniform"
+                      RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <ScaleTransform x:Name="UpdateArrowScale" ScaleX="1" ScaleY="1"/>
+                    </Path.RenderTransform>
+                </Path>
+
+                <!-- 3. Spinning arc (Windows 11 boot style) -->
+                <Path x:Name="OuterCircleSpinner"
+                      Data="M2,2 M22,22 M12,2 A10,10 0 0,1 22,12"
+                      StrokeThickness="1.8" Fill="Transparent"
+                      Stroke="#3B82F6"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                      Width="18" Height="18" Stretch="Uniform"
+                      Opacity="0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="SpinnerScale" ScaleX="1" ScaleY="1"/>
+                            <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+
+                <!-- 4. Checkmark (✓) -->
+                <Path x:Name="IconCheckmark"
+                      Data="M4,12 L9,17 L20,6"
+                      StrokeThickness="1.8" Fill="Transparent"
+                      Stroke="#22C55E"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                      Width="18" Height="18" Stretch="Uniform"
+                      Opacity="0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="CheckmarkScale" ScaleX="0" ScaleY="0"/>
+                            <RotateTransform x:Name="CheckmarkRotate" Angle="-35"/>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+
+                <!-- 5. Cross (✕) -->
+                <Path x:Name="IconCross"
+                      Data="M4,4 L20,20 M20,4 L4,20"
+                      StrokeThickness="1.8" Fill="Transparent"
+                      Stroke="#8E92A4"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                      Width="18" Height="18" Stretch="Uniform"
+                      Opacity="0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="CrossScale" ScaleX="0" ScaleY="0"/>
+                            <RotateTransform x:Name="CrossRotate" Angle="90"/>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+            </Grid>
+        </Button>
+
     </Grid>
 </UserControl>

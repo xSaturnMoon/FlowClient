@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="#0C0C10">
+    <Grid Background="#141416">
 
 
         <Grid Margin="48,48,48,32">

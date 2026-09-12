@@ -1,9 +1,9 @@
 {
-  "version": "1.1.3",
+  "version": "1.1.4",
   "releaseDate": "September 12, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.1.3: Interactive account dropdown menu, directional sliding tab transitions, full News changelog section, comprehensive English localization, and Settings update checker.",
+  "releaseNotes": "Flow Client v1.1.4: In-tree dropdown overlay, unified dark grey aesthetic, zero-latency tab transitions, and seamless in-app updates.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.3/FlowClient-v1.1.3.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.4/FlowClient-v1.1.4.zip"
 }

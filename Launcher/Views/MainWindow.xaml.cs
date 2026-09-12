@@ -387,25 +387,32 @@ namespace Launcher.Views
 
         private void AccountPill_Click(object sender, MouseButtonEventArgs e)
         {
-            AccountPopup.IsOpen = !AccountPopup.IsOpen;
+            AccountMenuOverlay.Visibility = AccountMenuOverlay.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
             e.Handled = true;
+        }
+
+        private void AccountMenuBackdrop_Click(object sender, MouseButtonEventArgs e)
+        {
+            AccountMenuOverlay.Visibility = Visibility.Collapsed;
         }
 
         private void AccountMenu_Manage_Click(object sender, RoutedEventArgs e)
         {
-            AccountPopup.IsOpen = false;
+            AccountMenuOverlay.Visibility = Visibility.Collapsed;
             _viewModel.ActiveButton = "Account";
         }
 
         private void AccountMenu_AddAccount_Click(object sender, RoutedEventArgs e)
         {
-            AccountPopup.IsOpen = false;
+            AccountMenuOverlay.Visibility = Visibility.Collapsed;
             _viewModel.ActiveButton = "Account";
         }
 
         private void AccountMenu_SignOut_Click(object sender, RoutedEventArgs e)
         {
-            AccountPopup.IsOpen = false;
+            AccountMenuOverlay.Visibility = Visibility.Collapsed;
             var confirm = MessageBox.Show(
                 $"Are you sure you want to sign out of your Microsoft account ({_viewModel.PlayerName})?",
                 "Sign Out",

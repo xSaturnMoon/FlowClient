@@ -732,10 +732,16 @@ namespace Launcher.Views
 
         private void LoadLauncherInfo(AccountViewModel vm)
         {
-            var info = _launcherInfo.Gather();
-            vm.LauncherVersion = info.LauncherVersion;
-            vm.LauncherChannel = info.Channel;
-            vm.JavaVersion = info.JavaVersion;
+            _ = Task.Run(() =>
+            {
+                var info = _launcherInfo.Gather();
+                Dispatcher.BeginInvoke(() =>
+                {
+                    vm.LauncherVersion = info.LauncherVersion;
+                    vm.LauncherChannel = info.Channel;
+                    vm.JavaVersion = info.JavaVersion;
+                });
+            });
         }
 
         private static string FormatSyncTime(DateTime time)

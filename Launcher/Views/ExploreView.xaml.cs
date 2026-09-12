@@ -43,7 +43,10 @@ namespace Launcher.Views
         {
             _isReady = true;
             RefreshList();
-            await LoadVersionsAsync();
+            if (_allVersions == null || _allVersions.Count == 0)
+            {
+                await LoadVersionsAsync();
+            }
         }
 
         private async Task LoadVersionsAsync()
@@ -144,8 +147,9 @@ namespace Launcher.Views
                 _ => all.OrderByDescending(i => i.IsFavorite).ThenByDescending(i => i.LastPlayedAt ?? DateTime.MinValue)
             };
 
+            var allList = all.ToList();
             vm.Instances.Clear();
-            foreach (var inst in all)
+            foreach (var inst in allList)
             {
                 vm.Instances.Add(new InstanceListItemViewModel
                 {
@@ -155,7 +159,7 @@ namespace Launcher.Views
                     Loader = inst.Loader,
                     ModCount = inst.Mods.Count,
                     LastPlayedText = FormatLastPlayed(inst.LastPlayedAt),
-                    SizeText = _instances.GetFolderSizeText(inst.Id),
+                    SizeText = _instances.GetCachedFolderSizeText(inst.Id),
                     IsFavorite = inst.IsFavorite,
                     IconColor = inst.IconColor,
                     IconLetter = inst.IconLetter,
@@ -164,6 +168,20 @@ namespace Launcher.Views
                 });
             }
             vm.OnPropertyChangedPublic(nameof(ExploreViewModel.HasInstances));
+
+            // Background populate folder sizes asynchronously so UI never freezes
+            _ = Task.Run(() =>
+            {
+                foreach (var inst in allList)
+                {
+                    var size = _instances.GetFolderSizeText(inst.Id);
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        var target = vm.Instances.FirstOrDefault(x => x.Id == inst.Id);
+                        if (target != null && target.SizeText != size) target.SizeText = size;
+                    });
+                }
+            });
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -209,7 +227,12 @@ namespace Launcher.Views
             vm.DetailName = inst.Name;
             vm.DetailVersion = inst.MinecraftVersion;
             vm.DetailLoader = inst.Loader;
-            vm.DetailSize = _instances.GetFolderSizeText(id);
+            vm.DetailSize = _instances.GetCachedFolderSizeText(id);
+            _ = Task.Run(() =>
+            {
+                var size = _instances.GetFolderSizeText(id);
+                Dispatcher.BeginInvoke(() => { if (Vm.SelectedInstanceId == id) Vm.DetailSize = size; });
+            });
             vm.DetailPath = _instances.GetInstanceDirectory(id);
             vm.DetailCreated = inst.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy", EnUs);
             vm.DetailLastPlayed = FormatLastPlayed(inst.LastPlayedAt);

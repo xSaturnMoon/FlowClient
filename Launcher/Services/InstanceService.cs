@@ -145,19 +145,35 @@ namespace Launcher.Services
             Save(inst);
         }
 
+        private static readonly Dictionary<string, (string size, DateTime expires)> _sizeCache = new();
+
         public string GetFolderSizeText(string id)
         {
+            if (_sizeCache.TryGetValue(id, out var cached) && cached.expires > DateTime.UtcNow)
+                return cached.size;
+
             try
             {
                 var dir = GetInstanceDirectory(id);
                 if (!Directory.Exists(dir)) return "—";
                 long bytes = Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Sum(f => new FileInfo(f).Length);
-                if (bytes < 1024) return $"{bytes} B";
-                if (bytes < 1024 * 1024) return $"{bytes / 1024.0:0.#} KB";
-                if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024):0.#} MB";
-                return $"{bytes / (1024.0 * 1024 * 1024):0.#} GB";
+                string res;
+                if (bytes < 1024) res = $"{bytes} B";
+                else if (bytes < 1024 * 1024) res = $"{bytes / 1024.0:0.#} KB";
+                else if (bytes < 1024 * 1024 * 1024) res = $"{bytes / (1024.0 * 1024):0.#} MB";
+                else res = $"{bytes / (1024.0 * 1024 * 1024):0.#} GB";
+
+                _sizeCache[id] = (res, DateTime.UtcNow.AddMinutes(5));
+                return res;
             }
             catch { return "—"; }
+        }
+
+        public string GetCachedFolderSizeText(string id)
+        {
+            if (_sizeCache.TryGetValue(id, out var cached) && cached.expires > DateTime.UtcNow)
+                return cached.size;
+            return "—";
         }
 
         public string GetModsPath(string id) => Path.Combine(GetInstanceDirectory(id), "mods");

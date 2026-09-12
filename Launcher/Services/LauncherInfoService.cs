@@ -23,40 +23,51 @@ namespace Launcher.Services
 
     public class LauncherInfoService
     {
+        private static LauncherSystemInfo? _cached;
+        private static readonly object _lock = new();
+
         public LauncherSystemInfo Gather()
         {
-            var info = new LauncherSystemInfo
-            {
-                MinecraftDir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    ".minecraft"),
-                OsName = RuntimeInformation.OSDescription,
-                OsVersion = Environment.OSVersion.VersionString
-            };
+            if (_cached != null) return _cached;
 
-            try
+            lock (_lock)
             {
-                var ver = typeof(LauncherInfoService).Assembly.GetName().Version;
-                if (ver != null) info.LauncherVersion = $"{ver.Major}.{ver.Minor}.{ver.Build}";
+                if (_cached != null) return _cached;
+
+                var info = new LauncherSystemInfo
+                {
+                    MinecraftDir = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        ".minecraft"),
+                    OsName = RuntimeInformation.OSDescription,
+                    OsVersion = Environment.OSVersion.VersionString
+                };
+
+                try
+                {
+                    var ver = typeof(LauncherInfoService).Assembly.GetName().Version;
+                    if (ver != null) info.LauncherVersion = $"{ver.Major}.{ver.Minor}.{ver.Build}";
+                }
+                catch { }
+
+                try
+                {
+                    var ram = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
+                    info.RamTotal = $"{ram / (1024 * 1024 * 1024.0):0.#} GB";
+                }
+                catch { }
+
+                info.JavaPath = FindJava() ?? "Not detected";
+                info.JavaVersion = TryJavaVersion(info.JavaPath);
+                info.GpuName = TryGpuName();
+                info.CpuName = TryCpuName();
+
+                if (!Directory.Exists(info.MinecraftDir))
+                    info.MinecraftDir += " (not found)";
+
+                _cached = info;
+                return info;
             }
-            catch { }
-
-            try
-            {
-                var ram = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
-                info.RamTotal = $"{ram / (1024 * 1024 * 1024.0):0.#} GB";
-            }
-            catch { }
-
-            info.JavaPath = FindJava() ?? "Non rilevato";
-            info.JavaVersion = TryJavaVersion(info.JavaPath);
-            info.GpuName = TryGpuName();
-            info.CpuName = TryCpuName();
-
-            if (!Directory.Exists(info.MinecraftDir))
-                info.MinecraftDir += " (non trovata)";
-
-            return info;
         }
 
         private static string? FindJava()
