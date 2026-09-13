@@ -1,9 +1,9 @@
 {
-  "version": "1.1.8",
+  "version": "1.1.9",
   "releaseDate": "September 13, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.1.8: Added built-in Block Animation mod with smooth falling placement physics and block landing particle bursts.",
+  "releaseNotes": "Flow Client v1.1.9: Block Animation mod added to 26.2 and 1.20.1 Fabric jars, with automatic mod jar synchronization on launch.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.8/FlowClient-v1.1.8.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.9/FlowClient-v1.1.9.zip"
 }

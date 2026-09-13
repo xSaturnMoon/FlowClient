@@ -19,6 +19,7 @@
     "ClientTooltipComponentMixin",
     "ItemStackMixin",
     "ClientLevelMixin",
+    "ClientLevelBlockUpdateMixin",
     "DebugScreenOverlayMixin",
     "FreelookCameraMixin",
     "HudMixin",

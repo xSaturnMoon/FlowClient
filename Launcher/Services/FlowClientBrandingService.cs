@@ -169,9 +169,6 @@ namespace Launcher.Services
             var sourceInfo = new FileInfo(source);
             var targetInfo = new FileInfo(target);
 
-            if (targetInfo.LastWriteTimeUtc > sourceInfo.LastWriteTimeUtc)
-                return false;
-
             if (targetInfo.Length == sourceInfo.Length
                 && string.Equals(ComputeSha256(source), ComputeSha256(target), StringComparison.OrdinalIgnoreCase))
             {
