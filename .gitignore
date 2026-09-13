@@ -2,14 +2,16 @@
 [Bb]in/
 [Oo]bj/
 dist/
+.gradle/
+**/build/
 *.user
 *.suo
 .vs/
 
 # Temporary
 cfr.jar
-com/
-net/
+/com/
+/net/
 testjson/
 mc_methods.txt
 flowclient-branding-1.0.0.jar

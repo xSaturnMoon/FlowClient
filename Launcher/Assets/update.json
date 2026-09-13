@@ -1,9 +1,9 @@
 {
-  "version": "1.1.7",
+  "version": "1.1.8",
   "releaseDate": "September 13, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.1.7: Quit and Update buttons restored to bottom window corners, full and solid 3D voxel paper model (bright, complete sheet with real thickness), default upright front-facing 3D pose matching Image 3, and authentic official 4-element Minecraft Anvil.",
+  "releaseNotes": "Flow Client v1.1.8: Added built-in Block Animation mod with smooth falling placement physics and block landing particle bursts.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.7/FlowClient-v1.1.7.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.1.8/FlowClient-v1.1.8.zip"
 }

@@ -13,6 +13,8 @@
     "ClientTooltipComponentMixin",
     "ItemStackMixin",
     "ClientLevelMixin",
+    "ClientLevelBlockUpdateMixin",
+    "BlockRenderDispatcherMixin",
     "DebugScreenOverlayMixin",
     "FreelookCameraMixin",
     "GameRendererMixin",
