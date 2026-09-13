@@ -34,8 +34,8 @@ namespace Launcher.Views
         // 3D Model rotation & floating state
         private bool _isDragging3D;
         private Point _lastMouse3D;
-        private double _yaw = 35.0;
-        private double _pitch = 18.0;
+        private double _yaw = -22.0;
+        private double _pitch = 0.0;
         private double _bobTime = 0.0;
         private string? _currentLoaderModel;
 
@@ -302,6 +302,11 @@ namespace Launcher.Views
 
             _currentLoaderModel = norm;
             Mascot3DGroup.Children.Clear();
+
+            _yaw = -22.0;
+            _pitch = 0.0;
+            YawRotation.Angle = _yaw;
+            PitchRotation.Angle = _pitch;
 
             try
             {

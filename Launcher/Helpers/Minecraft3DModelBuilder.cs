@@ -18,7 +18,9 @@ namespace Launcher.Helpers
         private static Material? _grassSideMat;
         private static Material? _dirtMat;
         private static Material? _paperMat;
+        private static Material? _paperEdgeMat;
         private static Material? _anvilTopMat;
+        private static Material? _anvilTopCleanMat;
         private static Material? _anvilSideMat;
 
         // Fox head per-face materials (pre-cropped textures)
@@ -52,7 +54,9 @@ namespace Launcher.Helpers
             _grassSideMat = LoadMaterial("grass_side.png");
             _dirtMat      = LoadMaterial("dirt.png");
             _paperMat     = LoadMaterial("paper.png");
+            _paperEdgeMat = new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(190, 190, 190)));
             _anvilTopMat  = LoadMaterial("anvil_top.png");
+            _anvilTopCleanMat = LoadMaterial("anvil_top_clean.png");
             _anvilSideMat = LoadMaterial("anvil_side.png");
 
             // Fox face materials
@@ -210,38 +214,50 @@ namespace Launcher.Helpers
         {
             EnsureMaterials();
             var group = new Model3DGroup();
-            var mesh = new MeshGeometry3D();
 
-            const double totalSize = 2.15;
+            const double totalSize = 2.3;
+            const double originOffset = totalSize / 2.0; // 1.15
+            const double halfDepth = 0.07;               // visible tactile 3D thickness
+
+            // 1. Full Front Face (+Z) with crisp razor-sharp paper texture
+            AddFace(group,
+                new Point3D(-originOffset, -originOffset, halfDepth),
+                new Point3D(originOffset, -originOffset, halfDepth),
+                new Point3D(originOffset, originOffset, halfDepth),
+                new Point3D(-originOffset, originOffset, halfDepth),
+                _paperMat!);
+
+            // 2. Full Back Face (-Z)
+            AddFace(group,
+                new Point3D(originOffset, -originOffset, -halfDepth),
+                new Point3D(-originOffset, -originOffset, -halfDepth),
+                new Point3D(-originOffset, originOffset, -halfDepth),
+                new Point3D(originOffset, originOffset, -halfDepth),
+                _paperMat!);
+
+            // 3. 3D Perimeter Voxel Edges (connecting front to back along the paper silhouette)
+            var edgeMesh = new MeshGeometry3D();
             const double ps = totalSize / 16.0;
-            const double halfDepth = 0.055; // tactile 3D thickness
-            const double originOffset = totalSize / 2.0;
 
             bool IsOpaque(int x, int y) =>
                 x >= 0 && x < 16 && y >= 0 && y < 16 &&
                 (PaperOpaqueMask[y] & (1 << (15 - x))) != 0;
 
-            void AddQuad(Point3D p0, Point3D p1, Point3D p2, Point3D p3,
-                         Point uv0, Point uv1, Point uv2, Point uv3)
+            void AddEdgeQuad(Point3D p0, Point3D p1, Point3D p2, Point3D p3)
             {
-                int baseIndex = mesh.Positions.Count;
-                mesh.Positions.Add(p0);
-                mesh.Positions.Add(p1);
-                mesh.Positions.Add(p2);
-                mesh.Positions.Add(p3);
+                int baseIndex = edgeMesh.Positions.Count;
+                edgeMesh.Positions.Add(p0);
+                edgeMesh.Positions.Add(p1);
+                edgeMesh.Positions.Add(p2);
+                edgeMesh.Positions.Add(p3);
 
-                mesh.TextureCoordinates.Add(uv0);
-                mesh.TextureCoordinates.Add(uv1);
-                mesh.TextureCoordinates.Add(uv2);
-                mesh.TextureCoordinates.Add(uv3);
+                edgeMesh.TriangleIndices.Add(baseIndex);
+                edgeMesh.TriangleIndices.Add(baseIndex + 1);
+                edgeMesh.TriangleIndices.Add(baseIndex + 2);
 
-                mesh.TriangleIndices.Add(baseIndex);
-                mesh.TriangleIndices.Add(baseIndex + 1);
-                mesh.TriangleIndices.Add(baseIndex + 2);
-
-                mesh.TriangleIndices.Add(baseIndex);
-                mesh.TriangleIndices.Add(baseIndex + 2);
-                mesh.TriangleIndices.Add(baseIndex + 3);
+                edgeMesh.TriangleIndices.Add(baseIndex);
+                edgeMesh.TriangleIndices.Add(baseIndex + 2);
+                edgeMesh.TriangleIndices.Add(baseIndex + 3);
             }
 
             for (int y = 0; y < 16; y++)
@@ -255,76 +271,53 @@ namespace Launcher.Helpers
                     double y1 = -(y * ps - originOffset);
                     double y0 = y1 - ps;
 
-                    double u0 = x / 16.0;
-                    double u1 = (x + 1) / 16.0;
-                    double v0 = y / 16.0;
-                    double v1 = (y + 1) / 16.0;
-
-                    var uvCenter = new Point((x + 0.5) / 16.0, (y + 0.5) / 16.0);
-
-                    // Front face (+Z)
-                    AddQuad(
-                        new Point3D(x0, y0, halfDepth),
-                        new Point3D(x1, y0, halfDepth),
-                        new Point3D(x1, y1, halfDepth),
-                        new Point3D(x0, y1, halfDepth),
-                        new Point(u0, v1), new Point(u1, v1), new Point(u1, v0), new Point(u0, v0));
-
-                    // Back face (-Z)
-                    AddQuad(
-                        new Point3D(x1, y0, -halfDepth),
-                        new Point3D(x0, y0, -halfDepth),
-                        new Point3D(x0, y1, -halfDepth),
-                        new Point3D(x1, y1, -halfDepth),
-                        new Point(u1, v1), new Point(u0, v1), new Point(u0, v0), new Point(u1, v0));
-
-                    // Top (+Y)
+                    // Top (+Y) edge
                     if (!IsOpaque(x, y - 1))
                     {
-                        AddQuad(
+                        AddEdgeQuad(
                             new Point3D(x0, y1, halfDepth),
                             new Point3D(x1, y1, halfDepth),
                             new Point3D(x1, y1, -halfDepth),
-                            new Point3D(x0, y1, -halfDepth),
-                            uvCenter, uvCenter, uvCenter, uvCenter);
+                            new Point3D(x0, y1, -halfDepth));
                     }
 
-                    // Bottom (-Y)
+                    // Bottom (-Y) edge
                     if (!IsOpaque(x, y + 1))
                     {
-                        AddQuad(
+                        AddEdgeQuad(
                             new Point3D(x0, y0, -halfDepth),
                             new Point3D(x1, y0, -halfDepth),
                             new Point3D(x1, y0, halfDepth),
-                            new Point3D(x0, y0, halfDepth),
-                            uvCenter, uvCenter, uvCenter, uvCenter);
+                            new Point3D(x0, y0, halfDepth));
                     }
 
-                    // Left (-X)
+                    // Left (-X) edge
                     if (!IsOpaque(x - 1, y))
                     {
-                        AddQuad(
+                        AddEdgeQuad(
                             new Point3D(x0, y0, -halfDepth),
                             new Point3D(x0, y0, halfDepth),
                             new Point3D(x0, y1, halfDepth),
-                            new Point3D(x0, y1, -halfDepth),
-                            uvCenter, uvCenter, uvCenter, uvCenter);
+                            new Point3D(x0, y1, -halfDepth));
                     }
 
-                    // Right (+X)
+                    // Right (+X) edge
                     if (!IsOpaque(x + 1, y))
                     {
-                        AddQuad(
+                        AddEdgeQuad(
                             new Point3D(x1, y0, halfDepth),
                             new Point3D(x1, y0, -halfDepth),
                             new Point3D(x1, y1, -halfDepth),
-                            new Point3D(x1, y1, halfDepth),
-                            uvCenter, uvCenter, uvCenter, uvCenter);
+                            new Point3D(x1, y1, halfDepth));
                     }
                 }
             }
 
-            group.Children.Add(new GeometryModel3D(mesh, _paperMat!));
+            if (edgeMesh.Positions.Count > 0)
+            {
+                group.Children.Add(new GeometryModel3D(edgeMesh, _paperEdgeMat!));
+            }
+
             return group;
         }
 
@@ -439,42 +432,47 @@ namespace Launcher.Helpers
             EnsureMaterials();
             var group = new Model3DGroup();
 
-            // Base
-            AddBoxSimple(group, -0.8, -0.85, -0.6, 0.8, -0.5, 0.6, _anvilSideMat!);
+            // Official Minecraft Anvil Elements:
+            // 1. Base (12w x 4h x 12d in 16-pixel units): from [2, 0, 2] to [14, 4, 14]
+            AddBoxSimple(group, -0.65, -0.80, -0.65, 0.65, -0.40, 0.65, _anvilSideMat!);
 
-            // Waist
-            AddBoxSimple(group, -0.25, -0.5, -0.25, 0.25, 0.1, 0.25, _anvilSideMat!);
+            // 2. Lower narrow portion / step (8w x 1h x 10d): from [4, 4, 3] to [12, 5, 13]
+            AddBoxSimple(group, -0.45, -0.40, -0.55, 0.45, -0.30, 0.55, _anvilSideMat!);
 
-            // Head
-            const double minX = -1.1, minY = 0.1, minZ = -0.55;
-            const double maxX =  1.1, maxY = 0.75, maxZ =  0.55;
+            // 3. Waist column / pillar (4w x 5h x 8d): from [6, 5, 4] to [10, 10, 12]
+            AddBoxSimple(group, -0.22, -0.30, -0.45, 0.22, 0.20, 0.45, _anvilSideMat!);
 
-            // Top (+Y)
+            // 4. Anvil top / Head (10w x 6h x 16d): from [3, 10, 0] to [13, 16, 16]
+            const double minX = -0.55, maxX = 0.55;
+            const double minY = 0.20, maxY = 0.80;
+            const double minZ = -0.90, maxZ = 0.90;
+
+            // Top (+Y) face: use anvil_top_clean.png (cropped to columns 3..13, zero transparent borders)
             AddFace(group,
                 new Point3D(minX, maxY, maxZ), new Point3D(maxX, maxY, maxZ), new Point3D(maxX, maxY, minZ), new Point3D(minX, maxY, minZ),
-                _anvilTopMat!);
+                _anvilTopCleanMat ?? _anvilTopMat!);
 
             // Bottom (-Y)
             AddFace(group,
                 new Point3D(minX, minY, minZ), new Point3D(maxX, minY, minZ), new Point3D(maxX, minY, maxZ), new Point3D(minX, minY, maxZ),
                 _anvilSideMat!);
 
-            // Front (+Z)
+            // Front (+Z) - horn nose
             AddFace(group,
                 new Point3D(minX, minY, maxZ), new Point3D(maxX, minY, maxZ), new Point3D(maxX, maxY, maxZ), new Point3D(minX, maxY, maxZ),
                 _anvilSideMat!);
 
-            // Back (-Z)
+            // Back (-Z) - anvil heel
             AddFace(group,
                 new Point3D(maxX, minY, minZ), new Point3D(minX, minY, minZ), new Point3D(minX, maxY, minZ), new Point3D(maxX, maxY, minZ),
                 _anvilSideMat!);
 
-            // Left (-X)
+            // Left (-X) - side length
             AddFace(group,
                 new Point3D(minX, minY, minZ), new Point3D(minX, minY, maxZ), new Point3D(minX, maxY, maxZ), new Point3D(minX, maxY, minZ),
                 _anvilSideMat!);
 
-            // Right (+X)
+            // Right (+X) - side length
             AddFace(group,
                 new Point3D(maxX, minY, maxZ), new Point3D(maxX, minY, minZ), new Point3D(maxX, maxY, minZ), new Point3D(maxX, maxY, maxZ),
                 _anvilSideMat!);
