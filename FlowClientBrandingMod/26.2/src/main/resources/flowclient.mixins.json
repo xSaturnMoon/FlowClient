@@ -31,6 +31,7 @@
     "LevelRendererMixin",
     "LightmapRenderStateExtractorMixin",
     "LivingEntityRendererMixin",
+    "ModelBlockRendererMixin",
     "EntityRendererMixin",
     "EntityRenderStateMixin",
     "RenderTypeFeatureRendererMixin",
