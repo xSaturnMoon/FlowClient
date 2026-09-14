@@ -1,9 +1,9 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "releaseDate": "September 14, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.0: Block Animation ora usa fisiche reali (stile Element X) — i blocchi spawano sopra e cadono con particelle al landing. Mixin di tessellazione nasconde il blocco statico durante l'animazione.",
+  "releaseNotes": "Flow Client v1.2.1: Risolto crash al piazzamento dei blocchi (assegnazione ID entità sicura e Accessor). Risolto problema di persistenza per lista server, render distance, volumi e tasti rapidi delle mod (sincronizzazione bidirezionale con verifica data/ora più recente).",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.0/FlowClient-v1.2.0.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.1/FlowClient-v1.2.1.zip"
 }

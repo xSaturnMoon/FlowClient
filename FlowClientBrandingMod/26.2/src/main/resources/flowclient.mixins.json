@@ -8,6 +8,7 @@
     "ClientAdvancementsAccessor",
     "ContextAwarePredicateAccessor",
     "EntityPredicateAccessor",
+    "FallingBlockEntityAccessor",
     "ClientPacketListenerAdvancementsMixin",
     "ClientPacketListenerRespawnMixin",
     "AdvancementTrackingMixin",

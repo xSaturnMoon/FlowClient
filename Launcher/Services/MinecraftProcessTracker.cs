@@ -377,6 +377,7 @@ namespace Launcher.Services
             if (session != null)
             {
                 RecordCompletedSession(session, launchMetadata);
+                try { new SharedGameSettingsService().SaveFromInstance(session.GameDirectory); } catch { }
                 _sessions.EndSession(session);
             }
 

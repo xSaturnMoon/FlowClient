@@ -27,63 +27,151 @@ namespace Launcher.Services
             Directory.CreateDirectory(gameDirectory);
             Directory.CreateDirectory(MinecraftRoot);
 
-            EnsureSharedOptionsInitialized();
-            EnsureMinecraftSavesInitialized();
-            EnsureMinecraftServersInitialized();
-
-            if (File.Exists(SharedOptionsPath))
-                File.Copy(SharedOptionsPath, Path.Combine(gameDirectory, "options.txt"), overwrite: true);
-
             LinkSavesToMinecraft(gameDirectory);
             LinkConfigToShared(gameDirectory);
-            ApplyServersToInstance(gameDirectory);
+
+            // 1. Sync options.txt (render distance, volumes, keybinds):
+            // Always discover the newest file across shared, .minecraft, and all FlowVersions
+            var newestOptions = FindNewestFile("options.txt");
+            if (newestOptions != null && File.Exists(newestOptions))
+            {
+                if (!File.Exists(SharedOptionsPath) || File.GetLastWriteTimeUtc(newestOptions) > File.GetLastWriteTimeUtc(SharedOptionsPath))
+                {
+                    Directory.CreateDirectory(SharedDir);
+                    TryCopyFileWithRetry(newestOptions, SharedOptionsPath);
+                }
+            }
+
+            var instanceOptions = Path.Combine(gameDirectory, "options.txt");
+            SyncFileBidirectional(SharedOptionsPath, instanceOptions);
+
+            // 2. Sync servers.dat (multiplayer server list):
+            // Always discover the newest servers.dat
+            var newestServers = FindNewestFile("servers.dat");
+            if (newestServers != null && File.Exists(newestServers))
+            {
+                if (!File.Exists(MinecraftServersPath) || File.GetLastWriteTimeUtc(newestServers) > File.GetLastWriteTimeUtc(MinecraftServersPath))
+                {
+                    Directory.CreateDirectory(MinecraftRoot);
+                    TryCopyFileWithRetry(newestServers, MinecraftServersPath);
+                }
+            }
+
+            if (!IsMinecraftRoot(gameDirectory))
+            {
+                var instanceServers = Path.Combine(gameDirectory, "servers.dat");
+                SyncFileBidirectional(MinecraftServersPath, instanceServers);
+            }
         }
 
         public void SaveFromInstance(string gameDirectory)
         {
-            SaveOptionsFromInstance(gameDirectory);
-            SaveServersFromInstance(gameDirectory);
+            try
+            {
+                var instanceOptions = Path.Combine(gameDirectory, "options.txt");
+                if (File.Exists(instanceOptions))
+                {
+                    Directory.CreateDirectory(SharedDir);
+                    TryCopyFileWithRetry(instanceOptions, SharedOptionsPath);
+                }
+
+                if (!IsMinecraftRoot(gameDirectory))
+                {
+                    var instanceServers = Path.Combine(gameDirectory, "servers.dat");
+                    if (File.Exists(instanceServers))
+                    {
+                        Directory.CreateDirectory(MinecraftRoot);
+                        TryCopyFileWithRetry(instanceServers, MinecraftServersPath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"SaveFromInstance error: {ex.Message}");
+            }
         }
 
         public void TrackProcessExit(Process process, string gameDirectory)
         {
             var gameDir = gameDirectory;
-            process.EnableRaisingEvents = true;
-            process.Exited += (_, _) => SaveFromInstance(gameDir);
+            try
+            {
+                process.EnableRaisingEvents = true;
+                process.Exited += async (_, _) =>
+                {
+                    await Task.Delay(500);
+                    SaveFromInstance(gameDir);
+                };
+            }
+            catch { }
         }
 
-        private static void SaveOptionsFromInstance(string gameDirectory)
+        private static void SyncFileBidirectional(string pathA, string pathB)
         {
-            var instanceOptions = Path.Combine(gameDirectory, "options.txt");
-            if (!File.Exists(instanceOptions))
-                return;
+            try
+            {
+                bool existsA = File.Exists(pathA);
+                bool existsB = File.Exists(pathB);
 
-            Directory.CreateDirectory(SharedDir);
-            File.Copy(instanceOptions, SharedOptionsPath, overwrite: true);
+                if (!existsA && !existsB)
+                    return;
+
+                if (existsA && !existsB)
+                {
+                    var dirB = Path.GetDirectoryName(pathB);
+                    if (!string.IsNullOrEmpty(dirB)) Directory.CreateDirectory(dirB);
+                    TryCopyFileWithRetry(pathA, pathB);
+                    return;
+                }
+
+                if (!existsA && existsB)
+                {
+                    var dirA = Path.GetDirectoryName(pathA);
+                    if (!string.IsNullOrEmpty(dirA)) Directory.CreateDirectory(dirA);
+                    TryCopyFileWithRetry(pathB, pathA);
+                    return;
+                }
+
+                var timeA = File.GetLastWriteTimeUtc(pathA);
+                var timeB = File.GetLastWriteTimeUtc(pathB);
+
+                if (timeB > timeA)
+                {
+                    var dirA = Path.GetDirectoryName(pathA);
+                    if (!string.IsNullOrEmpty(dirA)) Directory.CreateDirectory(dirA);
+                    TryCopyFileWithRetry(pathB, pathA);
+                }
+                else if (timeA > timeB)
+                {
+                    var dirB = Path.GetDirectoryName(pathB);
+                    if (!string.IsNullOrEmpty(dirB)) Directory.CreateDirectory(dirB);
+                    TryCopyFileWithRetry(pathA, pathB);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"SyncFileBidirectional error between {pathA} and {pathB}: {ex.Message}");
+            }
         }
 
-        private static void ApplyServersToInstance(string gameDirectory)
+        private static void TryCopyFileWithRetry(string source, string destination)
         {
-            if (IsMinecraftRoot(gameDirectory))
-                return;
-
-            if (!File.Exists(MinecraftServersPath))
-                return;
-
-            File.Copy(MinecraftServersPath, Path.Combine(gameDirectory, "servers.dat"), overwrite: true);
-        }
-
-        private static void SaveServersFromInstance(string gameDirectory)
-        {
-            if (IsMinecraftRoot(gameDirectory))
-                return;
-
-            var instanceServers = Path.Combine(gameDirectory, "servers.dat");
-            if (!File.Exists(instanceServers))
-                return;
-
-            Directory.CreateDirectory(MinecraftRoot);
-            File.Copy(instanceServers, MinecraftServersPath, overwrite: true);
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    File.Copy(source, destination, overwrite: true);
+                    break;
+                }
+                catch (IOException)
+                {
+                    System.Threading.Thread.Sleep(200);
+                }
+                catch
+                {
+                    break;
+                }
+            }
         }
 
         private static void LinkSavesToMinecraft(string gameDirectory)
@@ -204,6 +292,7 @@ namespace Launcher.Services
                 bestPath = path;
             }
 
+            Consider(Path.Combine(SharedDir, fileName));
             Consider(Path.Combine(MinecraftRoot, fileName));
 
             if (!Directory.Exists(FlowVersionsRoot))

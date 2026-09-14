@@ -1,5 +1,6 @@
 package com.flowclient.mods.render;
 
+import com.flowclient.mixin.FallingBlockEntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Controls the Element X-style block placement falling animation.
@@ -20,13 +22,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * When a block is placed:
  *  1. A client-side FallingBlockEntity is spawned ~0.85 blocks above the target.
  *  2. The real block is hidden from chunk tessellation while the entity falls.
- *  3. On landing the entity is removed, particles burst out, and the chunk
- *     refreshes to reveal the now-visible static block.
+ *  3. On landing the entity is discarded, particles burst out, and the chunk
+ *     refreshes immediately to reveal the now-visible static block.
  */
 public final class BlockAnimationController {
 
     /** BlockPos → active animation tracking. */
     private static final Map<BlockPos, ActiveAnimation> ACTIVE = new ConcurrentHashMap<>();
+
+    /**
+     * Client-only negative entity IDs so they never conflict with server-assigned positive IDs,
+     * and satisfy Minecraft's Entity.getId() validation without throwing IllegalStateException.
+     */
+    private static final AtomicInteger NEXT_ENTITY_ID = new AtomicInteger(-100000);
 
     private BlockAnimationController() {}
 
@@ -45,29 +53,34 @@ public final class BlockAnimationController {
             if (distSq > 32.0 * 32.0) return;
         }
 
-        // Cancel any previous animation at this position
-        cancelAnimation(pos);
+        try {
+            // Cancel any previous animation at this position
+            cancelAnimation(pos);
 
-        // Spawn entity 0.85 blocks above target
-        double startX = pos.getX() + 0.5;
-        double startY = pos.getY() + 0.85;
-        double startZ = pos.getZ() + 0.5;
+            // Spawn entity 0.85 blocks above target
+            double startX = pos.getX() + 0.5;
+            double startY = pos.getY() + 0.85;
+            double startZ = pos.getZ() + 0.5;
 
-        FallingBlockEntity entity = new FallingBlockEntity(EntityTypes.FALLING_BLOCK, mc.level);
-        entity.setPos(startX, startY, startZ);
-        // Set the block state via reflection (field is private in 26.2)
-        if (!injectBlockState(entity, state)) return;
+            FallingBlockEntity entity = new FallingBlockEntity(EntityTypes.FALLING_BLOCK, mc.level);
+            entity.setId(NEXT_ENTITY_ID.decrementAndGet());
+            entity.setPos(startX, startY, startZ);
+            entity.setStartPos(pos);
+            ((FallingBlockEntityAccessor) entity).flowclient$setBlockState(state);
 
-        // Prevent vanilla land-logic from touching the world
-        entity.dropItem = false;
-        entity.time = 1;
+            // Prevent vanilla land-logic from touching the world
+            entity.dropItem = false;
+            entity.time = 1;
 
-        mc.level.addEntity(entity);
-        ACTIVE.put(pos.immutable(), new ActiveAnimation(entity, pos.immutable(), state));
+            mc.level.addEntity(entity);
+            ACTIVE.put(pos.immutable(), new ActiveAnimation(entity, pos.immutable(), state));
+        } catch (Throwable t) {
+            // Never crash the client on block place
+        }
     }
 
     /**
-     * Tick called from a client-tick mixin every frame.
+     * Tick called from LocalPlayerMixin every frame.
      * Detects when falling entities reach the target Y and finalises the animation.
      */
     public static void tick() {
@@ -88,17 +101,24 @@ public final class BlockAnimationController {
             double entityY = anim.entity.getY();
             double targetY = anim.pos.getY();
 
-            boolean landed = entityY <= targetY + 0.05;
-            boolean timeout = anim.entity.tickCount > 200;
+            boolean landed = entityY <= targetY + 0.08;
+            boolean timeout = anim.entity.tickCount > 25;
 
             if (landed || timeout) {
-                anim.entity.remove(net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
+                anim.entity.discard();
                 if (landed) {
                     spawnLandingParticles(mc, anim.pos, anim.state);
                 }
                 it.remove();
-                // Trigger a visual re-mesh so the real block appears
-                mc.level.sendBlockUpdated(anim.pos, anim.state, anim.state, 0);
+                // Trigger an immediate visual re-mesh so the real block appears
+                if (mc.level != null) {
+                    mc.level.setSectionDirtyWithNeighbors(
+                        anim.pos.getX() >> 4,
+                        anim.pos.getY() >> 4,
+                        anim.pos.getZ() >> 4
+                    );
+                    mc.level.sendBlockUpdated(anim.pos, anim.state, anim.state, 3);
+                }
             }
         }
     }
@@ -116,18 +136,7 @@ public final class BlockAnimationController {
     private static void cancelAnimation(BlockPos pos) {
         ActiveAnimation old = ACTIVE.remove(pos);
         if (old != null && old.entity.isAlive()) {
-            old.entity.remove(net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
-        }
-    }
-
-    private static boolean injectBlockState(FallingBlockEntity entity, BlockState state) {
-        try {
-            java.lang.reflect.Field f = FallingBlockEntity.class.getDeclaredField("blockState");
-            f.setAccessible(true);
-            f.set(entity, state);
-            return true;
-        } catch (Exception e) {
-            return false;
+            old.entity.discard();
         }
     }
 
