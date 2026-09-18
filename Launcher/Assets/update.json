@@ -1,9 +1,9 @@
 {
-  "version": "1.2.4",
+  "version": "1.2.5",
   "releaseDate": "September 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.4: Sistema di autenticazione ultra-intelligente con rinnovo automatico del token Microsoft all'avvio e blocco proattivo del tasto Launch durante la verifica; Impostazioni completamente rinnovate con categorie SVG, gestione cartelle rapide (Mondi, Screenshot, Texture, Shader, Mod), pulizia disco intelligente con conteggio esatto dei MB liberati e file rimossi, telemetria RAM in tempo reale e report diagnostico di sistema.",
+  "releaseNotes": "Flow Client v1.2.5: Fix per l'apertura delle Impostazioni (risolto stile ExploreTextBox XAML); sistema di autenticazione ultra-intelligente con rinnovo token Microsoft all'avvio e blocco proattivo del tasto Launch durante la verifica; Impostazioni rinnovate con categorie SVG, gestione rapida cartelle (Mondi, Screenshot, Texture, Shader, Mod), pulizia disco con calcolo esatto dei MB liberati e telemetria RAM in tempo reale.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.4/FlowClient-v1.2.4.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.5/FlowClient-v1.2.5.zip"
 }
