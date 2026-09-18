@@ -310,7 +310,10 @@ namespace Launcher.Services
                 var url = $"https://api.github.com/repos/{repository}/releases/latest";
                 using var response = await Http.GetAsync(url, ct);
                 if (!response.IsSuccessStatusCode)
-                    return null;
+                {
+                    // Fallback to raw repository update.json if GitHub API is rate-limited or fails
+                    return await TryCheckRawManifestAsync(repository, current, ct);
+                }
 
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
                 using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
@@ -331,6 +334,40 @@ namespace Launcher.Services
                     LatestVersion = latest,
                     ReleaseNotes = notes,
                     DownloadUrl = download,
+                    Message = available
+                        ? $"Update available: {latest}"
+                        : "You're on the latest version."
+                };
+            }
+            catch
+            {
+                return await TryCheckRawManifestAsync(repository, current, ct);
+            }
+        }
+
+        private async Task<UpdateCheckResult?> TryCheckRawManifestAsync(string repository, string current, CancellationToken ct)
+        {
+            try
+            {
+                var rawUrl = $"https://raw.githubusercontent.com/{repository}/main/Launcher/Assets/update.json";
+                using var rawResp = await Http.GetAsync(rawUrl, ct);
+                if (!rawResp.IsSuccessStatusCode) return null;
+
+                var json = await rawResp.Content.ReadAsStringAsync(ct);
+                var manifest = JsonSerializer.Deserialize<UpdateManifest>(json, JsonOptions);
+                if (manifest == null) return null;
+
+                var latest = NormalizeVersion(manifest.Version);
+                var available = IsNewer(latest, current);
+
+                return new UpdateCheckResult
+                {
+                    Success = true,
+                    UpdateAvailable = available,
+                    CurrentVersion = current,
+                    LatestVersion = latest,
+                    ReleaseNotes = manifest.ReleaseNotes,
+                    DownloadUrl = manifest.DownloadUrl,
                     Message = available
                         ? $"Update available: {latest}"
                         : "You're on the latest version."
