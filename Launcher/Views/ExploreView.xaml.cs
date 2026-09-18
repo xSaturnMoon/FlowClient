@@ -697,6 +697,34 @@ namespace Launcher.Views
             if (sender is Button { Tag: string path }) OpenPath(path);
         }
 
+        private void OpenModsFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var id = Vm.SelectedInstanceId;
+            if (id == null) return;
+            var dir = _instances.GetModsPath(id);
+            Directory.CreateDirectory(dir);
+            OpenPath(dir);
+        }
+
+        private void RamPreset_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: string s } && int.TryParse(s, out var mb))
+                Vm.EditRam = mb;
+        }
+
+        private void ResPreset_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: string s })
+            {
+                var parts = s.Split('x');
+                if (parts.Length == 2 && int.TryParse(parts[0], out var w) && int.TryParse(parts[1], out var h))
+                {
+                    Vm.EditWidth = w;
+                    Vm.EditHeight = h;
+                }
+            }
+        }
+
         // ── Helpers ───────────────────────────────────────────────────────────
 
         private static string? GetActionId(object sender) =>

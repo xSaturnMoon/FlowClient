@@ -1,9 +1,15 @@
 {
   "mappings": {
+    "com/flowclient/mixin/BlockRenderDispatcherMixin": {
+      "renderBatched": "Lnet/minecraft/class_776;method_3355(Lnet/minecraft/class_2680;Lnet/minecraft/class_2338;Lnet/minecraft/class_1920;Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;ZLnet/minecraft/class_5819;)V"
+    },
     "com/flowclient/mixin/ChatComponentMixin": {
       "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V": "Lnet/minecraft/class_332;method_25294(IIIII)V",
       "addMessage(Lnet/minecraft/network/chat/Component;)V": "Lnet/minecraft/class_338;method_1812(Lnet/minecraft/class_2561;)V",
       "render": "Lnet/minecraft/class_338;method_1805(Lnet/minecraft/class_332;III)V"
+    },
+    "com/flowclient/mixin/ClientLevelBlockUpdateMixin": {
+      "sendBlockUpdated": "Lnet/minecraft/class_638;method_8413(Lnet/minecraft/class_2338;Lnet/minecraft/class_2680;Lnet/minecraft/class_2680;I)V"
     },
     "com/flowclient/mixin/ClientLevelMixin": {
       "getRainLevel": "Lnet/minecraft/class_1937;method_8430(F)F",
@@ -67,7 +73,8 @@
       "keyPress": "Lnet/minecraft/class_309;method_1466(JIIII)V"
     },
     "com/flowclient/mixin/LevelRendererMixin": {
-      "renderHitOutline": "Lnet/minecraft/class_761;method_22712(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;Lnet/minecraft/class_1297;DDDLnet/minecraft/class_2338;Lnet/minecraft/class_2680;)V"
+      "renderHitOutline": "Lnet/minecraft/class_761;method_22712(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;Lnet/minecraft/class_1297;DDDLnet/minecraft/class_2338;Lnet/minecraft/class_2680;)V",
+      "renderLevel": "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_4587;FJZLnet/minecraft/class_4184;Lnet/minecraft/class_757;Lnet/minecraft/class_765;Lorg/joml/Matrix4f;)V"
     },
     "com/flowclient/mixin/LivingEntityRendererMixin": {
       "shouldShowName": "Lnet/minecraft/class_922;method_4055(Lnet/minecraft/class_1309;)Z"
@@ -115,10 +122,16 @@
   },
   "data": {
     "named:intermediary": {
+      "com/flowclient/mixin/BlockRenderDispatcherMixin": {
+        "renderBatched": "Lnet/minecraft/class_776;method_3355(Lnet/minecraft/class_2680;Lnet/minecraft/class_2338;Lnet/minecraft/class_1920;Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;ZLnet/minecraft/class_5819;)V"
+      },
       "com/flowclient/mixin/ChatComponentMixin": {
         "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V": "Lnet/minecraft/class_332;method_25294(IIIII)V",
         "addMessage(Lnet/minecraft/network/chat/Component;)V": "Lnet/minecraft/class_338;method_1812(Lnet/minecraft/class_2561;)V",
         "render": "Lnet/minecraft/class_338;method_1805(Lnet/minecraft/class_332;III)V"
+      },
+      "com/flowclient/mixin/ClientLevelBlockUpdateMixin": {
+        "sendBlockUpdated": "Lnet/minecraft/class_638;method_8413(Lnet/minecraft/class_2338;Lnet/minecraft/class_2680;Lnet/minecraft/class_2680;I)V"
       },
       "com/flowclient/mixin/ClientLevelMixin": {
         "getRainLevel": "Lnet/minecraft/class_1937;method_8430(F)F",
@@ -182,7 +195,8 @@
         "keyPress": "Lnet/minecraft/class_309;method_1466(JIIII)V"
       },
       "com/flowclient/mixin/LevelRendererMixin": {
-        "renderHitOutline": "Lnet/minecraft/class_761;method_22712(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;Lnet/minecraft/class_1297;DDDLnet/minecraft/class_2338;Lnet/minecraft/class_2680;)V"
+        "renderHitOutline": "Lnet/minecraft/class_761;method_22712(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;Lnet/minecraft/class_1297;DDDLnet/minecraft/class_2338;Lnet/minecraft/class_2680;)V",
+        "renderLevel": "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_4587;FJZLnet/minecraft/class_4184;Lnet/minecraft/class_757;Lnet/minecraft/class_765;Lorg/joml/Matrix4f;)V"
       },
       "com/flowclient/mixin/LivingEntityRendererMixin": {
         "shouldShowName": "Lnet/minecraft/class_922;method_4055(Lnet/minecraft/class_1309;)Z"

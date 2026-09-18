@@ -31,6 +31,7 @@ namespace Launcher.Services
         private readonly DispatcherTimer _timer;
         private SavedAccount? _account;
         private bool _refreshing;
+        private bool _startupValidationDone;
         private Task<bool>? _startupValidationTask;
 
         public event Action<SessionState, string>? StateChanged;
@@ -92,6 +93,10 @@ namespace Launcher.Services
         /// </summary>
         public Task<bool> InitializeAndValidateOnStartupAsync(CancellationToken ct = default)
         {
+            // Already validated once this session – return cached result immediately
+            if (_startupValidationDone)
+                return Task.FromResult(IsSessionReady);
+
             if (_startupValidationTask != null && !_startupValidationTask.IsCompleted)
                 return _startupValidationTask;
 
@@ -105,6 +110,7 @@ namespace Launcher.Services
             if (saved == null || string.IsNullOrWhiteSpace(saved.MinecraftToken))
             {
                 _account = null;
+                _startupValidationDone = true;
                 SetState(SessionState.NotLoggedIn, "Nessun account collegato");
                 return false;
             }
@@ -126,6 +132,7 @@ namespace Launcher.Services
                         if (profile != null)
                         {
                             LastSuccessfulSync = DateTime.Now;
+                            _startupValidationDone = true;
                             SetState(SessionState.Ready, "Sessione verificata e attiva");
                             SessionRefreshed?.Invoke(saved, profile);
                             _timer.Start();
@@ -140,27 +147,51 @@ namespace Launcher.Services
                     {
                         LauncherLogService.Instance.Warn("Token returned 401 Unauthorized; attempting proactive refresh.");
                     }
+                    catch (HttpRequestException ex) when (ex.StatusCode == (System.Net.HttpStatusCode)429)
+                    {
+                        // Rate-limited by Mojang – keep existing token, do NOT expire
+                        LauncherLogService.Instance.Warn("Rate-limited (HTTP 429) during validation; keeping existing session.");
+                        LastSuccessfulSync = DateTime.Now;
+                        _startupValidationDone = true;
+                        SetState(SessionState.Ready, "Sessione attiva");
+                        _timer.Start();
+                        return true;
+                    }
                     catch (Exception ex) when (IsNetworkFailure(ex))
                     {
                         LauncherLogService.Instance.Warn("Network unreachable during validation; falling back to offline mode.");
                         LastSuccessfulSync = DateTime.Now;
+                        _startupValidationDone = true;
                         SetState(SessionState.OfflineReady, "Modalità offline (token valido)");
                         return true;
                     }
                 }
 
                 // If token expires soon (<= 4h) or fast-check needed a refresh:
-                return await RefreshInternalAsync(ct);
+                var result = await RefreshInternalAsync(ct);
+                if (result) _startupValidationDone = true;
+                return result;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == (System.Net.HttpStatusCode)429)
+            {
+                // Rate-limited – keep session alive, never expire on 429
+                LauncherLogService.Instance.Warn("Rate-limited (HTTP 429) during startup; keeping existing session.");
+                _startupValidationDone = true;
+                SetState(SessionState.Ready, "Sessione attiva");
+                _timer.Start();
+                return true;
             }
             catch (Exception ex)
             {
                 LauncherLogService.Instance.Error($"Startup session validation error: {ex.Message}");
                 if (_account != null && _account.TokenExpiry > DateTime.UtcNow && IsNetworkFailure(ex))
                 {
+                    _startupValidationDone = true;
                     SetState(SessionState.OfflineReady, "Modalità offline");
                     return true;
                 }
 
+                _startupValidationDone = true;
                 SetState(SessionState.Expired, "Sessione scaduta");
                 RefreshFailed?.Invoke(ex);
                 return false;

@@ -1,9 +1,9 @@
 {
-  "version": "1.2.5",
+  "version": "1.2.7",
   "releaseDate": "September 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.5: Fix per l'apertura delle Impostazioni (risolto stile ExploreTextBox XAML); sistema di autenticazione ultra-intelligente con rinnovo token Microsoft all'avvio e blocco proattivo del tasto Launch durante la verifica; Impostazioni rinnovate con categorie SVG, gestione rapida cartelle (Mondi, Screenshot, Texture, Shader, Mod), pulizia disco con calcolo esatto dei MB liberati e telemetria RAM in tempo reale.",
+  "releaseNotes": "Flow Client v1.2.7: Redesign completo della sezione Versioni (Explore). Interfaccia moderna in stile Flow Settings: sidebar istanze a sinistra elegante con card scure e badge, pulsanti Nuova Versione e Importa Modpack differenziati, hero banner dettagliato con pulsanti azione rifiniti (Gioca, Cartella, Duplica, Elimina), sub-tab intuitive (Impostazioni, Mod Installate, Cerca Mod su Modrinth), card mod con toggle Abilita/Disabilita e pulsante Rimuovi, preset rapidi RAM e Risoluzione, e scrollbar scura integrata su ogni pannello.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.5/FlowClient-v1.2.5.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.7/FlowClient-v1.2.7.zip"
 }

@@ -244,8 +244,8 @@ namespace Launcher.Services
                 var pipeName = $"discord-ipc-{i}";
                 try
                 {
-                    var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-                    pipe.Connect(500);
+                    var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.None);
+                    pipe.Connect(1000);
 
                     _pipe = pipe;
 

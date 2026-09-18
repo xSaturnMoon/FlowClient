@@ -29,6 +29,7 @@ namespace Launcher.Views
         private bool _skinViewerOpen;
         private bool _skinAnimating;
         private double _slideDistance = 520;
+        private DateTime _lastManualRefresh = DateTime.MinValue;
         private DispatcherTimer? _lockTimer;
 
         private static readonly string RecentSkinsDir = Path.Combine(
@@ -48,10 +49,10 @@ namespace Launcher.Views
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             StartLockTimer();
-            _ = LoadAccountAsync();
+            LoadAccount();
         }
 
-        private async Task LoadAccountAsync()
+        private void LoadAccount()
         {
             var vm = GetVm();
             if (vm == null) return;
@@ -63,17 +64,19 @@ namespace Launcher.Views
 
             _currentAccount = saved;
             ApplyToVm(vm, saved);
-            _session.Start(saved);
 
-            if (saved.TokenExpiry > DateTime.UtcNow.AddHours(1))
+            // Only bind to existing cached session state – NEVER trigger network calls here
+            if (_session.IsSessionReady && _session.CurrentAccount != null)
             {
                 vm.IsSyncing = false;
-                vm.LastSyncText = FormatSyncTime(DateTime.Now);
-                _ = RefreshProfileInBackgroundAsync(saved, vm);
-                return;
+                vm.LastSyncText = FormatSyncTime(_session.LastSuccessfulSync ?? DateTime.Now);
             }
-
-            await TryRestoreSessionAsync(saved, vm, showLoading: false);
+            else if (!_session.IsValidating)
+            {
+                _session.Start(saved);
+                vm.IsSyncing = false;
+                vm.LastSyncText = FormatSyncTime(DateTime.Now);
+            }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -239,6 +242,14 @@ namespace Launcher.Views
             var vm = GetVm();
             if (vm == null) return;
 
+            // 30-second cooldown to prevent Mojang rate-limiting (HTTP 429)
+            if ((DateTime.Now - _lastManualRefresh).TotalSeconds < 30)
+            {
+                vm.LastSyncText = "Attendi prima di aggiornare di nuovo";
+                return;
+            }
+            _lastManualRefresh = DateTime.Now;
+
             vm.IsSyncing = true;
             vm.LastSyncText = "Syncing…";
             _cts?.Cancel();
@@ -261,7 +272,16 @@ namespace Launcher.Views
             {
                 vm.IsSyncing = false;
                 vm.LastSyncText = FormatSyncTime(DateTime.Now);
-                MessageBox.Show(ex.Message, "Session Refresh", MessageBoxButton.OK, MessageBoxImage.Warning);
+                // Don't show popup for rate-limiting or network errors
+                if (ex.Message.Contains("429") || ex.Message.Contains("Too Many"))
+                {
+                    LauncherLogService.Instance.Warn($"Manual refresh rate-limited: {ex.Message}");
+                    vm.LastSyncText = "Rate-limited, riprova fra poco";
+                }
+                else
+                {
+                    LauncherLogService.Instance.Error($"Manual refresh failed: {ex.Message}");
+                }
             }
         }
 
