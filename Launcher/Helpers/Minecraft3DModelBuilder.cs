@@ -54,7 +54,7 @@ namespace Launcher.Helpers
             _grassSideMat = LoadMaterial("grass_side.png");
             _dirtMat      = LoadMaterial("dirt.png");
             _paperMat     = LoadMaterial("paper.png");
-            _paperEdgeMat = new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(190, 190, 190)));
+            _paperEdgeMat = new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(215, 212, 202)));
             _anvilTopMat  = LoadMaterial("anvil_top.png");
             _anvilTopCleanMat = LoadMaterial("anvil_top_clean.png");
             _anvilSideMat = LoadMaterial("anvil_side.png");
@@ -217,31 +217,16 @@ namespace Launcher.Helpers
 
             const double totalSize = 2.3;
             const double originOffset = totalSize / 2.0; // 1.15
-            const double halfDepth = 0.07;               // visible tactile 3D thickness
-
-            // 1. Full Front Face (+Z) with crisp razor-sharp paper texture
-            AddFace(group,
-                new Point3D(-originOffset, -originOffset, halfDepth),
-                new Point3D(originOffset, -originOffset, halfDepth),
-                new Point3D(originOffset, originOffset, halfDepth),
-                new Point3D(-originOffset, originOffset, halfDepth),
-                _paperMat!);
-
-            // 2. Full Back Face (-Z)
-            AddFace(group,
-                new Point3D(originOffset, -originOffset, -halfDepth),
-                new Point3D(-originOffset, -originOffset, -halfDepth),
-                new Point3D(-originOffset, originOffset, -halfDepth),
-                new Point3D(originOffset, originOffset, -halfDepth),
-                _paperMat!);
-
-            // 3. 3D Perimeter Voxel Edges (connecting front to back along the paper silhouette)
-            var edgeMesh = new MeshGeometry3D();
+            const double halfDepth = 0.07;               // tactile authentic voxel thickness
             const double ps = totalSize / 16.0;
 
             bool IsOpaque(int x, int y) =>
                 x >= 0 && x < 16 && y >= 0 && y < 16 &&
                 (PaperOpaqueMask[y] & (1 << (15 - x))) != 0;
+
+            var frontMesh = new MeshGeometry3D();
+            var backMesh = new MeshGeometry3D();
+            var edgeMesh = new MeshGeometry3D();
 
             void AddEdgeQuad(Point3D p0, Point3D p1, Point3D p2, Point3D p3)
             {
@@ -271,6 +256,50 @@ namespace Launcher.Helpers
                     double y1 = -(y * ps - originOffset);
                     double y0 = y1 - ps;
 
+                    double u0 = x / 16.0;
+                    double u1 = (x + 1) / 16.0;
+                    double v0 = y / 16.0;
+                    double v1 = (y + 1) / 16.0;
+
+                    // 1. Pixel Front Face (+Z)
+                    int fBase = frontMesh.Positions.Count;
+                    frontMesh.Positions.Add(new Point3D(x0, y0, halfDepth));
+                    frontMesh.Positions.Add(new Point3D(x1, y0, halfDepth));
+                    frontMesh.Positions.Add(new Point3D(x1, y1, halfDepth));
+                    frontMesh.Positions.Add(new Point3D(x0, y1, halfDepth));
+
+                    frontMesh.TextureCoordinates.Add(new Point(u0, v1));
+                    frontMesh.TextureCoordinates.Add(new Point(u1, v1));
+                    frontMesh.TextureCoordinates.Add(new Point(u1, v0));
+                    frontMesh.TextureCoordinates.Add(new Point(u0, v0));
+
+                    frontMesh.TriangleIndices.Add(fBase);
+                    frontMesh.TriangleIndices.Add(fBase + 1);
+                    frontMesh.TriangleIndices.Add(fBase + 2);
+                    frontMesh.TriangleIndices.Add(fBase);
+                    frontMesh.TriangleIndices.Add(fBase + 2);
+                    frontMesh.TriangleIndices.Add(fBase + 3);
+
+                    // 2. Pixel Back Face (-Z)
+                    int bBase = backMesh.Positions.Count;
+                    backMesh.Positions.Add(new Point3D(x1, y0, -halfDepth));
+                    backMesh.Positions.Add(new Point3D(x0, y0, -halfDepth));
+                    backMesh.Positions.Add(new Point3D(x0, y1, -halfDepth));
+                    backMesh.Positions.Add(new Point3D(x1, y1, -halfDepth));
+
+                    backMesh.TextureCoordinates.Add(new Point(u1, v1));
+                    backMesh.TextureCoordinates.Add(new Point(u0, v1));
+                    backMesh.TextureCoordinates.Add(new Point(u0, v0));
+                    backMesh.TextureCoordinates.Add(new Point(u1, v0));
+
+                    backMesh.TriangleIndices.Add(bBase);
+                    backMesh.TriangleIndices.Add(bBase + 1);
+                    backMesh.TriangleIndices.Add(bBase + 2);
+                    backMesh.TriangleIndices.Add(bBase);
+                    backMesh.TriangleIndices.Add(bBase + 2);
+                    backMesh.TriangleIndices.Add(bBase + 3);
+
+                    // 3. Perimeter Edges
                     // Top (+Y) edge
                     if (!IsOpaque(x, y - 1))
                     {
@@ -313,10 +342,14 @@ namespace Launcher.Helpers
                 }
             }
 
+            if (frontMesh.Positions.Count > 0)
+                group.Children.Add(new GeometryModel3D(frontMesh, _paperMat!));
+
+            if (backMesh.Positions.Count > 0)
+                group.Children.Add(new GeometryModel3D(backMesh, _paperMat!));
+
             if (edgeMesh.Positions.Count > 0)
-            {
                 group.Children.Add(new GeometryModel3D(edgeMesh, _paperEdgeMat!));
-            }
 
             return group;
         }

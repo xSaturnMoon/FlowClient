@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,6 +31,8 @@ namespace Launcher.Views
         private readonly MinecraftLaunchService _launch = new();
         private readonly ServerFavoritesService _favorites = ServerFavoritesService.Instance;
         private readonly MinecraftProcessTracker _tracker = MinecraftProcessTracker.Instance;
+
+        private CancellationTokenSource? _launchCts;
 
         // 3D Model rotation & floating state
         private bool _isDragging3D;
@@ -116,12 +119,14 @@ namespace Launcher.Views
 
                 if (_tracker.IsLaunching)
                 {
-                    Vm.CanPlay = false;
+                    Vm.IsLaunching = true;
+                    Vm.CanPlay = true;
                     Vm.IsRunning = false;
                     Vm.StatusMessage = _tracker.LaunchStatusMessage;
                 }
                 else
                 {
+                    Vm.IsLaunching = false;
                     Vm.CanPlay = !string.IsNullOrEmpty(Vm.SelectedInstanceId);
                     Vm.StatusMessage = _tracker.LaunchStatusMessage;
                 }
@@ -132,6 +137,7 @@ namespace Launcher.Views
         {
             Dispatcher.BeginInvoke(() =>
             {
+                Vm.IsLaunching = false;
                 Vm.IsRunning = true;
                 Vm.CanPlay = true;
                 Vm.StatusMessage = "Minecraft is running";
@@ -142,6 +148,7 @@ namespace Launcher.Views
         {
             Dispatcher.BeginInvoke(() =>
             {
+                Vm.IsLaunching = false;
                 Vm.IsRunning = false;
                 Vm.CanPlay = true;
                 Vm.StatusMessage = null;
@@ -152,18 +159,21 @@ namespace Launcher.Views
         {
             if (_tracker.IsRunning)
             {
+                Vm.IsLaunching = false;
                 Vm.IsRunning = true;
                 Vm.CanPlay = true;
                 Vm.StatusMessage = "Minecraft is running";
             }
             else if (_tracker.IsLaunching)
             {
+                Vm.IsLaunching = true;
                 Vm.IsRunning = false;
-                Vm.CanPlay = false;
+                Vm.CanPlay = true;
                 Vm.StatusMessage = _tracker.LaunchStatusMessage;
             }
             else
             {
+                Vm.IsLaunching = false;
                 Vm.IsRunning = false;
                 Vm.CanPlay = !string.IsNullOrEmpty(Vm.SelectedInstanceId);
                 Vm.StatusMessage = null;
@@ -265,7 +275,7 @@ namespace Launcher.Views
             vm.SelectedRamText = $"{inst.RamMb} MB RAM";
             vm.SelectedLastPlayed = FormatLastPlayed(inst.LastPlayedAt);
 
-            vm.CanPlay = !_tracker.IsRunning && !_tracker.IsLaunching;
+            vm.CanPlay = true;
 
             UpdateLoaderBadge(inst.Loader);
             Update3DModel(inst.Loader);
@@ -680,7 +690,19 @@ namespace Launcher.Views
                 return;
             }
 
-            if (_tracker.IsLaunching) return;
+            if (_tracker.IsLaunching)
+            {
+                LauncherLogService.Instance.Info("User requested Stop Launch.");
+                try
+                {
+                    _launchCts?.Cancel();
+                }
+                catch { }
+                _tracker.SetLaunching(false, null);
+                Vm.IsLaunching = false;
+                Vm.StatusMessage = null;
+                return;
+            }
 
             var id = Vm.SelectedInstanceId;
             if (string.IsNullOrEmpty(id)) return;
@@ -689,7 +711,12 @@ namespace Launcher.Views
                 ? $"Connecting to {server.Host}…"
                 : "Preparing launch…";
 
+            _launchCts?.Dispose();
+            _launchCts = new CancellationTokenSource();
+            var ct = _launchCts.Token;
+
             _tracker.SetLaunching(true, initialMsg);
+            Vm.IsLaunching = true;
             LauncherLogService.Instance.Info(initialMsg);
 
             try
@@ -702,14 +729,26 @@ namespace Launcher.Views
                 });
 
                 var result = await Task.Run(async () =>
-                    await _launch.LaunchAsync(id, progress, server: server));
+                    await _launch.LaunchAsync(id, progress, cancellationToken: ct, server: server));
+
+                if (ct.IsCancellationRequested)
+                {
+                    _tracker.SetLaunching(false, null);
+                    Vm.IsLaunching = false;
+                    Vm.StatusMessage = null;
+                    LauncherLogService.Instance.Info("Launch aborted by user.");
+                    return;
+                }
 
                 if (!result.Success)
                 {
                     _tracker.SetLaunching(false, result.Message);
                     LauncherLogService.Instance.Error(result.Message);
-                    MessageBox.Show(result.Message, "Launch Failed",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    if (result.Message != "Launch cancelled.")
+                    {
+                        MessageBox.Show(result.Message, "Launch Failed",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
                 else if (result.Process != null)
                 {
@@ -721,12 +760,27 @@ namespace Launcher.Views
                     _tracker.SetLaunching(false, null);
                 }
             }
+            catch (OperationCanceledException)
+            {
+                _tracker.SetLaunching(false, null);
+                LauncherLogService.Instance.Info("Launch aborted by user.");
+            }
             catch (Exception ex)
             {
+                if (ct.IsCancellationRequested)
+                {
+                    _tracker.SetLaunching(false, null);
+                    LauncherLogService.Instance.Info("Launch aborted by user.");
+                    return;
+                }
                 _tracker.SetLaunching(false, ex.Message);
                 LauncherLogService.Instance.Error(ex.Message);
                 MessageBox.Show(ex.Message, "Launch Failed",
                     MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Vm.IsLaunching = false;
             }
         }
 

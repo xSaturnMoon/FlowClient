@@ -131,6 +131,19 @@ namespace Launcher.ViewModels
             set { _canPlay = value; OnPropertyChanged(); }
         }
 
+        private bool _isLaunching;
+
+        public bool IsLaunching
+        {
+            get => _isLaunching;
+            set
+            {
+                _isLaunching = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PlayButtonText));
+            }
+        }
+
         public bool IsRunning
         {
             get => _isRunning;
@@ -142,7 +155,15 @@ namespace Launcher.ViewModels
             }
         }
 
-        public string PlayButtonText => _isRunning ? "STOP GAME" : "LAUNCH";
+        public string PlayButtonText
+        {
+            get
+            {
+                if (_isRunning) return "STOP GAME";
+                if (_isLaunching) return "STOP LAUNCH";
+                return "LAUNCH";
+            }
+        }
 
         public string? StatusMessage
         {

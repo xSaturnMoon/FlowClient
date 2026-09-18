@@ -1,9 +1,9 @@
 {
-  "version": "1.2.1",
-  "releaseDate": "September 14, 2026",
+  "version": "1.2.2",
+  "releaseDate": "September 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.1: Risolto crash al piazzamento dei blocchi (assegnazione ID entità sicura e Accessor). Risolto problema di persistenza per lista server, render distance, volumi e tasti rapidi delle mod (sincronizzazione bidirezionale con verifica data/ora più recente).",
+  "releaseNotes": "Flow Client v1.2.2: Icone di navigazione unificate con stile outline coerente; introdotto pulsante STOP LAUNCH per annullare l'avvio e il download in qualsiasi momento; risolto bug grafico nel rendering 3D dell'icona Fabric (ora in vera estrusione voxel senza piani 2D); restyling raffinato del tasto profilo SaturnLife, della scheda istanza e dei pulsanti principali.",
   "manifestUrl": null,
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.1/FlowClient-v1.2.1.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.2/FlowClient-v1.2.2.zip"
 }

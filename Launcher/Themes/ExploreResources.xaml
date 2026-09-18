@@ -884,7 +884,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="b" CornerRadius="14" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                    <Border x:Name="b" CornerRadius="8" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                         <Border.Effect>
                             <DropShadowEffect Color="#000000" BlurRadius="12" Opacity="0.25" Direction="270" ShadowDepth="2"/>
                         </Border.Effect>
