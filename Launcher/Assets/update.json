@@ -1,9 +1,9 @@
 {
-  "version": "1.2.2",
+  "version": "1.2.3",
   "releaseDate": "September 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.2: Icone di navigazione unificate con stile outline coerente; introdotto pulsante STOP LAUNCH per annullare l'avvio e il download in qualsiasi momento; risolto bug grafico nel rendering 3D dell'icona Fabric (ora in vera estrusione voxel senza piani 2D); restyling raffinato del tasto profilo SaturnLife, della scheda istanza e dei pulsanti principali.",
+  "releaseNotes": "Flow Client v1.2.3: Nuove icone Home e Settings ridisegnate con geometria pulita ed elegante; fix rendering 3D Fabric (bloccate coordinate UV e risolti artefatti texture e bordi); tasto di aggiornamento monocromatico grigio uniforme per rotellina e spunta di completamento; risolto il problema degli angoli inferiori che straripavano nelle schede secondarie con angoli curvi coerenti in tutte le viste.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.2/FlowClient-v1.2.2.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.3/FlowClient-v1.2.3.zip"
 }

@@ -306,7 +306,7 @@
                 <Path x:Name="OuterCircleSpinner"
                       Data="M2,2 M22,22 M12,2 A10,10 0 0,1 22,12"
                       StrokeThickness="1.8" Fill="Transparent"
-                      Stroke="#3B82F6"
+                      Stroke="#8E92A4"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                       Width="18" Height="18" Stretch="Uniform"
                       Opacity="0" RenderTransformOrigin="0.5,0.5">
@@ -322,7 +322,7 @@
                 <Path x:Name="IconCheckmark"
                       Data="M4,12 L9,17 L20,6"
                       StrokeThickness="1.8" Fill="Transparent"
-                      Stroke="#22C55E"
+                      Stroke="#8E92A4"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                       Width="18" Height="18" Stretch="Uniform"
                       Opacity="0" RenderTransformOrigin="0.5,0.5">

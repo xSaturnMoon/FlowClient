@@ -98,7 +98,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="#141416">
+    <Grid Background="Transparent">
 
         <Grid Margin="36,32,36,24">
             <Grid.ColumnDefinitions>

@@ -217,7 +217,7 @@ namespace Launcher.Helpers
 
             const double totalSize = 2.3;
             const double originOffset = totalSize / 2.0; // 1.15
-            const double halfDepth = 0.07;               // tactile authentic voxel thickness
+            const double halfDepth = 0.045;              // authentic sleek paper thickness
             const double ps = totalSize / 16.0;
 
             bool IsOpaque(int x, int y) =>
@@ -227,6 +227,26 @@ namespace Launcher.Helpers
             var frontMesh = new MeshGeometry3D();
             var backMesh = new MeshGeometry3D();
             var edgeMesh = new MeshGeometry3D();
+
+            // Mesh boundary anchors: force frontMesh and backMesh 3D and UV bounding boxes
+            // to span the complete [-originOffset, originOffset] and [0, 1] UV space.
+            // This guarantees WPF never renormalizes/rescales texture coordinates,
+            // locking every voxel face 1:1 with paper.png without any gap or drift.
+            frontMesh.Positions.Add(new Point3D(-originOffset, originOffset, halfDepth));
+            frontMesh.TextureCoordinates.Add(new Point(0, 0));
+            frontMesh.Positions.Add(new Point3D(originOffset, -originOffset, halfDepth));
+            frontMesh.TextureCoordinates.Add(new Point(1, 1));
+            frontMesh.TriangleIndices.Add(0);
+            frontMesh.TriangleIndices.Add(0);
+            frontMesh.TriangleIndices.Add(0);
+
+            backMesh.Positions.Add(new Point3D(originOffset, originOffset, -halfDepth));
+            backMesh.TextureCoordinates.Add(new Point(1, 0));
+            backMesh.Positions.Add(new Point3D(-originOffset, -originOffset, -halfDepth));
+            backMesh.TextureCoordinates.Add(new Point(0, 1));
+            backMesh.TriangleIndices.Add(0);
+            backMesh.TriangleIndices.Add(0);
+            backMesh.TriangleIndices.Add(0);
 
             void AddEdgeQuad(Point3D p0, Point3D p1, Point3D p2, Point3D p3)
             {

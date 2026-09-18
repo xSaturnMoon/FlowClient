@@ -29,7 +29,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="#141416">
+    <Grid Background="Transparent">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="42,28,42,32">
             <StackPanel MaxWidth="880" HorizontalAlignment="Center">
 
