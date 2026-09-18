@@ -48,6 +48,10 @@ namespace Launcher.Services
         public bool EnableDiscordRpc { get; set; } = true;
         public int DefaultRamMb { get; set; } = 4096;
         public string? CustomJvmArgs { get; set; }
+        public string? CustomJavaPath { get; set; }
+        public int GameWidth { get; set; } = 1280;
+        public int GameHeight { get; set; } = 720;
+        public bool IsGameFullscreen { get; set; } = false;
 
         // Legacy UI prefs (kept for forward compatibility)
         public bool GlassEffect { get; set; } = true;

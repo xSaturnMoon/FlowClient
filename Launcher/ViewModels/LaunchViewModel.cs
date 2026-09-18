@@ -39,6 +39,7 @@ namespace Launcher.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(HasSelection));
                 OnPropertyChanged(nameof(ShowEmpty));
+                OnPropertyChanged(nameof(CanPlay));
             }
         }
 
@@ -74,7 +75,47 @@ namespace Launcher.ViewModels
         public bool IsAuthenticated
         {
             get => _isAuthenticated;
-            set { _isAuthenticated = value; OnPropertyChanged(); }
+            set
+            {
+                _isAuthenticated = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PlayButtonText));
+                OnPropertyChanged(nameof(CanPlay));
+            }
+        }
+
+        private bool _isValidatingSession;
+        private bool _isSessionReady;
+        private string _sessionStatusText = string.Empty;
+
+        public bool IsValidatingSession
+        {
+            get => _isValidatingSession;
+            set
+            {
+                _isValidatingSession = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PlayButtonText));
+                OnPropertyChanged(nameof(CanPlay));
+            }
+        }
+
+        public bool IsSessionReady
+        {
+            get => _isSessionReady;
+            set
+            {
+                _isSessionReady = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PlayButtonText));
+                OnPropertyChanged(nameof(CanPlay));
+            }
+        }
+
+        public string SessionStatusText
+        {
+            get => _sessionStatusText;
+            set { _sessionStatusText = value; OnPropertyChanged(); }
         }
 
         public bool IsDiscordRpcConnected
@@ -127,8 +168,18 @@ namespace Launcher.ViewModels
 
         public bool CanPlay
         {
-            get => _canPlay;
-            set { _canPlay = value; OnPropertyChanged(); }
+            get
+            {
+                if (_isRunning || _isLaunching) return true;
+                if (_isValidatingSession) return false;
+                if (!_isAuthenticated || !_isSessionReady) return true;
+                return _canPlay && HasSelection;
+            }
+            set
+            {
+                _canPlay = value;
+                OnPropertyChanged();
+            }
         }
 
         private bool _isLaunching;
@@ -141,6 +192,7 @@ namespace Launcher.ViewModels
                 _isLaunching = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(PlayButtonText));
+                OnPropertyChanged(nameof(CanPlay));
             }
         }
 
@@ -152,6 +204,7 @@ namespace Launcher.ViewModels
                 _isRunning = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(PlayButtonText));
+                OnPropertyChanged(nameof(CanPlay));
             }
         }
 
@@ -161,6 +214,8 @@ namespace Launcher.ViewModels
             {
                 if (_isRunning) return "STOP GAME";
                 if (_isLaunching) return "STOP LAUNCH";
+                if (_isValidatingSession) return "VERIFYING ACCOUNT…";
+                if (!_isAuthenticated || !_isSessionReady) return "SIGN IN TO PLAY";
                 return "LAUNCH";
             }
         }

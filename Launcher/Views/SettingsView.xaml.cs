@@ -2,8 +2,10 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
 using Launcher.Services;
 using Launcher.ViewModels;
 
@@ -37,9 +39,15 @@ namespace Launcher.Views
             Vm.ConfirmBeforeStop = settings.ConfirmBeforeStop;
             Vm.EnableDiscordRpc = settings.EnableDiscordRpc;
             Vm.DefaultRamMb = settings.DefaultRamMb > 0 ? settings.DefaultRamMb : 4096;
+            Vm.CustomJvmArgs = settings.CustomJvmArgs;
+            Vm.CustomJavaPath = settings.CustomJavaPath;
+            Vm.GameWidth = settings.GameWidth > 0 ? settings.GameWidth : 1280;
+            Vm.GameHeight = settings.GameHeight > 0 ? settings.GameHeight : 720;
+            Vm.IsGameFullscreen = settings.IsGameFullscreen;
 
             Vm.LoadSystemInfo();
             _ = AutoCheckUpdateSilentlyAsync();
+            _ = Vm.RefreshStorageAnalysisAsync();
 
             _loading = false;
         }
@@ -53,9 +61,9 @@ namespace Launcher.Views
                 if (res.UpdateAvailable)
                 {
                     _latestUpdateResult = res;
-                    Vm.LatestVersion = res.LatestVersion ?? "New version";
+                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
                     Vm.IsUpdateAvailable = true;
-                    Vm.UpdateCheckMessage = $"New version available: v{res.LatestVersion}!";
+                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
                 }
             }
             catch { }
@@ -78,6 +86,11 @@ namespace Launcher.Views
                 case nameof(SettingsViewModel.AutoCheckUpdates):
                 case nameof(SettingsViewModel.ConfirmBeforeStop):
                 case nameof(SettingsViewModel.DefaultRamMb):
+                case nameof(SettingsViewModel.CustomJvmArgs):
+                case nameof(SettingsViewModel.CustomJavaPath):
+                case nameof(SettingsViewModel.GameWidth):
+                case nameof(SettingsViewModel.GameHeight):
+                case nameof(SettingsViewModel.IsGameFullscreen):
                     break;
                 default:
                     return;
@@ -106,6 +119,11 @@ namespace Launcher.Views
                 s.AutoCheckUpdates = Vm.AutoCheckUpdates;
                 s.ConfirmBeforeStop = Vm.ConfirmBeforeStop;
                 s.DefaultRamMb = Vm.DefaultRamMb;
+                s.CustomJvmArgs = Vm.CustomJvmArgs;
+                s.CustomJavaPath = Vm.CustomJavaPath;
+                s.GameWidth = Vm.GameWidth;
+                s.GameHeight = Vm.GameHeight;
+                s.IsGameFullscreen = Vm.IsGameFullscreen;
             });
         }
 
@@ -133,20 +151,51 @@ namespace Launcher.Views
             }
         }
 
-        private void OpenInstancesDir_Click(object sender, RoutedEventArgs e)
+        private void BrowseJava_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderSafe(Vm.InstancesDirectory);
+            try
+            {
+                var dialog = new OpenFileDialog
+                {
+                    Title = "Seleziona eseguibile Java (javaw.exe)",
+                    Filter = "Java Executable (javaw.exe;java.exe)|javaw.exe;java.exe|Tutti gli eseguibili (*.exe)|*.exe",
+                    CheckFileExists = true
+                };
+
+                if (dialog.ShowDialog() == true)
+                {
+                    Vm.CustomJavaPath = dialog.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Impossibile aprire il selettore di file:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
-        private void OpenDataDir_Click(object sender, RoutedEventArgs e)
+        private void ResetJava_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderSafe(Vm.LauncherDataDirectory);
+            Vm.CustomJavaPath = null;
         }
 
-        private void OpenInstallDir_Click(object sender, RoutedEventArgs e)
+        private void JvmPreset_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderSafe(Vm.OfficialInstallDirectory);
+            if (sender is Button btn && btn.Tag is string preset)
+            {
+                Vm.CustomJvmArgs = preset == "DEFAULT" ? null : preset;
+            }
         }
+
+        // ══════ DIRECTORIES ══════
+        private void OpenWorldsDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.WorldsDirectory);
+        private void OpenScreenshotsDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.ScreenshotsDirectory);
+        private void OpenResourcePacksDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.ResourcePacksDirectory);
+        private void OpenShaderPacksDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.ShaderPacksDirectory);
+        private void OpenModsDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.ModsDirectory);
+        private void OpenCrashReportsDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.CrashReportsDirectory);
+        private void OpenMinecraftDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.MinecraftDirectory);
+        private void OpenLauncherDataDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.LauncherDataDirectory);
+        private void OpenInstallDir_Click(object sender, RoutedEventArgs e) => OpenFolderSafe(Vm.OfficialInstallDirectory);
 
         private static void OpenFolderSafe(string path)
         {
@@ -163,20 +212,76 @@ namespace Launcher.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Unable to open folder:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Impossibile aprire la cartella:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
-        private void CleanTempFiles_Click(object sender, RoutedEventArgs e)
+        private void CopyPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string path)
+            {
+                try
+                {
+                    Clipboard.SetText(path);
+                    if (btn.ToolTip is ToolTip tt)
+                    {
+                        tt.Content = "Copiato!";
+                        tt.IsOpen = true;
+                    }
+                    else
+                    {
+                        btn.ToolTip = "Copiato!";
+                    }
+                }
+                catch { }
+            }
+        }
+
+        // ══════ STORAGE & CLEANUP ══════
+        private async void CleanTempFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (Vm.IsCleaningStorage) return;
+            await Vm.CleanTempFilesAsync();
+        }
+
+        private async void CleanLogsAndCrashes_Click(object sender, RoutedEventArgs e)
+        {
+            if (Vm.IsCleaningStorage) return;
+            await Vm.CleanOldLogsAsync();
+        }
+
+        private async void RefreshStorage_Click(object sender, RoutedEventArgs e)
+        {
+            await Vm.RefreshStorageAnalysisAsync();
+        }
+
+        private void CopyDiagnostic_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                UpdateService.CleanOldUpdates();
-                Vm.MaintenanceMessage = "Temporary folders and old updates removed successfully!";
+                var report = Vm.GenerateDiagnosticReport();
+                Clipboard.SetText(report);
+                MessageBox.Show("Report diagnostico copiato negli appunti con successo!", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                Vm.MaintenanceMessage = $"Cleanup failed: {ex.Message}";
+                MessageBox.Show($"Errore nella copia del report:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void ResetDefaults_Click(object sender, RoutedEventArgs e)
+        {
+            var res = MessageBox.Show(
+                "Sei sicuro di voler ripristinare tutte le impostazioni predefinite di Flow Client?",
+                "Ripristina Impostazioni",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (res == MessageBoxResult.Yes)
+            {
+                LauncherSettingsService.Instance.Save(new LauncherSettings());
+                OnLoaded(this, new RoutedEventArgs());
+                MessageBox.Show("Tutte le impostazioni sono state ripristinate ai valori predefiniti.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -187,7 +292,7 @@ namespace Launcher.Views
             if (Vm.IsCheckingUpdate || Vm.IsUpdating) return;
 
             Vm.IsCheckingUpdate = true;
-            Vm.UpdateCheckMessage = "Checking for updates…";
+            Vm.UpdateCheckMessage = "Controllo aggiornamenti in corso…";
 
             try
             {
@@ -196,20 +301,20 @@ namespace Launcher.Views
                 if (res.UpdateAvailable)
                 {
                     _latestUpdateResult = res;
-                    Vm.LatestVersion = res.LatestVersion ?? "New version";
+                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
                     Vm.IsUpdateAvailable = true;
-                    Vm.UpdateCheckMessage = $"New version available: v{res.LatestVersion}!";
+                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
                 }
                 else
                 {
                     _latestUpdateResult = null;
                     Vm.IsUpdateAvailable = false;
-                    Vm.UpdateCheckMessage = "Flow Client is up to date!";
+                    Vm.UpdateCheckMessage = "Flow Client è già aggiornato all'ultima versione!";
                 }
             }
             catch (Exception ex)
             {
-                Vm.UpdateCheckMessage = $"Check failed: {ex.Message}";
+                Vm.UpdateCheckMessage = $"Controllo fallito: {ex.Message}";
             }
             finally
             {
@@ -223,15 +328,15 @@ namespace Launcher.Views
                 return;
 
             var confirm = MessageBox.Show(
-                $"Do you want to download and install Flow Client v{_latestUpdateResult.LatestVersion} now?",
-                "Flow Client Update",
+                $"Vuoi scaricare e installare Flow Client v{_latestUpdateResult.LatestVersion} adesso?",
+                "Aggiornamento Flow Client",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
             if (confirm != MessageBoxResult.Yes) return;
 
             Vm.IsUpdating = true;
-            Vm.UpdateCheckMessage = "Downloading update…";
+            Vm.UpdateCheckMessage = "Download aggiornamento in corso…";
 
             try
             {
@@ -250,17 +355,18 @@ namespace Launcher.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Download or installation failed:\n{ex.Message}", "Update Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                Vm.UpdateCheckMessage = "Update failed.";
                 Vm.IsUpdating = false;
+                Vm.UpdateCheckMessage = $"Aggiornamento fallito: {ex.Message}";
+                MessageBox.Show($"Impossibile completare l'aggiornamento:\n{ex.Message}", "Errore Aggiornamento", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void BackToLaunch_Click(object sender, RoutedEventArgs e)
         {
-            if (Window.GetWindow(this) is MainWindow window)
-                window.NavigateTo("Launch");
+            if (Window.GetWindow(this) is MainWindow mw)
+            {
+                mw.Home_Click(sender, e);
+            }
         }
     }
 }

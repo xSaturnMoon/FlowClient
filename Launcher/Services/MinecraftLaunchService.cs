@@ -37,7 +37,7 @@ namespace Launcher.Services
 
         private readonly InstanceService _instances = new();
         private readonly MinecraftAuthService _auth = new();
-        private readonly SessionKeepAliveService _session = new();
+        private readonly SessionKeepAliveService _session = SessionKeepAliveService.Instance;
         private readonly FlowClientBrandingService _branding = new();
         private readonly VoiceChatService _voiceChat = new();
         private readonly SharedGameSettingsService _sharedSettings = new();

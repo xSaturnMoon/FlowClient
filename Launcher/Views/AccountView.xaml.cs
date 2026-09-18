@@ -23,7 +23,7 @@ namespace Launcher.Views
 
         private CancellationTokenSource? _cts;
         private readonly MinecraftAuthService _auth = new();
-        private readonly SessionKeepAliveService _session = new();
+        private readonly SessionKeepAliveService _session = SessionKeepAliveService.Instance;
         private readonly LauncherInfoService _launcherInfo = new();
         private SavedAccount? _currentAccount;
         private bool _skinViewerOpen;
@@ -80,7 +80,6 @@ namespace Launcher.Views
         {
             _lockTimer?.Stop();
             _lockTimer = null;
-            _session.Stop();
         }
 
         private void StartLockTimer()
@@ -529,7 +528,7 @@ namespace Launcher.Views
                 "Sign out", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes) return;
 
-            _session.Stop();
+            _session.SignOut();
             _auth.DeleteSavedAccount();
             _currentAccount = null;
             var vm = GetVm();

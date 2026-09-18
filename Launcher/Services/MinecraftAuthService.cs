@@ -87,7 +87,7 @@ namespace Launcher.Services
         private const string ServicesUserAgent = "MinecraftLauncher/3.12.15";
 
         // Persistent storage path
-        private static readonly string SavePath = Path.Combine(
+        public static readonly string SavePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "FlowLauncher", "account.json");
 

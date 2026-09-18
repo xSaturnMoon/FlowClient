@@ -322,29 +322,78 @@ namespace Launcher.Views
             }
         }
 
+        private bool _sessionEventsHooked;
+
         private void LoadUserAccount()
         {
             try
             {
+                if (!_sessionEventsHooked)
+                {
+                    _sessionEventsHooked = true;
+                    SessionKeepAliveService.Instance.SessionRefreshed += (updated, profile) =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            _viewModel.PlayerName = string.IsNullOrWhiteSpace(updated.MinecraftUsername) ? "Player" : updated.MinecraftUsername;
+                            _viewModel.IsAuthenticated = true;
+                            _ = Task.Run(async () =>
+                            {
+                                var avatar = await SkinAvatarService.LoadHeadAsync(updated.SkinTextureUrl, updated.MinecraftUsername, updated.MinecraftUuid);
+                                if (avatar != null)
+                                {
+                                    Dispatcher.Invoke(() => _viewModel.PlayerAvatar = avatar);
+                                }
+                            });
+                        });
+                    };
+
+                    SessionKeepAliveService.Instance.StateChanged += (state, status) =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (state is SessionState.NotLoggedIn or SessionState.Expired)
+                            {
+                                _viewModel.PlayerName = "Guest";
+                                _viewModel.PlayerAvatar = null;
+                                _viewModel.IsAuthenticated = false;
+                            }
+                            else if (state is SessionState.Ready or SessionState.OfflineReady)
+                            {
+                                var current = SessionKeepAliveService.Instance.CurrentAccount;
+                                if (current != null)
+                                {
+                                    _viewModel.PlayerName = string.IsNullOrWhiteSpace(current.MinecraftUsername) ? "Player" : current.MinecraftUsername;
+                                    _viewModel.IsAuthenticated = true;
+                                }
+                            }
+                        });
+                    };
+                }
+
                 var account = new MinecraftAuthService().LoadSavedAccount();
                 if (account == null)
                 {
                     _viewModel.PlayerName = "Guest";
                     _viewModel.PlayerAvatar = null;
                     _viewModel.IsAuthenticated = false;
-                    return;
+                }
+                else
+                {
+                    _viewModel.PlayerName = string.IsNullOrWhiteSpace(account.MinecraftUsername) ? "Player" : account.MinecraftUsername;
+                    _viewModel.IsAuthenticated = true;
+                    _ = Task.Run(async () =>
+                    {
+                        var avatar = await SkinAvatarService.LoadHeadAsync(account.SkinTextureUrl, account.MinecraftUsername, account.MinecraftUuid);
+                        if (avatar != null)
+                        {
+                            Dispatcher.Invoke(() => _viewModel.PlayerAvatar = avatar);
+                        }
+                    });
                 }
 
-                _viewModel.PlayerName = string.IsNullOrWhiteSpace(account.MinecraftUsername) ? "Player" : account.MinecraftUsername;
-                _viewModel.IsAuthenticated = true;
-                _ = Task.Run(async () =>
-                {
-                    var avatar = await SkinAvatarService.LoadHeadAsync(account.SkinTextureUrl, account.MinecraftUsername, account.MinecraftUuid);
-                    if (avatar != null)
-                    {
-                        Dispatcher.Invoke(() => _viewModel.PlayerAvatar = avatar);
-                    }
-                });
+                // Proactively trigger the smart token validation & refresh in background
+                _ = SessionKeepAliveService.Instance.InitializeAndValidateOnStartupAsync();
             }
             catch { }
         }
@@ -372,7 +421,7 @@ namespace Launcher.Views
         private void Close_Click(object sender, RoutedEventArgs e) =>
             SystemCommands.CloseWindow(this);
 
-        private void Home_Click(object sender, RoutedEventArgs e) =>
+        public void Home_Click(object? sender = null, RoutedEventArgs? e = null) =>
             _viewModel.ActiveButton = "Home";
 
         private void Versions_Click(object sender, RoutedEventArgs e) =>
@@ -422,6 +471,7 @@ namespace Launcher.Views
             {
                 try
                 {
+                    SessionKeepAliveService.Instance.SignOut();
                     new MinecraftAuthService().DeleteSavedAccount();
                     _viewModel.PlayerName = "Guest";
                     _viewModel.PlayerAvatar = null;

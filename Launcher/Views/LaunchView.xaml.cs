@@ -65,6 +65,11 @@ namespace Launcher.Views
             InstanceSelectionService.SelectedInstanceChanged += OnInstanceSelectionChanged;
             InstanceService.InstancesChanged += OnInstancesChanged;
 
+            // Hook SessionKeepAliveService
+            SessionKeepAliveService.Instance.StateChanged += OnSessionStateChanged;
+            SessionKeepAliveService.Instance.SessionRefreshed += OnSessionRefreshed;
+            ApplySessionState(SessionKeepAliveService.Instance.State, SessionKeepAliveService.Instance.StatusText);
+
             // Hook Discord RPC
             DiscordRpcService.Instance.ConnectionChanged += OnDiscordRpcConnectionChanged;
             Vm.IsDiscordRpcConnected = DiscordRpcService.Instance.IsConnected;
@@ -84,6 +89,8 @@ namespace Launcher.Views
             _tracker.LaunchStateChanged -= OnLaunchStateChanged;
             InstanceSelectionService.SelectedInstanceChanged -= OnInstanceSelectionChanged;
             InstanceService.InstancesChanged -= OnInstancesChanged;
+            SessionKeepAliveService.Instance.StateChanged -= OnSessionStateChanged;
+            SessionKeepAliveService.Instance.SessionRefreshed -= OnSessionRefreshed;
             DiscordRpcService.Instance.ConnectionChanged -= OnDiscordRpcConnectionChanged;
 
             CompositionTarget.Rendering -= OnRendering3D;
@@ -96,6 +103,74 @@ namespace Launcher.Views
                 Vm.IsDiscordRpcConnected = connected;
                 Vm.DiscordRpcStatus = connected ? "Discord RPC Active" : "Waiting for Discord";
             });
+        }
+
+        private void OnSessionStateChanged(SessionState state, string status)
+        {
+            Dispatcher.BeginInvoke(() => ApplySessionState(state, status));
+        }
+
+        private void OnSessionRefreshed(SavedAccount account, MinecraftProfile profile)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                _ = LoadPlayerAvatarAsync(account);
+                ApplySessionState(SessionKeepAliveService.Instance.State, SessionKeepAliveService.Instance.StatusText);
+            });
+        }
+
+        private void ApplySessionState(SessionState state, string status)
+        {
+            var vm = Vm;
+            vm.SessionStatusText = status;
+
+            switch (state)
+            {
+                case SessionState.Validating:
+                    vm.IsValidatingSession = true;
+                    vm.IsSessionReady = false;
+                    if (!_tracker.IsRunning && !_tracker.IsLaunching)
+                    {
+                        vm.StatusMessage = status;
+                    }
+                    break;
+
+                case SessionState.Ready:
+                case SessionState.OfflineReady:
+                    vm.IsValidatingSession = false;
+                    vm.IsSessionReady = true;
+                    vm.IsAuthenticated = true;
+                    if (!_tracker.IsRunning && !_tracker.IsLaunching)
+                    {
+                        vm.StatusMessage = null;
+                    }
+                    break;
+
+                case SessionState.NotLoggedIn:
+                    vm.IsValidatingSession = false;
+                    vm.IsSessionReady = false;
+                    vm.IsAuthenticated = false;
+                    if (!_tracker.IsRunning && !_tracker.IsLaunching)
+                    {
+                        vm.StatusMessage = null;
+                    }
+                    break;
+
+                case SessionState.Expired:
+                    vm.IsValidatingSession = false;
+                    vm.IsSessionReady = false;
+                    vm.IsAuthenticated = false;
+                    if (!_tracker.IsRunning && !_tracker.IsLaunching)
+                    {
+                        vm.StatusMessage = "Sessione scaduta. Clicca per accedere.";
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            SyncRunningState();
         }
 
         private void OnInstancesChanged()
@@ -670,6 +745,26 @@ namespace Launcher.Views
 
         private async void Play_Click(object sender, RoutedEventArgs e)
         {
+            if (_tracker.IsRunning || _tracker.IsLaunching)
+            {
+                await LaunchSelectedAsync(null);
+                return;
+            }
+
+            if (SessionKeepAliveService.Instance.IsValidating)
+            {
+                return;
+            }
+
+            if (!Vm.IsAuthenticated || !SessionKeepAliveService.Instance.IsSessionReady)
+            {
+                if (Window.GetWindow(this) is MainWindow mw)
+                {
+                    mw.NavigateTo("Account");
+                }
+                return;
+            }
+
             await LaunchSelectedAsync(null);
         }
 
@@ -701,6 +796,18 @@ namespace Launcher.Views
                 _tracker.SetLaunching(false, null);
                 Vm.IsLaunching = false;
                 Vm.StatusMessage = null;
+                return;
+            }
+
+            if (!SessionKeepAliveService.Instance.IsSessionReady)
+            {
+                if (SessionKeepAliveService.Instance.IsValidating)
+                {
+                    MessageBox.Show("Verifica sessione Microsoft in corso. Attendi qualche istante prima di avviare il gioco.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                MessageBox.Show("Effettua l'accesso con il tuo account Microsoft prima di avviare il gioco.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
