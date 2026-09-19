@@ -90,18 +90,39 @@ namespace Launcher.Services
             int limit = 20,
             CancellationToken ct = default)
         {
-            var facets = BuildFacets(projectType, mcVersion, loader);
-            var url = $"search?query={Uri.EscapeDataString(query)}&limit={limit}&index=relevance&facets={Uri.EscapeDataString(facets)}";
-            var json = await Http.GetStringAsync(url, ct);
-            using var doc = JsonDocument.Parse(json);
-            var hits = new List<ModrinthSearchHit>();
-            if (!doc.RootElement.TryGetProperty("hits", out var arr)) return hits;
-            foreach (var el in arr.EnumerateArray())
+            var hits = await InternalSearchAsync(query, projectType, mcVersion, loader, limit, ct);
+            if (hits.Count == 0 && !string.IsNullOrEmpty(mcVersion))
             {
-                var hit = JsonSerializer.Deserialize<ModrinthSearchHit>(el.GetRawText());
-                if (hit != null) hits.Add(hit);
+                // Fallback without mcVersion filter (e.g. for snapshots or custom versions)
+                hits = await InternalSearchAsync(query, projectType, null, loader, limit, ct);
             }
             return hits;
+        }
+
+        private async Task<List<ModrinthSearchHit>> InternalSearchAsync(
+            string query,
+            string projectType,
+            string? mcVersion,
+            string? loader,
+            int limit,
+            CancellationToken ct)
+        {
+            var facets = BuildFacets(projectType, mcVersion, loader);
+            var url = $"search?query={Uri.EscapeDataString(query)}&limit={limit}&index=relevance&facets={Uri.EscapeDataString(facets)}";
+            try
+            {
+                var json = await Http.GetStringAsync(url, ct);
+                using var doc = JsonDocument.Parse(json);
+                var hits = new List<ModrinthSearchHit>();
+                if (!doc.RootElement.TryGetProperty("hits", out var arr)) return hits;
+                foreach (var el in arr.EnumerateArray())
+                {
+                    var hit = JsonSerializer.Deserialize<ModrinthSearchHit>(el.GetRawText());
+                    if (hit != null) hits.Add(hit);
+                }
+                return hits;
+            }
+            catch { return new(); }
         }
 
         public async Task<ModrinthProject?> GetProjectAsync(string idOrSlug, CancellationToken ct = default)
@@ -129,6 +150,21 @@ namespace Launcher.Services
             string? mcVersion,
             string? loader,
             CancellationToken ct = default)
+        {
+            var versions = await InternalGetVersionsAsync(projectId, mcVersion, loader, ct);
+            if (versions.Count == 0 && !string.IsNullOrEmpty(mcVersion))
+            {
+                // Fallback: fetch without mcVersion so user can pick the closest compatible version
+                versions = await InternalGetVersionsAsync(projectId, null, loader, ct);
+            }
+            return versions;
+        }
+
+        private async Task<List<ModrinthVersion>> InternalGetVersionsAsync(
+            string projectId,
+            string? mcVersion,
+            string? loader,
+            CancellationToken ct)
         {
             var loaders = MapLoader(loader);
             var query = $"project/{projectId}/version";

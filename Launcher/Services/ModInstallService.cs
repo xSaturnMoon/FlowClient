@@ -30,17 +30,31 @@ namespace Launcher.Services
             var installed = new List<InstalledContent>();
             foreach (var item in plan)
             {
-                if (instance.Mods.Any(m => m.ProjectId == item.Project.Id))
-                    continue;
-
-                progress?.Report($"Downloading {item.Project.Title}…");
-
+                var isTarget = item.Version.Id == versionId;
+                var existing = instance.Mods.FirstOrDefault(m => m.ProjectId == item.Project.Id);
                 var file = item.Version.Files.FirstOrDefault(f => f.Primary) ?? item.Version.Files.FirstOrDefault();
                 if (file == null)
                     continue;
 
-                var bytes = item.CachedBytes ?? await _modrinth.DownloadFileAsync(file.Url, ct);
                 var dest = Path.Combine(modsDir, file.Filename);
+
+                // If it's a dependency, already recorded, and the file exists on disk, skip downloading
+                if (!isTarget && existing != null && (File.Exists(dest) || File.Exists(dest + ".disabled")))
+                {
+                    installed.Add(existing);
+                    continue;
+                }
+
+                progress?.Report($"Downloading {item.Project.Title}…");
+
+                // If older file with different name exists, delete it to avoid version conflicts
+                if (existing != null && !string.Equals(existing.FileName, file.Filename, StringComparison.OrdinalIgnoreCase))
+                {
+                    try { File.Delete(Path.Combine(modsDir, existing.FileName)); } catch { }
+                    try { File.Delete(Path.Combine(modsDir, existing.FileName + ".disabled")); } catch { }
+                }
+
+                var bytes = item.CachedBytes ?? await _modrinth.DownloadFileAsync(file.Url, ct);
                 await File.WriteAllBytesAsync(dest, bytes, ct);
 
                 var content = new InstalledContent
@@ -66,6 +80,7 @@ namespace Launcher.Services
             {
                 Installed = installed,
                 MainMod = installed.FirstOrDefault(m => m.VersionId == versionId)
+                    ?? instance.Mods.FirstOrDefault(m => m.VersionId == versionId)
                     ?? installed.LastOrDefault()
             };
         }

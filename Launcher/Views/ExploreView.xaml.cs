@@ -43,6 +43,10 @@ namespace Launcher.Views
         {
             _isReady = true;
             RefreshList();
+            if (Vm.SelectedInstanceId == null && Vm.Instances.Count > 0)
+            {
+                SelectInstance(Vm.Instances[0].Id);
+            }
             if (_allVersions == null || _allVersions.Count == 0)
             {
                 await LoadVersionsAsync();
@@ -208,10 +212,14 @@ namespace Launcher.Views
             LoadDetail(id);
 
             var inst = _instances.GetById(id);
-            if (string.Equals(inst?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase) &&
-                (vm.DetailTab == ExploreDetailTab.Mods || vm.DetailTab == ExploreDetailTab.Catalog))
+            if (string.Equals(inst?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase))
             {
                 vm.DetailTab = ExploreDetailTab.Settings;
+            }
+            else
+            {
+                if (vm.DetailTab == ExploreDetailTab.Settings)
+                    vm.DetailTab = ExploreDetailTab.Catalog;
             }
             UpdateDetailTabChips();
             UpdateGlobalSidebarButtons();
@@ -269,7 +277,8 @@ namespace Launcher.Views
             vm.Mods.Clear();
             foreach (var m in inst.Mods.Where(m => string.IsNullOrEmpty(q) ||
                 m.Title.ToLowerInvariant().Contains(q) ||
-                m.Author.ToLowerInvariant().Contains(q)))
+                m.Author.ToLowerInvariant().Contains(q) ||
+                m.FileName.ToLowerInvariant().Contains(q)))
             {
                 vm.Mods.Add(ToContentVm(m));
             }
@@ -608,6 +617,15 @@ namespace Launcher.Views
             }
         }
 
+        private async void GoToModrinth_Click(object sender, RoutedEventArgs e)
+        {
+            Vm.DetailTab = ExploreDetailTab.Mods;
+            UpdateDetailTabChips();
+            Vm.CatalogType = CatalogType.Mod;
+            Vm.SelectedCatalogProjectId = null;
+            await InstanceCatalogBrowser.RefreshAsync();
+        }
+
         private void CatalogBrowser_InstallCompleted(object? sender, EventArgs e)
         {
             if (Vm.ShowGlobalPanel)
@@ -623,8 +641,6 @@ namespace Launcher.Views
             inst = _instances.GetById(Vm.SelectedInstanceId ?? "");
             if (inst == null) return;
 
-            Vm.DetailTab = ExploreDetailTab.Catalog;
-            UpdateDetailTabChips();
             LoadDetail(inst.Id);
             RefreshList();
         }

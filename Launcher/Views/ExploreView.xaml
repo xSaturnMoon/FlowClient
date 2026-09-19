@@ -336,11 +336,11 @@
                         <!-- Sub-tabs Bar -->
                         <Border Background="#0D0D10" BorderBrush="#1A1A22" BorderThickness="1" CornerRadius="9" Padding="4" Margin="0,0,0,16" HorizontalAlignment="Left">
                             <StackPanel Orientation="Horizontal">
-                                <Button x:Name="TabSettings" Content="⚙ Impostazioni" Tag="settings" Style="{StaticResource ExploreNavPillActive}" Click="Tab_Click"/>
-                                <Button x:Name="TabCatalog" Content="📦 Mod Installate" Tag="catalog" Style="{StaticResource ExploreNavPill}" Click="Tab_Click"
+                                <Button x:Name="TabCatalog" Content="📦 Mod Installate" Tag="catalog" Style="{StaticResource ExploreNavPillActive}" Click="Tab_Click"
                                         Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 <Button x:Name="TabMods" Content="🔍 Cerca Mod (Modrinth)" Tag="mods" Style="{StaticResource ExploreNavPill}" Click="Tab_Click"
                                         Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                <Button x:Name="TabSettings" Content="⚙ Impostazioni" Tag="settings" Style="{StaticResource ExploreNavPill}" Click="Tab_Click"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -351,77 +351,128 @@
                         <ScrollViewer.Resources>
                             <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
                         </ScrollViewer.Resources>
-                        <StackPanel MaxWidth="600" HorizontalAlignment="Left">
-                            <!-- Name card -->
-                            <Border Style="{StaticResource ExploreSettingCard}">
-                                <StackPanel>
-                                    <TextBlock Text="Nome dell'Istanza" Foreground="#FFF" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                                    <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditName}"/>
-                                </StackPanel>
-                            </Border>
+                        <Grid Margin="0,0,12,24">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="18"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                            <!-- RAM Card -->
-                            <Border Style="{StaticResource ExploreSettingCard}">
-                                <StackPanel>
-                                    <Grid Margin="0,0,0,10">
-                                        <TextBlock Text="Memoria RAM Allocata" Foreground="#FFF" FontSize="13" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding EditRam, StringFormat={}{0} MB}" Foreground="#3B82F6"
-                                                   HorizontalAlignment="Right" FontSize="13" FontWeight="Bold"/>
-                                    </Grid>
-                                    <Slider Style="{StaticResource ExploreSlider}" Minimum="1024" Maximum="16384"
-                                            TickFrequency="512" IsSnapToTickEnabled="True" Value="{Binding EditRam}"/>
-                                    <WrapPanel Margin="0,10,0,0">
-                                        <Button Content="2 GB" Tag="2048" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                        <Button Content="4 GB" Tag="4096" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                        <Button Content="6 GB" Tag="6144" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                        <Button Content="8 GB" Tag="8192" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                        <Button Content="12 GB" Tag="12288" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                        <Button Content="16 GB" Tag="16384" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                    </WrapPanel>
-                                </StackPanel>
-                            </Border>
+                            <!-- LEFT COLUMN -->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <!-- General Info Card -->
+                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="Informazioni Istanza" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,12"/>
+                                        
+                                        <TextBlock Text="Nome dell'Istanza" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                        <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditName}" Margin="0,0,0,14"/>
 
-                            <!-- Resolution Card -->
-                            <Border Style="{StaticResource ExploreSettingCard}">
-                                <StackPanel>
-                                    <TextBlock Text="Risoluzione Schermo" Foreground="#FFF" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                                    <Grid Margin="0,0,0,8">
-                                        <TextBlock Text="Larghezza" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding EditWidth, StringFormat={}{0}px}" Foreground="#3B82F6"
-                                                   HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
-                                    </Grid>
-                                    <Slider Style="{StaticResource ExploreSlider}" Minimum="800" Maximum="3840"
-                                            TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditWidth}" Margin="0,0,0,12"/>
-                                    <Grid Margin="0,0,0,8">
-                                        <TextBlock Text="Altezza" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding EditHeight, StringFormat={}{0}px}" Foreground="#3B82F6"
-                                                   HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
-                                    </Grid>
-                                    <Slider Style="{StaticResource ExploreSlider}" Minimum="600" Maximum="2160"
-                                            TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditHeight}" Margin="0,0,0,12"/>
-                                    <WrapPanel Margin="0,0,0,12">
-                                        <Button Content="1280×720" Tag="1280x720" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
-                                        <Button Content="1920×1080 (FHD)" Tag="1920x1080" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
-                                        <Button Content="2560×1440 (2K)" Tag="2560x1440" Style="{StaticResource ExploreNavPill}" Height="26" Padding="10,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
-                                    </WrapPanel>
-                                    <CheckBox Content="Schermo Intero (Fullscreen)" Style="{StaticResource ExploreToggle}" IsChecked="{Binding EditFullscreen}"/>
-                                </StackPanel>
-                            </Border>
+                                        <Grid Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                                <TextBlock Text="Versione Minecraft" Foreground="#8E8E93" FontSize="11.5" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <Border Background="#16161C" BorderBrush="#252530" BorderThickness="1" CornerRadius="8" Padding="12,8">
+                                                    <TextBlock Text="{Binding DetailVersion}" Foreground="#D4D4D8" FontSize="12.5" FontWeight="SemiBold"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                                <TextBlock Text="Mod Loader" Foreground="#8E8E93" FontSize="11.5" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <Border Background="#132034" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="8" Padding="12,8">
+                                                    <TextBlock Text="{Binding DetailLoader}" Foreground="#93C5FD" FontSize="12.5" FontWeight="SemiBold"/>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
 
-                            <!-- JVM Arguments Card -->
-                            <Border Style="{StaticResource ExploreSettingCard}">
-                                <StackPanel>
-                                    <TextBlock Text="Argomenti JVM" Foreground="#FFF" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                    <TextBlock Text="Avanzato — lascia vuoto per utilizzare i flag ottimizzati predefiniti" Foreground="#55555C" FontSize="11" Margin="0,0,0,10"/>
-                                    <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditJvmArgs}"
-                                             AcceptsReturn="True" MinHeight="50" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
-                                </StackPanel>
-                            </Border>
+                                <!-- Display & Window Card -->
+                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="Schermo &amp; Risoluzione" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,14"/>
+                                        
+                                        <Grid Margin="0,0,0,6">
+                                            <TextBlock Text="Larghezza Finestra" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding EditWidth, StringFormat={}{0} px}" Foreground="#3B82F6"
+                                                       HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
+                                        </Grid>
+                                        <Slider Style="{StaticResource ExploreSlider}" Minimum="800" Maximum="3840"
+                                                TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditWidth}" Margin="0,0,0,12"/>
 
-                            <!-- Save Button -->
-                            <Button Content="Salva Impostazioni" Style="{StaticResource ExploreBtnPrimary}"
-                                    HorizontalAlignment="Left" Click="SaveSettings_Click" Padding="24,9" Margin="0,6,0,20"/>
-                        </StackPanel>
+                                        <Grid Margin="0,0,0,6">
+                                            <TextBlock Text="Altezza Finestra" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding EditHeight, StringFormat={}{0} px}" Foreground="#3B82F6"
+                                                       HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
+                                        </Grid>
+                                        <Slider Style="{StaticResource ExploreSlider}" Minimum="600" Maximum="2160"
+                                                TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditHeight}" Margin="0,0,0,14"/>
+
+                                        <TextBlock Text="Preset Rapidi" Foreground="#6E6E73" FontSize="11" Margin="0,0,0,6"/>
+                                        <WrapPanel Margin="0,0,0,14">
+                                            <Button Content="1280×720 (HD)" Tag="1280x720" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
+                                            <Button Content="1920×1080 (FHD)" Tag="1920x1080" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
+                                            <Button Content="2560×1440 (2K)" Tag="2560x1440" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
+                                        </WrapPanel>
+
+                                        <CheckBox Content="Avvia a Schermo Intero (Fullscreen)" Style="{StaticResource ExploreToggle}" IsChecked="{Binding EditFullscreen}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- RIGHT COLUMN -->
+                            <StackPanel Grid.Row="0" Grid.Column="2">
+                                <!-- RAM Allocation Card -->
+                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <Grid Margin="0,0,0,6">
+                                            <TextBlock Text="Memoria RAM Allocata" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                            <Border Background="#102035" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding EditRam, StringFormat={}{0} MB}" Foreground="#60A5FA" FontSize="12" FontWeight="Bold"/>
+                                            </Border>
+                                        </Grid>
+                                        <TextBlock Text="Imposta la quantit&#x00E0; di memoria massima utilizzabile dal gioco." Foreground="#6E6E73" FontSize="11.5" Margin="0,0,0,12"/>
+                                        
+                                        <Slider Style="{StaticResource ExploreSlider}" Minimum="1024" Maximum="16384"
+                                                TickFrequency="512" IsSnapToTickEnabled="True" Value="{Binding EditRam}" Margin="0,0,0,12"/>
+
+                                        <TextBlock Text="Preset Consigliati" Foreground="#6E6E73" FontSize="11" Margin="0,0,0,6"/>
+                                        <WrapPanel Margin="0,0,0,6">
+                                            <Button Content="2 GB" Tag="2048" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
+                                            <Button Content="4 GB" Tag="4096" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
+                                            <Button Content="6 GB" Tag="6144" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
+                                            <Button Content="8 GB" Tag="8192" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
+                                            <Button Content="12 GB" Tag="12288" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
+                                            <Button Content="16 GB" Tag="16384" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- JVM Arguments Card -->
+                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="Argomenti JVM Avanzati" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Opzioni aggiuntive per la Java Virtual Machine. Lascia vuoto per usare i parametri ottimizzati predefiniti di Flow." Foreground="#6E6E73" FontSize="11.5" Margin="0,0,0,12" TextWrapping="Wrap"/>
+                                        <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditJvmArgs}"
+                                                 AcceptsReturn="True" MinHeight="75" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- BOTTOM ACTION BAR -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,4,0,12">
+                                <Button Content="💾 Salva Modifiche" Style="{StaticResource ExploreBtnPrimary}"
+                                        Padding="28,10" Click="SaveSettings_Click" Margin="0,0,14,0"/>
+                                <TextBlock Text="{Binding StatusMessage}" Foreground="#10B981" FontSize="12.5" FontWeight="SemiBold"
+                                           VerticalAlignment="Center" Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                            </StackPanel>
+                        </Grid>
                     </ScrollViewer>
 
                     <!-- TAB 2: MOD INSTALLATE -->
@@ -432,19 +483,21 @@
                         </ScrollViewer.Resources>
                         <StackPanel Margin="0,0,6,0">
                             <!-- Search & Action bar -->
-                            <Grid Margin="0,0,0,12">
+                            <Grid Margin="0,0,0,14">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="8"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Search Box with Placeholder -->
                                 <Grid Grid.Column="0">
-                                    <TextBox Style="{StaticResource ExploreSearchBox}" Height="36"
+                                    <TextBox Style="{StaticResource ExploreSearchBox}" Height="38"
                                              Text="{Binding ModSearch, UpdateSourceTrigger=PropertyChanged}"
                                              TextChanged="ModSearch_TextChanged"/>
-                                    <TextBlock Text="Cerca tra le mod installate..." Foreground="#52525A" FontSize="12" Margin="12,0,0,0"
+                                    <TextBlock Text="Cerca tra le mod installate..." Foreground="#52525A" FontSize="12" Margin="14,0,0,0"
                                                VerticalAlignment="Center" IsHitTestVisible="False">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
@@ -459,18 +512,29 @@
                                     </TextBlock>
                                 </Grid>
 
+                                <!-- Add Mod from Modrinth Button -->
+                                <Button Grid.Column="2" Content="+ Aggiungi Mod (Modrinth)" Style="{StaticResource ExploreBtnPrimary}"
+                                        Height="38" Padding="16,0" Click="GoToModrinth_Click"/>
+
                                 <!-- Open folder action button -->
-                                <Button Grid.Column="2" Content="📁 Apri Cartella Mod" Style="{StaticResource ExploreHeaderActionBtn}"
-                                        Height="36" Click="OpenModsFolder_Click"/>
+                                <Button Grid.Column="4" Content="📁 Cartella Mod" Style="{StaticResource ExploreHeaderActionBtn}"
+                                        Height="38" Padding="14,0" Click="OpenModsFolder_Click"/>
                             </Grid>
 
                             <!-- Empty Mods Notice -->
-                            <Border Background="#111115" BorderBrush="#1C1C22" BorderThickness="1" CornerRadius="10" Padding="24" Margin="0,8,0,0"
+                            <Border Background="#111115" BorderBrush="#1C1C24" BorderThickness="1" CornerRadius="12" Padding="32,28" Margin="0,12,0,0"
                                     Visibility="{Binding HasNoInstalledMods, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="Nessuna mod installata in questa istanza" Foreground="#8E8E93" FontSize="14" FontWeight="SemiBold" TextAlignment="Center"/>
-                                    <TextBlock Text="Passa alla scheda 'Cerca Mod' per esplorare il catalogo Modrinth e installarne con un click!"
-                                               Foreground="#55555C" FontSize="12" TextAlignment="Center" Margin="0,4,0,0"/>
+                                    <Border Width="56" Height="56" CornerRadius="14" Background="#181822" BorderBrush="#262634" BorderThickness="1"
+                                            HorizontalAlignment="Center" Margin="0,0,0,16">
+                                        <Path Data="M20,6 H12 L10,4 H4 A2,2 0 0,0 2,6 V18 A2,2 0 0,0 4,20 H20 A2,2 0 0,0 22,18 V8 A2,2 0 0,0 20,6 Z"
+                                              Stroke="#60A5FA" StrokeThickness="1.8" Stretch="Uniform" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Nessuna mod installata in questa istanza" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
+                                    <TextBlock Text="Esplora migliaia di mod compatibili con la tua versione su Modrinth e installale con un click!"
+                                               Foreground="#71717A" FontSize="12.5" TextAlignment="Center" Margin="0,6,0,20" MaxWidth="420" TextWrapping="Wrap"/>
+                                    <Button Content="🔍 Esplora Catalogo Modrinth" Style="{StaticResource ExploreBtnPrimary}" Padding="20,10" HorizontalAlignment="Center"
+                                            Click="GoToModrinth_Click"/>
                                 </StackPanel>
                             </Border>
 
@@ -478,7 +542,7 @@
                             <ItemsControl ItemsSource="{Binding Mods}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="#111114" BorderBrush="#1A1A22" BorderThickness="1" CornerRadius="9" Padding="12,10" Margin="0,0,0,6">
+                                        <Border Background="#111114" BorderBrush="#1A1A22" BorderThickness="1" CornerRadius="9" Padding="14,11" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
@@ -487,7 +551,7 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <!-- Mod Icon -->
-                                                <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#181820" Padding="4" Margin="0,0,12,0" ClipToBounds="True">
+                                                <Border Grid.Column="0" Width="38" Height="38" CornerRadius="8" Background="#181820" Padding="4" Margin="0,0,14,0" ClipToBounds="True">
                                                     <Image Source="{Binding IconUrl, Converter={StaticResource ImgSrc}}" Stretch="UniformToFill"/>
                                                 </Border>
 

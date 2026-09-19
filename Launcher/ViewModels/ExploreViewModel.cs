@@ -11,7 +11,7 @@ namespace Launcher.ViewModels
         private string _searchQuery = "";
         private ExploreSortMode _sortMode = ExploreSortMode.LastUsed;
         private string? _selectedInstanceId;
-        private ExploreDetailTab _detailTab = ExploreDetailTab.Settings;
+        private ExploreDetailTab _detailTab = ExploreDetailTab.Catalog;
         private ExploreMainMode _mainMode = ExploreMainMode.Empty;
         private bool _isCreating;
         private bool _showCatalog;
