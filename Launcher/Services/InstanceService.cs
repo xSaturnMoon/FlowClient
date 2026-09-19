@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -107,7 +108,7 @@ namespace Launcher.Services
             var copy = JsonSerializer.Deserialize<MinecraftInstance>(
                 JsonSerializer.Serialize(source))!;
             copy.Id = AllocateUniqueId(source.MinecraftVersion, source.Loader);
-            copy.Name = $"{source.Name} (copia)";
+            copy.Name = $"{source.Name} (copy)";
             copy.CreatedAt = DateTime.UtcNow;
             copy.LastPlayedAt = null;
 
@@ -145,7 +146,7 @@ namespace Launcher.Services
             Save(inst);
         }
 
-        private static readonly Dictionary<string, (string size, DateTime expires)> _sizeCache = new();
+        private static readonly ConcurrentDictionary<string, (string size, DateTime expires)> _sizeCache = new();
 
         public string GetFolderSizeText(string id)
         {

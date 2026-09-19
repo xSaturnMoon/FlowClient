@@ -212,14 +212,9 @@ namespace Launcher.Views
             LoadDetail(id);
 
             var inst = _instances.GetById(id);
-            if (string.Equals(inst?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase))
+            if (vm.DetailTab != ExploreDetailTab.Mods && vm.DetailTab != ExploreDetailTab.Catalog)
             {
-                vm.DetailTab = ExploreDetailTab.Settings;
-            }
-            else
-            {
-                if (vm.DetailTab == ExploreDetailTab.Settings)
-                    vm.DetailTab = ExploreDetailTab.Catalog;
+                vm.DetailTab = ExploreDetailTab.Catalog;
             }
             UpdateDetailTabChips();
             UpdateGlobalSidebarButtons();
@@ -585,8 +580,6 @@ namespace Launcher.Views
             inst.IconLetter = string.IsNullOrEmpty(inst.Name) ? "F" : inst.Name[..1].ToUpper();
             _instances.Save(inst);
             LoadDetail(inst.Id);
-            if (!Vm.ShowModsTabs && (Vm.DetailTab == ExploreDetailTab.Mods || Vm.DetailTab == ExploreDetailTab.Catalog))
-                Vm.DetailTab = ExploreDetailTab.Settings;
             UpdateDetailTabChips();
             RefreshList();
             Vm.StatusMessage = "Settings saved.";
@@ -600,11 +593,7 @@ namespace Launcher.Views
             {
                 "mods" => ExploreDetailTab.Mods,
                 "catalog" => ExploreDetailTab.Catalog,
-                "packs" => ExploreDetailTab.ResourcePacks,
-                "shaders" => ExploreDetailTab.Shaders,
-                "worlds" => ExploreDetailTab.Worlds,
-                "settings" => ExploreDetailTab.Settings,
-                _ => ExploreDetailTab.Settings
+                _ => ExploreDetailTab.Catalog
             };
 
             UpdateDetailTabChips();
@@ -649,9 +638,10 @@ namespace Launcher.Views
         {
             if (!IsInitialized) return;
             var tab = Vm.DetailTab;
-            TabSettings.Style = (Style)FindResource(tab == ExploreDetailTab.Settings ? "ExploreNavPillActive" : "ExploreNavPill");
-            TabMods.Style = (Style)FindResource(tab == ExploreDetailTab.Mods ? "ExploreNavPillActive" : "ExploreNavPill");
-            TabCatalog.Style = (Style)FindResource(tab == ExploreDetailTab.Catalog ? "ExploreNavPillActive" : "ExploreNavPill");
+            if (TabMods != null)
+                TabMods.Style = (Style)FindResource(tab == ExploreDetailTab.Mods ? "ExploreNavPillActive" : "ExploreNavPill");
+            if (TabCatalog != null)
+                TabCatalog.Style = (Style)FindResource(tab == ExploreDetailTab.Catalog ? "ExploreNavPillActive" : "ExploreNavPill");
         }
 
         private void ModSearch_TextChanged(object sender, TextChangedEventArgs e)

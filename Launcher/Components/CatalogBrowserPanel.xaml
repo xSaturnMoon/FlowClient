@@ -34,7 +34,7 @@
                     <TextBox Style="{StaticResource ExploreSearchBox}"
                              Text="{Binding CatalogSearch, UpdateSourceTrigger=PropertyChanged}"
                              TextChanged="CatalogSearch_TextChanged"/>
-                    <TextBlock Text="Cerca su Modrinth..." Foreground="#52525A" FontSize="12" Margin="12,0,0,0"
+                    <TextBlock Text="Search Modrinth..." Foreground="#52525A" FontSize="12" Margin="12,0,0,0"
                                VerticalAlignment="Center" IsHitTestVisible="False">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -88,8 +88,8 @@
                         <Path Data="M15.5,14 H14.71 L14.43,13.73 A6.47,6.47 0 0,0 16,9.5 A6.5,6.5 0 1,0 9.5,16 A6.47,6.47 0 0,0 13.73,14.43 L14,14.71 V15.5 L19,20.49 L20.49,19 L15.5,14 Z M9.5,14 A4.5,4.5 0 1,1 14,9.5 A4.5,4.5 0 0,1 9.5,14 Z"
                               Fill="#60A5FA" Stretch="Uniform" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
-                    <TextBlock Text="Seleziona una mod" Foreground="#FFFFFF" FontSize="16" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
-                    <TextBlock Text="Scegli un elemento dall'elenco a sinistra per visualizzarne i dettagli e installarlo con un click." Foreground="#6E6E73" FontSize="12.5" TextAlignment="Center" Margin="0,6,0,0" MaxWidth="360" TextWrapping="Wrap"/>
+                    <TextBlock Text="Select a mod" Foreground="#FFFFFF" FontSize="16" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
+                    <TextBlock Text="Choose an item from the list to view details and install." Foreground="#6E6E73" FontSize="12.5" TextAlignment="Center" Margin="0,6,0,0" MaxWidth="360" TextWrapping="Wrap"/>
                 </StackPanel>
 
                 <ScrollViewer x:Name="DetailScrollViewer" Visibility="{Binding HasCatalogProject, Converter={StaticResource BoolToVisibilityConverter}}"
@@ -117,10 +117,10 @@
                                            TextWrapping="Wrap" MaxHeight="38" TextTrimming="CharacterEllipsis"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Foreground="#6E6E72" FontSize="11.5" Margin="0,0,16,0">
-                                        <Run Text="↓ "/><Run Text="{Binding CatalogDetailDownloadsText}"/><Run Text=" download"/>
+                                        <Run Text="↓ "/><Run Text="{Binding CatalogDetailDownloadsText}"/><Run Text=" downloads"/>
                                     </TextBlock>
                                     <TextBlock Foreground="#6E6E72" FontSize="11.5">
-                                        <Run Text="♡ "/><Run Text="{Binding CatalogDetailFollowersText}"/><Run Text=" follower"/>
+                                        <Run Text="♡ "/><Run Text="{Binding CatalogDetailFollowersText}"/><Run Text=" followers"/>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -148,9 +148,9 @@
 
                         <!-- Tabs -->
                         <WrapPanel Margin="0,0,0,14">
-                            <Button x:Name="TabDesc" Content="Descrizione" Tag="description" Style="{StaticResource ExploreCatalogTabActive}" Click="CatalogTab_Click"/>
-                            <Button x:Name="TabChangelog" Content="Note di Rilascio" Tag="changelog" Style="{StaticResource ExploreCatalogTab}" Click="CatalogTab_Click"/>
-                            <Button x:Name="TabVersions" Content="Versioni" Tag="versions" Style="{StaticResource ExploreCatalogTab}" Click="CatalogTab_Click"/>
+                            <Button x:Name="TabDesc" Content="Description" Tag="description" Style="{StaticResource ExploreCatalogTabActive}" Click="CatalogTab_Click"/>
+                            <Button x:Name="TabChangelog" Content="Changelog" Tag="changelog" Style="{StaticResource ExploreCatalogTab}" Click="CatalogTab_Click"/>
+                            <Button x:Name="TabVersions" Content="Versions" Tag="versions" Style="{StaticResource ExploreCatalogTab}" Click="CatalogTab_Click"/>
                         </WrapPanel>
 
                         <!-- Tab: Description -->
@@ -183,10 +183,10 @@
                                             <Button Grid.Column="1" VerticalAlignment="Center" Tag="{Binding Id}" Click="VersionAction_Click">
                                                 <Button.Style>
                                                     <Style TargetType="Button" BasedOn="{StaticResource ExploreInstallBtn}">
-                                                        <Setter Property="Content" Value="Installa"/>
+                                                        <Setter Property="Content" Value="Install"/>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsInstalled}" Value="True">
-                                                                <Setter Property="Content" Value="Disinstalla"/>
+                                                                <Setter Property="Content" Value="Uninstall"/>
                                                                 <Setter Property="Foreground" Value="#FF6B6B"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>

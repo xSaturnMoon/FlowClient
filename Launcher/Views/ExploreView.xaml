@@ -18,576 +18,478 @@
     </UserControl.Resources>
 
     <Grid Background="Transparent">
-        <Grid Margin="32,24,32,20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260"/>
-                <ColumnDefinition Width="24"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
 
-            <!-- ════════════════ LEFT: INSTANCE SIDEBAR ════════════════ -->
-            <Grid Grid.Column="0" VerticalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <!-- ══════════════ 1. CREATE INSTANCE SCREEN ══════════════ -->
+        <Grid Margin="48,36,48,28"
+              Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="720">
+                <TextBlock Text="Create Instance" Foreground="#FFFFFF" FontSize="26" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                <TextBlock Text="Choose a name, mod loader, and Minecraft version to get started."
+                           Foreground="#6E6E72" FontSize="13.5" Margin="0,0,0,28"/>
 
-                <!-- 1. Header -->
-                <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                    <TextBlock Text="Versioni" Foreground="#FFFFFF" FontSize="22" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                    <TextBlock Text="Gestione Istanze &amp; Mod" Foreground="#6E6E73" FontSize="11.5" Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="340"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="340"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- 2. Primary Actions -->
-                <StackPanel Grid.Row="1" Margin="0,0,0,12">
-                    <Button Style="{StaticResource ExploreNewVersionBtn}" Click="NewInstance_Click"/>
-                    <Button x:Name="AttachModpackBtn" Style="{StaticResource ExploreAttachModpackBtn}" Click="AttachModpack_Click"/>
-                </StackPanel>
+                    <!-- Left: Name, Type, Loader -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Instance Name" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding NewName}" Margin="0,0,0,20"/>
 
-                <!-- 3. Group Label -->
-                <TextBlock Grid.Row="2" Text="LE TUE ISTANZE" Foreground="#52525A" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="6,4,0,8"/>
-
-                <!-- 4. Instances List with Dark Scrollbar -->
-                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <ScrollViewer.Resources>
-                        <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
-                    </ScrollViewer.Resources>
-                    <StackPanel Margin="0,0,4,0">
-                        <ItemsControl ItemsSource="{Binding Instances}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource ExploreInstanceNav}" Tag="{Binding Id}" MouseLeftButtonDown="InstanceCard_Click">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Loader Badge -->
-                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#181820" Padding="5" Margin="0,0,10,0" VerticalAlignment="Center">
-                                                <Image Source="{Binding LoaderIconUri, Converter={StaticResource ImgSrc}}" Stretch="Uniform"/>
-                                            </Border>
-
-                                            <!-- Title & Details -->
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="#CCCCCC"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                                    <Setter Property="Foreground" Value="#FFFFFF"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="#55555C"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                                    <Setter Property="Foreground" Value="#93C5FD"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                    <Run Text="{Binding Version}"/><Run Text=" · "/><Run Text="{Binding Loader}"/>
-                                                </TextBlock>
-                                            </StackPanel>
-
-                                            <!-- Mod count badge -->
-                                            <Border Grid.Column="2" VerticalAlignment="Center" Background="#16161B" CornerRadius="5" Padding="5,2" Margin="4,0,0,0">
-                                                <TextBlock Text="{Binding ModCount, StringFormat={}{0} mod}" Foreground="#666670" FontSize="10" FontWeight="SemiBold"/>
-                                            </Border>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <!-- Empty Instance State -->
-                        <TextBlock Text="Nessuna versione creata" Foreground="#44444A" FontSize="11" TextAlignment="Center" Margin="0,20,0,0"
-                                   Visibility="{Binding HasInstances, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
-                    </StackPanel>
-                </ScrollViewer>
-
-                <!-- 5. Global Resources at bottom -->
-                <StackPanel Grid.Row="4" Margin="0,14,0,0">
-                    <TextBlock Text="RISORSE CONDIVISE" Foreground="#52525A" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="6,0,0,6"/>
-                    <Button x:Name="GlobalTexturesBtn" Style="{StaticResource ExploreGlobalNavChip}" Click="GlobalTextures_Click">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Path Data="M19,3 H5 A2,2 0 0,0 3,5 V19 A2,2 0 0,0 5,21 H19 A2,2 0 0,0 21,19 V5 A2,2 0 0,0 19,3 Z M5,19 L8.5,14.5 L11,17.5 L14.5,13 L19,19 Z"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.5" Fill="Transparent" Width="13" Height="13" Stretch="Uniform" Margin="0,0,9,0"/>
-                            <TextBlock Text="Texture Pack Globali" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="GlobalShadersBtn" Style="{StaticResource ExploreGlobalNavChip}" Click="GlobalShaders_Click">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Path Data="M12,2 L14.4,7.6 L20,8.3 L15.8,12.2 L17,17.8 L12,14.9 L7,17.8 L8.2,12.2 L4,8.3 L9.6,7.6 Z"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.5" Fill="Transparent" Width="13" Height="13" Stretch="Uniform" Margin="0,0,9,0"/>
-                            <TextBlock Text="Shader Globali" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
-
-            <!-- ════════════════ RIGHT: MAIN CONTENT AREA ════════════════ -->
-            <Grid Grid.Column="2">
-
-                <!-- ══════ A. CREATE INSTANCE FORM ══════ -->
-                <StackPanel VerticalAlignment="Top" MaxWidth="720"
-                            Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <TextBlock Text="Nuova Versione" Foreground="#FFF" FontSize="22" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                    <TextBlock Text="Scegli un nome, un loader e la versione di Minecraft desiderata." Foreground="#6E6E73" FontSize="12.5" Margin="0,0,0,24"/>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="28"/>
-                            <ColumnDefinition Width="1.1*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Left col: name & loaders -->
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Nome Versione" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                            <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding NewName}" Margin="0,0,0,20"/>
-
-                            <TextBlock Text="Tipo di Versione" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                            <WrapPanel Margin="0,0,0,20">
-                                <Button x:Name="ChipRelease" Content="Release" Tag="release" Style="{StaticResource ExploreNavPillActive}" Click="VersionType_Click"/>
-                                <Button x:Name="ChipSnapshot" Content="Snapshot" Tag="snapshot" Style="{StaticResource ExploreNavPill}" Click="VersionType_Click"/>
-                                <Button x:Name="ChipBeta" Content="Beta" Tag="old_beta" Style="{StaticResource ExploreNavPill}" Click="VersionType_Click"/>
-                                <Button x:Name="ChipAlpha" Content="Alpha" Tag="old_alpha" Style="{StaticResource ExploreNavPill}" Click="VersionType_Click"/>
-                            </WrapPanel>
-
-                            <TextBlock Text="Loader" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                            <WrapPanel Margin="0,0,0,28">
-                                <Button x:Name="LoaderVanilla" Content="Vanilla" Tag="Vanilla" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
-                                <Button x:Name="LoaderFabric" Content="Fabric" Tag="Fabric" Style="{StaticResource ExploreNavPillActive}" Click="LoaderChip_Click"/>
-                                <Button x:Name="LoaderForge" Content="Forge" Tag="Forge" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
-                                <Button x:Name="LoaderNeo" Content="NeoForge" Tag="NeoForge" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
-                                <Button x:Name="LoaderQuilt" Content="Quilt" Tag="Quilt" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
-                            </WrapPanel>
-
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="Crea Versione" Style="{StaticResource ExploreBtnPrimary}" Padding="20,8"
-                                        Click="ConfirmCreate_Click" Margin="0,0,10,0"/>
-                                <Button Content="Annulla" Style="{StaticResource ExploreHeaderActionBtn}"
-                                        Click="CancelCreate_Click"/>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <!-- Right col: versions list -->
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Versione Minecraft" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                            <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding VersionSearch, UpdateSourceTrigger=PropertyChanged}"
-                                     TextChanged="VersionSearch_TextChanged" Margin="0,0,0,10"/>
-                            <Grid>
-                                <ListBox x:Name="VersionList" Style="{StaticResource ExploreVersionList}" Height="300"
-                                         ItemsSource="{Binding FilteredVersions}" SelectedItem="{Binding NewVersion, Mode=TwoWay}"
-                                         ItemContainerStyle="{StaticResource ExploreVersionListItem}"
-                                         SelectionChanged="VersionList_SelectionChanged"/>
-                                <TextBlock Text="Caricamento versioni in corso…" Foreground="#505054" FontSize="11"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Visibility="{Binding IsLoadingVersions, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-
-                <!-- ══════ B. EMPTY STATE ══════ -->
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
-                            Visibility="{Binding ShowEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Border Width="64" Height="64" CornerRadius="16" Background="#121216" BorderBrush="#1C1C24" BorderThickness="1"
-                            HorizontalAlignment="Center" Margin="0,0,0,16">
-                        <Path Data="M12,2 L2,7 L12,12 L22,7 Z M2,17 L12,22 L22,17 M2,12 L12,17 L22,12"
-                              Stroke="#4E4E58" StrokeThickness="1.8" Stretch="Uniform" Width="28" Height="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <TextBlock Text="Nessuna Versione Selezionata" Foreground="#FFFFFF" FontSize="18" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
-                    <TextBlock Text="Seleziona una versione dalla lista a sinistra oppure creane una nuova per iniziare."
-                               Foreground="#6E6E73" FontSize="12.5" TextAlignment="Center" Margin="0,6,0,20" MaxWidth="360" TextWrapping="Wrap"/>
-                    <Button Content="+ Crea Nuova Versione" Style="{StaticResource ExploreBtnPrimary}" Padding="20,9" HorizontalAlignment="Center"
-                            Click="NewInstance_Click"/>
-                </StackPanel>
-
-                <!-- ══════ C. GLOBAL TEXTURES / SHADERS PANEL ══════ -->
-                <Grid Visibility="{Binding ShowGlobalPanel, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Header -->
-                    <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                        <TextBlock Text="{Binding GlobalPanelTitle}" Foreground="#FFF" FontSize="22" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                        <TextBlock Text="{Binding GlobalPanelSubtitle}" Foreground="#6E6E72" FontSize="12.5"/>
-                        <WrapPanel Margin="0,12,0,0">
-                            <Button Content="📁 Apri Cartella" Style="{StaticResource ExploreHeaderActionBtn}" Click="OpenGlobalFolder_Click" Margin="0,0,8,0"/>
-                            <Button Content="➕ Aggiungi File" Style="{StaticResource ExploreHeaderActionBtn}" Click="AddGlobalFile_Click"/>
+                        <TextBlock Text="Version Type" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <WrapPanel Margin="0,0,0,20">
+                            <Button x:Name="ChipRelease" Content="Release" Tag="release" Style="{StaticResource ExploreNavPillActive}" Click="VersionType_Click"/>
+                            <Button x:Name="ChipSnapshot" Content="Snapshot" Tag="snapshot" Style="{StaticResource ExploreNavPill}" Click="VersionType_Click"/>
+                            <Button x:Name="ChipBeta" Content="Beta" Tag="old_beta" Style="{StaticResource ExploreNavPill}" Click="VersionType_Click"/>
+                            <Button x:Name="ChipAlpha" Content="Alpha" Tag="old_alpha" Style="{StaticResource ExploreNavPill}" Click="VersionType_Click"/>
                         </WrapPanel>
+
+                        <TextBlock Text="Mod Loader" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <WrapPanel Margin="0,0,0,28">
+                            <Button x:Name="LoaderVanilla" Content="Vanilla" Tag="Vanilla" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
+                            <Button x:Name="LoaderFabric" Content="Fabric" Tag="Fabric" Style="{StaticResource ExploreNavPillActive}" Click="LoaderChip_Click"/>
+                            <Button x:Name="LoaderForge" Content="Forge" Tag="Forge" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
+                            <Button x:Name="LoaderNeo" Content="NeoForge" Tag="NeoForge" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
+                            <Button x:Name="LoaderQuilt" Content="Quilt" Tag="Quilt" Style="{StaticResource ExploreNavPill}" Click="LoaderChip_Click"/>
+                        </WrapPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Create Instance" Style="{StaticResource ExploreBtnPrimary}" Padding="24,10"
+                                    Click="ConfirmCreate_Click" Margin="0,0,10,0"/>
+                            <Button Content="Cancel" Style="{StaticResource ExploreHeaderActionBtn}" Padding="16,10"
+                                    Click="CancelCreate_Click"/>
+                        </StackPanel>
                     </StackPanel>
 
-                    <!-- Installed list -->
-                    <Border Grid.Row="1" Style="{StaticResource ExploreCatalogPane}" Margin="0,0,0,12" MaxHeight="140">
+                    <!-- Right: Minecraft version search & list -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Minecraft Version" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding VersionSearch, UpdateSourceTrigger=PropertyChanged}"
+                                 TextChanged="VersionSearch_TextChanged" Margin="0,0,0,10"/>
                         <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Installati" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                                <ScrollViewer.Resources>
-                                    <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
-                                </ScrollViewer.Resources>
-                                <StackPanel>
-                                    <TextBlock Text="Nessun elemento installato" Foreground="#505054" FontSize="12"
-                                               Visibility="{Binding HasNoGlobalInstalled, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <ItemsControl ItemsSource="{Binding GlobalInstalled}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,0,0,4">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                    <Button Grid.Column="1" Content="Rimuovi" Style="{StaticResource ModRemoveBtn}"
-                                                            Tag="{Binding FileName}" Click="RemoveGlobal_Click" Margin="8,0,0,0"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </ScrollViewer>
+                            <ListBox x:Name="VersionList" Style="{StaticResource ExploreVersionList}" Height="300"
+                                     ItemsSource="{Binding FilteredVersions}" SelectedItem="{Binding NewVersion, Mode=TwoWay}"
+                                     ItemContainerStyle="{StaticResource ExploreVersionListItem}"
+                                     SelectionChanged="VersionList_SelectionChanged"/>
+                            <TextBlock Text="Loading versions..." Foreground="#505054" FontSize="11"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding IsLoadingVersions, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         </Grid>
-                    </Border>
-
-                    <components:CatalogBrowserPanel x:Name="GlobalCatalogBrowser" Grid.Row="2"
-                                                    InstallCompleted="CatalogBrowser_InstallCompleted"/>
-
-                    <TextBlock Grid.Row="3" Text="{Binding StatusMessage}" Foreground="#505054" FontSize="11" Margin="0,10,0,0"
-                               Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                    </StackPanel>
                 </Grid>
+            </StackPanel>
+        </Grid>
 
-                <!-- ══════ D. SELECTED INSTANCE DETAIL ══════ -->
-                <Grid Visibility="{Binding ShowDetail, Converter={StaticResource BoolToVisibilityConverter}}">
+        <!-- ══════════════ 2. EMPTY STATE (No instances) ══════════════ -->
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="{Binding ShowEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Width="64" Height="64" CornerRadius="16" Background="#121216" BorderBrush="#1C1C24" BorderThickness="1"
+                    HorizontalAlignment="Center" Margin="0,0,0,16">
+                <Path Data="M12,2 L2,7 L12,12 L22,7 Z M2,17 L12,22 L22,17 M2,12 L12,17 L22,12"
+                      Stroke="#4E4E58" StrokeThickness="1.8" Stretch="Uniform" Width="28" Height="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <TextBlock Text="No Instances Yet" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
+            <TextBlock Text="Create your first Minecraft instance to start playing and installing mods."
+                       Foreground="#6E6E73" FontSize="13" TextAlignment="Center" Margin="0,6,0,24" MaxWidth="380" TextWrapping="Wrap"/>
+            <Button Content="+ Create Instance" Style="{StaticResource ExploreBtnPrimary}" Padding="24,10" HorizontalAlignment="Center"
+                    Click="NewInstance_Click"/>
+        </StackPanel>
+
+        <!-- ══════════════ 3. GLOBAL TEXTURES / SHADERS PANEL ══════════════ -->
+        <Grid Margin="48,36,48,28"
+              Visibility="{Binding ShowGlobalPanel, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <Grid>
+                    <StackPanel>
+                        <TextBlock Text="{Binding GlobalPanelTitle}" Foreground="#FFF" FontSize="24" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding GlobalPanelSubtitle}" Foreground="#6E6E72" FontSize="13"/>
+                    </StackPanel>
+                    <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Content="📁 Open Folder" Style="{StaticResource ExploreHeaderActionBtn}" Click="OpenGlobalFolder_Click" Margin="0,0,8,0"/>
+                        <Button Content="➕ Add File" Style="{StaticResource ExploreHeaderActionBtn}" Click="AddGlobalFile_Click"/>
+                    </WrapPanel>
+                </Grid>
+            </StackPanel>
+
+            <!-- Installed list -->
+            <Border Grid.Row="1" Style="{StaticResource ExploreCatalogPane}" Margin="0,0,0,14" MaxHeight="140">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-
-                    <!-- Top Hero Banner & Tabs -->
-                    <StackPanel Grid.Row="0">
-                        <!-- Hero Card -->
-                        <Border Background="#111115" BorderBrush="#1C1C24" BorderThickness="1" CornerRadius="12" Padding="18,14" Margin="0,0,0,14">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Left: Icon, Name & Badges -->
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Border Width="46" Height="46" CornerRadius="10" Background="#181822" BorderBrush="#252532" BorderThickness="1"
-                                            Padding="7" Margin="0,0,14,0" VerticalAlignment="Center">
-                                        <Image Source="{Binding DetailLoaderIconUri, Converter={StaticResource ImgSrc}}" Stretch="Uniform"/>
-                                    </Border>
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding DetailName}" Foreground="#FFF" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                            <!-- Version Badge -->
-                                            <Border Background="#16161C" BorderBrush="#242430" BorderThickness="1" CornerRadius="5" Padding="7,2" Margin="0,0,6,0">
-                                                <TextBlock Text="{Binding DetailVersion}" Foreground="#D4D4D8" FontSize="11" FontWeight="SemiBold"/>
-                                            </Border>
-                                            <!-- Loader Badge -->
-                                            <Border Background="#132034" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="5" Padding="7,2" Margin="0,0,6,0">
-                                                <TextBlock Text="{Binding DetailLoader}" Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold"/>
-                                            </Border>
-                                            <!-- Mod Count Badge -->
-                                            <Border Background="#16161C" BorderBrush="#242430" BorderThickness="1" CornerRadius="5" Padding="7,2">
-                                                <TextBlock Text="{Binding DetailModCount, StringFormat={}{0} mod installate}" Foreground="#8E8E93" FontSize="11"/>
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-
-                                <!-- Right: Action Buttons -->
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Content="▶ Gioca" Style="{StaticResource ExploreBtnPlay}" Click="Play_Click"
-                                            Height="34" Padding="18,0" Margin="0,0,8,0"/>
-                                    <Button Content="📁 Cartella" Style="{StaticResource ExploreHeaderActionBtn}" Click="OpenFolder_Click"/>
-                                    <Button Content="📋 Duplica" Style="{StaticResource ExploreHeaderActionBtn}" Click="Duplicate_Click"/>
-                                    <Button Content="🗑 Elimina" Style="{StaticResource ExploreHeaderActionDangerBtn}" Click="Delete_Click"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Sub-tabs Bar -->
-                        <Border Background="#0D0D10" BorderBrush="#1A1A22" BorderThickness="1" CornerRadius="9" Padding="4" Margin="0,0,0,16" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal">
-                                <Button x:Name="TabCatalog" Content="📦 Mod Installate" Tag="catalog" Style="{StaticResource ExploreNavPillActive}" Click="Tab_Click"
-                                        Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                <Button x:Name="TabMods" Content="🔍 Cerca Mod (Modrinth)" Tag="mods" Style="{StaticResource ExploreNavPill}" Click="Tab_Click"
-                                        Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                <Button x:Name="TabSettings" Content="⚙ Impostazioni" Tag="settings" Style="{StaticResource ExploreNavPill}" Click="Tab_Click"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!-- TAB 1: IMPOSTAZIONI ISTANZA -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
-                                  Visibility="{Binding IsSettingsTab, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="Installed" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <ScrollViewer.Resources>
                             <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
                         </ScrollViewer.Resources>
-                        <Grid Margin="0,0,12,24">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="18"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- LEFT COLUMN -->
-                            <StackPanel Grid.Row="0" Grid.Column="0">
-                                <!-- General Info Card -->
-                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
-                                    <StackPanel>
-                                        <TextBlock Text="Informazioni Istanza" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,12"/>
-                                        
-                                        <TextBlock Text="Nome dell'Istanza" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                        <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditName}" Margin="0,0,0,14"/>
-
+                        <StackPanel>
+                            <TextBlock Text="No items installed" Foreground="#505054" FontSize="12"
+                                       Visibility="{Binding HasNoGlobalInstalled, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <ItemsControl ItemsSource="{Binding GlobalInstalled}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
                                         <Grid Margin="0,0,0,4">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                                <TextBlock Text="Versione Minecraft" Foreground="#8E8E93" FontSize="11.5" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                                <Border Background="#16161C" BorderBrush="#252530" BorderThickness="1" CornerRadius="8" Padding="12,8">
-                                                    <TextBlock Text="{Binding DetailVersion}" Foreground="#D4D4D8" FontSize="12.5" FontWeight="SemiBold"/>
-                                                </Border>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                                <TextBlock Text="Mod Loader" Foreground="#8E8E93" FontSize="11.5" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                                <Border Background="#132034" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="8" Padding="12,8">
-                                                    <TextBlock Text="{Binding DetailLoader}" Foreground="#93C5FD" FontSize="12.5" FontWeight="SemiBold"/>
-                                                </Border>
-                                            </StackPanel>
+                                            <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                            <Button Grid.Column="1" Content="Remove" Style="{StaticResource ModRemoveBtn}"
+                                                    Tag="{Binding FileName}" Click="RemoveGlobal_Click" Margin="8,0,0,0"/>
                                         </Grid>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Display & Window Card -->
-                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
-                                    <StackPanel>
-                                        <TextBlock Text="Schermo &amp; Risoluzione" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,14"/>
-                                        
-                                        <Grid Margin="0,0,0,6">
-                                            <TextBlock Text="Larghezza Finestra" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding EditWidth, StringFormat={}{0} px}" Foreground="#3B82F6"
-                                                       HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
-                                        </Grid>
-                                        <Slider Style="{StaticResource ExploreSlider}" Minimum="800" Maximum="3840"
-                                                TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditWidth}" Margin="0,0,0,12"/>
-
-                                        <Grid Margin="0,0,0,6">
-                                            <TextBlock Text="Altezza Finestra" Foreground="#8E8E93" FontSize="12" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding EditHeight, StringFormat={}{0} px}" Foreground="#3B82F6"
-                                                       HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
-                                        </Grid>
-                                        <Slider Style="{StaticResource ExploreSlider}" Minimum="600" Maximum="2160"
-                                                TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding EditHeight}" Margin="0,0,0,14"/>
-
-                                        <TextBlock Text="Preset Rapidi" Foreground="#6E6E73" FontSize="11" Margin="0,0,0,6"/>
-                                        <WrapPanel Margin="0,0,0,14">
-                                            <Button Content="1280×720 (HD)" Tag="1280x720" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
-                                            <Button Content="1920×1080 (FHD)" Tag="1920x1080" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
-                                            <Button Content="2560×1440 (2K)" Tag="2560x1440" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="ResPreset_Click"/>
-                                        </WrapPanel>
-
-                                        <CheckBox Content="Avvia a Schermo Intero (Fullscreen)" Style="{StaticResource ExploreToggle}" IsChecked="{Binding EditFullscreen}"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- RIGHT COLUMN -->
-                            <StackPanel Grid.Row="0" Grid.Column="2">
-                                <!-- RAM Allocation Card -->
-                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
-                                    <StackPanel>
-                                        <Grid Margin="0,0,0,6">
-                                            <TextBlock Text="Memoria RAM Allocata" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
-                                            <Border Background="#102035" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Right">
-                                                <TextBlock Text="{Binding EditRam, StringFormat={}{0} MB}" Foreground="#60A5FA" FontSize="12" FontWeight="Bold"/>
-                                            </Border>
-                                        </Grid>
-                                        <TextBlock Text="Imposta la quantit&#x00E0; di memoria massima utilizzabile dal gioco." Foreground="#6E6E73" FontSize="11.5" Margin="0,0,0,12"/>
-                                        
-                                        <Slider Style="{StaticResource ExploreSlider}" Minimum="1024" Maximum="16384"
-                                                TickFrequency="512" IsSnapToTickEnabled="True" Value="{Binding EditRam}" Margin="0,0,0,12"/>
-
-                                        <TextBlock Text="Preset Consigliati" Foreground="#6E6E73" FontSize="11" Margin="0,0,0,6"/>
-                                        <WrapPanel Margin="0,0,0,6">
-                                            <Button Content="2 GB" Tag="2048" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                            <Button Content="4 GB" Tag="4096" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                            <Button Content="6 GB" Tag="6144" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                            <Button Content="8 GB" Tag="8192" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                            <Button Content="12 GB" Tag="12288" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                            <Button Content="16 GB" Tag="16384" Style="{StaticResource ExploreNavPill}" Height="28" Padding="12,0" Margin="0,0,6,4" Click="RamPreset_Click"/>
-                                        </WrapPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- JVM Arguments Card -->
-                                <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,14">
-                                    <StackPanel>
-                                        <TextBlock Text="Argomenti JVM Avanzati" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,4"/>
-                                        <TextBlock Text="Opzioni aggiuntive per la Java Virtual Machine. Lascia vuoto per usare i parametri ottimizzati predefiniti di Flow." Foreground="#6E6E73" FontSize="11.5" Margin="0,0,0,12" TextWrapping="Wrap"/>
-                                        <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditJvmArgs}"
-                                                 AcceptsReturn="True" MinHeight="75" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- BOTTOM ACTION BAR -->
-                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,4,0,12">
-                                <Button Content="💾 Salva Modifiche" Style="{StaticResource ExploreBtnPrimary}"
-                                        Padding="28,10" Click="SaveSettings_Click" Margin="0,0,14,0"/>
-                                <TextBlock Text="{Binding StatusMessage}" Foreground="#10B981" FontSize="12.5" FontWeight="SemiBold"
-                                           VerticalAlignment="Center" Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
-                            </StackPanel>
-                        </Grid>
-                    </ScrollViewer>
-
-                    <!-- TAB 2: MOD INSTALLATE -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
-                                  Visibility="{Binding IsCatalogTab, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <ScrollViewer.Resources>
-                            <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
-                        </ScrollViewer.Resources>
-                        <StackPanel Margin="0,0,6,0">
-                            <!-- Search & Action bar -->
-                            <Grid Margin="0,0,0,14">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="12"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="8"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Search Box with Placeholder -->
-                                <Grid Grid.Column="0">
-                                    <TextBox Style="{StaticResource ExploreSearchBox}" Height="38"
-                                             Text="{Binding ModSearch, UpdateSourceTrigger=PropertyChanged}"
-                                             TextChanged="ModSearch_TextChanged"/>
-                                    <TextBlock Text="Cerca tra le mod installate..." Foreground="#52525A" FontSize="12" Margin="14,0,0,0"
-                                               VerticalAlignment="Center" IsHitTestVisible="False">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ModSearch}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-
-                                <!-- Add Mod from Modrinth Button -->
-                                <Button Grid.Column="2" Content="+ Aggiungi Mod (Modrinth)" Style="{StaticResource ExploreBtnPrimary}"
-                                        Height="38" Padding="16,0" Click="GoToModrinth_Click"/>
-
-                                <!-- Open folder action button -->
-                                <Button Grid.Column="4" Content="📁 Cartella Mod" Style="{StaticResource ExploreHeaderActionBtn}"
-                                        Height="38" Padding="14,0" Click="OpenModsFolder_Click"/>
-                            </Grid>
-
-                            <!-- Empty Mods Notice -->
-                            <Border Background="#111115" BorderBrush="#1C1C24" BorderThickness="1" CornerRadius="12" Padding="32,28" Margin="0,12,0,0"
-                                    Visibility="{Binding HasNoInstalledMods, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="56" Height="56" CornerRadius="14" Background="#181822" BorderBrush="#262634" BorderThickness="1"
-                                            HorizontalAlignment="Center" Margin="0,0,0,16">
-                                        <Path Data="M20,6 H12 L10,4 H4 A2,2 0 0,0 2,6 V18 A2,2 0 0,0 4,20 H20 A2,2 0 0,0 22,18 V8 A2,2 0 0,0 20,6 Z"
-                                              Stroke="#60A5FA" StrokeThickness="1.8" Stretch="Uniform" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Text="Nessuna mod installata in questa istanza" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
-                                    <TextBlock Text="Esplora migliaia di mod compatibili con la tua versione su Modrinth e installale con un click!"
-                                               Foreground="#71717A" FontSize="12.5" TextAlignment="Center" Margin="0,6,0,20" MaxWidth="420" TextWrapping="Wrap"/>
-                                    <Button Content="🔍 Esplora Catalogo Modrinth" Style="{StaticResource ExploreBtnPrimary}" Padding="20,10" HorizontalAlignment="Center"
-                                            Click="GoToModrinth_Click"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Installed Mods Cards List -->
-                            <ItemsControl ItemsSource="{Binding Mods}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="#111114" BorderBrush="#1A1A22" BorderThickness="1" CornerRadius="9" Padding="14,11" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Mod Icon -->
-                                                <Border Grid.Column="0" Width="38" Height="38" CornerRadius="8" Background="#181820" Padding="4" Margin="0,0,14,0" ClipToBounds="True">
-                                                    <Image Source="{Binding IconUrl, Converter={StaticResource ImgSrc}}" Stretch="UniformToFill"/>
-                                                </Border>
-
-                                                <!-- Mod Info -->
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="13.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                                    <TextBlock Foreground="#71717A" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis">
-                                                        <Run Text="{Binding VersionNumber}"/><Run Text=" · "/><Run Text="{Binding FileName}"/>
-                                                    </TextBlock>
-                                                </StackPanel>
-
-                                                <!-- Actions -->
-                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Content="{Binding Enabled, Converter={StaticResource ModEnabledLabel}}" Style="{StaticResource ModToggleBtn}"
-                                                            Tag="{Binding FileName}" Click="ToggleMod_Click" Margin="0,0,8,0"/>
-                                                    <Button Content="Rimuovi" Style="{StaticResource ModRemoveBtn}"
-                                                            Tag="{Binding FileName}" Click="RemoveMod_Click"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
                     </ScrollViewer>
+                </Grid>
+            </Border>
 
-                    <!-- TAB 3: CERCA MOD (CATALOG BROWSER) -->
-                    <components:CatalogBrowserPanel x:Name="InstanceCatalogBrowser" Grid.Row="1"
+            <components:CatalogBrowserPanel x:Name="GlobalCatalogBrowser" Grid.Row="2"
+                                            InstallCompleted="CatalogBrowser_InstallCompleted"/>
+
+            <TextBlock Grid.Row="3" Text="{Binding StatusMessage}" Foreground="#505054" FontSize="11" Margin="0,10,0,0"
+                       Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+        </Grid>
+
+        <!-- ══════════════ 4. MAIN 2-COLUMN VIEW (MATCHING ACCOUNTVIEW) ══════════════ -->
+        <Grid Margin="48,36,48,28"
+              Visibility="{Binding ShowDetail, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── LEFT COLUMN: ACTIVE INSTANCE & CONTENT ── -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Instance Header & Play Action -->
+                <Grid Grid.Row="0" Margin="0,0,0,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Width="56" Height="56" CornerRadius="10" Background="#161618" Padding="7" Margin="0,0,16,0" VerticalAlignment="Center">
+                        <Image Source="{Binding DetailLoaderIconUri, Converter={StaticResource ImgSrc}}" Stretch="Uniform"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding DetailName}" Foreground="#FFFFFF" FontSize="22" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Border Background="#16161C" BorderBrush="#252530" BorderThickness="1" CornerRadius="5" Padding="7,2" Margin="0,0,6,0">
+                                <TextBlock Text="{Binding DetailVersion}" Foreground="#D4D4D8" FontSize="11" FontWeight="SemiBold"/>
+                            </Border>
+                            <Border Background="#132034" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="5" Padding="7,2" Margin="0,0,6,0">
+                                <TextBlock Text="{Binding DetailLoader}" Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold"/>
+                            </Border>
+                            <Border Background="#16161C" BorderBrush="#252530" BorderThickness="1" CornerRadius="5" Padding="7,2">
+                                <TextBlock Text="{Binding DetailModCount, StringFormat={}{0} mods installed}" Foreground="#8E8E93" FontSize="11"/>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="▶ Launch" Style="{StaticResource ExploreBtnPrimary}" Height="40" Padding="26,0" FontSize="14" FontWeight="SemiBold"
+                                Click="Play_Click" Margin="0,0,10,0"/>
+                        <Button Content="📁 Folder" Style="{StaticResource ExploreHeaderActionBtn}" Height="40" Padding="14,0"
+                                Click="OpenFolder_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Subtabs Switcher (Installed Mods / Browse Modrinth) -->
+                <WrapPanel Grid.Row="1" Margin="0,0,0,16">
+                    <Button x:Name="TabCatalog" Content="Installed Mods" Tag="catalog" Style="{StaticResource ExploreNavPillActive}" Click="Tab_Click"
+                            Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <Button x:Name="TabMods" Content="Browse Modrinth" Tag="mods" Style="{StaticResource ExploreNavPill}" Click="Tab_Click"
+                            Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </WrapPanel>
+
+                <!-- Content Area -->
+                <Grid Grid.Row="2">
+                    <!-- Vanilla instance info card -->
+                    <Border Background="#111115" BorderBrush="#1C1C24" BorderThickness="1" CornerRadius="12" Padding="32,28"
+                            VerticalAlignment="Top"
+                            Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
+                        <StackPanel HorizontalAlignment="Center" MaxWidth="440">
+                            <Border Width="52" Height="52" CornerRadius="14" Background="#181822" BorderBrush="#262634" BorderThickness="1"
+                                    HorizontalAlignment="Center" Margin="0,0,0,14">
+                                <Path Data="M12,2 L2,7 L12,12 L22,7 Z M2,17 L12,22 L22,17 M2,12 L12,17 L22,12"
+                                      Stroke="#60A5FA" StrokeThickness="1.8" Stretch="Uniform" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Vanilla Minecraft" Foreground="#FFFFFF" FontSize="16" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
+                            <TextBlock Text="This instance runs standard official Vanilla Minecraft without a mod loader. Ready to play immediately, or create a Fabric or Forge instance to install mods."
+                                       Foreground="#71717A" FontSize="12.5" TextAlignment="Center" Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="18"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Modded Content (Fabric / Forge / etc.) -->
+                    <Grid Visibility="{Binding ShowModsTabs, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <!-- Tab 1: Installed Mods -->
+                        <Grid Visibility="{Binding IsCatalogTab, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                        <!-- Search box -->
+                        <Grid Grid.Row="0" Margin="0,0,0,14">
+                            <TextBox Style="{StaticResource ExploreSearchBox}" Height="38"
+                                     Text="{Binding ModSearch, UpdateSourceTrigger=PropertyChanged}"
+                                     TextChanged="ModSearch_TextChanged"/>
+                            <TextBlock Text="Search installed mods..." Foreground="#52525A" FontSize="12" Margin="14,0,0,0"
+                                       VerticalAlignment="Center" IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ModSearch}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+
+                        <!-- Mods list -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer.Resources>
+                                <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
+                            </ScrollViewer.Resources>
+                            <StackPanel>
+                                <!-- Empty State -->
+                                <Border Background="#111115" BorderBrush="#1C1C24" BorderThickness="1" CornerRadius="12" Padding="32,28"
+                                        Visibility="{Binding HasNoInstalledMods, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <Border Width="52" Height="52" CornerRadius="14" Background="#181822" BorderBrush="#262634" BorderThickness="1"
+                                                HorizontalAlignment="Center" Margin="0,0,0,14">
+                                            <Path Data="M20,6 H12 L10,4 H4 A2,2 0 0,0 2,6 V18 A2,2 0 0,0 4,20 H20 A2,2 0 0,0 22,18 V8 A2,2 0 0,0 20,6 Z"
+                                                  Stroke="#60A5FA" StrokeThickness="1.8" Stretch="Uniform" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="No mods installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" TextAlignment="Center"/>
+                                        <TextBlock Text="Browse and install mods directly from Modrinth with one click."
+                                                   Foreground="#71717A" FontSize="12.5" TextAlignment="Center" Margin="0,4,0,16"/>
+                                        <Button Content="Browse Modrinth" Style="{StaticResource ExploreBtnPrimary}" Padding="20,9" HorizontalAlignment="Center"
+                                                Click="GoToModrinth_Click"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Installed Mods Cards -->
+                                <ItemsControl ItemsSource="{Binding Mods}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="#111114" BorderBrush="#1A1A22" BorderThickness="1" CornerRadius="9" Padding="14,10" Margin="0,0,0,6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#181820" Padding="4" Margin="0,0,12,0" ClipToBounds="True">
+                                                        <Image Source="{Binding IconUrl, Converter={StaticResource ImgSrc}}" Stretch="UniformToFill"/>
+                                                    </Border>
+
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Foreground="#71717A" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis">
+                                                            <Run Text="{Binding VersionNumber}"/><Run Text=" · "/><Run Text="{Binding FileName}"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <Button Content="{Binding Enabled, Converter={StaticResource ModEnabledLabel}}" Style="{StaticResource ModToggleBtn}"
+                                                                Tag="{Binding FileName}" Click="ToggleMod_Click" Margin="0,0,8,0"/>
+                                                        <Button Content="Remove" Style="{StaticResource ModRemoveBtn}"
+                                                                Tag="{Binding FileName}" Click="RemoveMod_Click"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- Tab 2: Browse Modrinth -->
+                    <components:CatalogBrowserPanel x:Name="InstanceCatalogBrowser"
                                                     Visibility="{Binding ShowCatalogBrowser, Converter={StaticResource BoolToVisibilityConverter}}"
                                                     InstallCompleted="CatalogBrowser_InstallCompleted"/>
-
-                    <!-- Bottom Status Message -->
-                    <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Foreground="#505054" FontSize="11" Margin="0,10,0,0"
-                               Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                    </Grid>
                 </Grid>
             </Grid>
+
+            <!-- ── RIGHT COLUMN: DETAILS & SETTINGS (MATCHING ACCOUNTVIEW) ── -->
+            <StackPanel Grid.Column="2" VerticalAlignment="Top">
+                <TextBlock Text="Details &amp; Settings" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="620">
+                    <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
+                    </ScrollViewer.Resources>
+                    <StackPanel>
+
+                        <!-- Card 1: Switch Instance -->
+                        <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Instances" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button x:Name="AttachModpackBtn" Content="Import" Style="{StaticResource ExploreNavPill}" Height="22" Padding="8,0" FontSize="11"
+                                                Margin="0,0,4,0" Click="AttachModpack_Click"/>
+                                        <Button Content="+ New" Style="{StaticResource ExploreNavPillActive}" Height="22" Padding="8,0" FontSize="11"
+                                                Click="NewInstance_Click"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ScrollViewer MaxHeight="140" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ScrollViewer.Resources>
+                                        <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
+                                    </ScrollViewer.Resources>
+                                    <ItemsControl ItemsSource="{Binding Instances}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Tag="{Binding Id}" MouseLeftButtonDown="InstanceCard_Click" Cursor="Hand"
+                                                        CornerRadius="8" Padding="10,8" Margin="0,0,0,4">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="#16161A"/>
+                                                            <Setter Property="BorderBrush" Value="#22222A"/>
+                                                            <Setter Property="BorderThickness" Value="1"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                    <Setter Property="Background" Value="#132034"/>
+                                                                    <Setter Property="BorderBrush" Value="#2563EB"/>
+                                                                    <Setter Property="BorderThickness" Value="1.5"/>
+                                                                </DataTrigger>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#1A1A22"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Grid.Column="0" Width="26" Height="26" CornerRadius="6" Background="#181820" Padding="4" Margin="0,0,8,0" VerticalAlignment="Center">
+                                                            <Image Source="{Binding LoaderIconUri, Converter={StaticResource ImgSrc}}" Stretch="Uniform"/>
+                                                        </Border>
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Name}" Foreground="#FFFFFF" FontSize="12.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                            <TextBlock Foreground="#71717A" FontSize="10.5">
+                                                                <Run Text="{Binding Version}"/><Run Text=" · "/><Run Text="{Binding Loader}"/>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                        <Border Grid.Column="2" VerticalAlignment="Center" Background="#1C1C24" CornerRadius="4" Padding="5,2">
+                                                            <TextBlock Text="{Binding ModCount, StringFormat={}{0} mods}" Foreground="#8E8E93" FontSize="10"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 2: Memory (RAM) -->
+                        <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="Allocated Memory" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding EditRam, StringFormat={}{0} MB}" Foreground="#60A5FA" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Slider Style="{StaticResource ExploreSlider}" Minimum="1024" Maximum="16384"
+                                        TickFrequency="512" IsSnapToTickEnabled="True" Value="{Binding EditRam}" Margin="0,0,0,8"/>
+                                <WrapPanel>
+                                    <Button Content="2 GB" Tag="2048" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="RamPreset_Click"/>
+                                    <Button Content="4 GB" Tag="4096" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="RamPreset_Click"/>
+                                    <Button Content="6 GB" Tag="6144" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="RamPreset_Click"/>
+                                    <Button Content="8 GB" Tag="8192" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="RamPreset_Click"/>
+                                    <Button Content="12 GB" Tag="12288" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="RamPreset_Click"/>
+                                    <Button Content="16 GB" Tag="16384" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="RamPreset_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 3: Game Window & Resolution -->
+                        <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="Game Window" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold"/>
+                                    <TextBlock Foreground="#60A5FA" FontSize="11.5" FontWeight="SemiBold" HorizontalAlignment="Right">
+                                        <Run Text="{Binding EditWidth}"/><Run Text="×"/><Run Text="{Binding EditHeight}"/>
+                                    </TextBlock>
+                                </Grid>
+                                <WrapPanel Margin="0,0,0,8">
+                                    <Button Content="720p" Tag="1280x720" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="ResPreset_Click"/>
+                                    <Button Content="1080p" Tag="1920x1080" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="ResPreset_Click"/>
+                                    <Button Content="1440p" Tag="2560x1440" Style="{StaticResource ExploreNavPill}" Height="24" Padding="8,0" Margin="0,0,4,4" Click="ResPreset_Click"/>
+                                </WrapPanel>
+                                <CheckBox Content="Fullscreen mode" Style="{StaticResource ExploreToggle}" IsChecked="{Binding EditFullscreen}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 4: JVM Arguments -->
+                        <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="JVM Arguments (Optional)" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <TextBox Style="{StaticResource ExploreSearchBox}" Text="{Binding EditJvmArgs}"
+                                         AcceptsReturn="True" MinHeight="42" MaxHeight="70" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 5: Actions & Save -->
+                        <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Instance Actions" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <WrapPanel Margin="0,0,0,10">
+                                    <Button Content="Duplicate" Style="{StaticResource ExploreNavPill}" Height="26" Padding="12,0" Margin="0,0,6,0" Click="Duplicate_Click"/>
+                                    <Button Content="Delete" Style="{StaticResource ExploreNavPill}" Height="26" Padding="12,0" Foreground="#FF6B6B" Click="Delete_Click"/>
+                                </WrapPanel>
+                                <Button Content="Save Settings" Style="{StaticResource ExploreBtnPrimary}" Height="34" Padding="16,0"
+                                        Click="SaveSettings_Click" HorizontalAlignment="Stretch"/>
+                                <TextBlock Text="{Binding StatusMessage}" Foreground="#10B981" FontSize="11.5" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" Margin="0,6,0,0" Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 6: Shared Resources -->
+                        <Border Style="{StaticResource ExploreSettingCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Shared Resources" Foreground="#8E8E93" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <WrapPanel>
+                                    <Button x:Name="GlobalTexturesBtn" Content="Global Textures" Style="{StaticResource ExploreGlobalNavChip}" Click="GlobalTextures_Click" Margin="0,0,6,4"/>
+                                    <Button x:Name="GlobalShadersBtn" Content="Global Shaders" Style="{StaticResource ExploreGlobalNavChip}" Click="GlobalShaders_Click" Margin="0,0,0,4"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

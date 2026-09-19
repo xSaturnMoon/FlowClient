@@ -1,9 +1,9 @@
 {
-  "version": "1.2.8",
+  "version": "1.2.9",
   "releaseDate": "September 19, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.8: Miglioramento completo della sezione Versioni. Layout Impostazioni riorganizzato a 2 colonne bilanciate eliminando lo spazio vuoto, visualizzazione predefinita delle mod installate per istanze moddate con ricerca rapida, pulsante diretto '+ Aggiungi Mod (Modrinth)', navigazione catalogo senza interruzioni durante il download, fallback intelligente per versioni/snapshot personalizzate e risoluzione dei problemi di aggiornamento mod.",
+  "releaseNotes": "Flow Client v1.2.9: Complete redesign of the Versions section. Modern, minimalist 2-column layout mirroring Account view in full English. Replaced cluttered controls with streamlined instance management and dedicated Modrinth browser. Fixed collection concurrency crash on folder size calculation.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.8/FlowClient-v1.2.8.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.9/FlowClient-v1.2.9.zip"
 }

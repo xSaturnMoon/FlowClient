@@ -332,7 +332,7 @@ namespace Launcher.ViewModels
             set { _catalogInstalledFileName = value; OnPropertyChanged(); }
         }
 
-        public string CatalogPrimaryActionLabel => _catalogIsInstalled ? "Disinstalla" : "Scarica e Installa";
+        public string CatalogPrimaryActionLabel => _catalogIsInstalled ? "Uninstall" : "Install";
         public bool CanPrimaryAction => _catalogIsInstalled
             ? !string.IsNullOrEmpty(_catalogInstalledFileName)
             : !string.IsNullOrEmpty(_catalogLatestVersionId);

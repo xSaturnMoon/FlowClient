@@ -6,7 +6,7 @@ namespace Launcher.Models
     public class MinecraftInstance
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
-        public string Name { get; set; } = "Nuova installazione";
+        public string Name { get; set; } = "New Instance";
         public string MinecraftVersion { get; set; } = "1.20.1";
         public string Loader { get; set; } = "Fabric";
         public string LoaderVersion { get; set; } = "";
