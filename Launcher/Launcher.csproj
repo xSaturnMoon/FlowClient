@@ -43,6 +43,7 @@
     <Resource Include="Assets\Loaders\neoforge.png" />
     <Resource Include="Assets\Loaders\quilt.png" />
     <Resource Include="Assets\Loaders\vanilla.png" />
+    <Resource Include="Assets\flow_title_logo.png" />
     <Resource Include="Assets\3d\*.png" />
     <Content Include="Assets\3d\*.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

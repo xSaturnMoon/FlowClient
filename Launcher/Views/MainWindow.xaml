@@ -31,174 +31,293 @@
             </ResourceDictionary.MergedDictionaries>
             <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+            <!-- Top bar Sidebar toggle button ([| ]) -->
+            <Style x:Key="TopBarSidebarToggleBtn" TargetType="Button">
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
+                                <Border x:Name="iconBd" Width="20" Height="15" CornerRadius="4.5" Background="#727278" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True">
+                                    <Border x:Name="barCutout" Width="3.5" Height="9" CornerRadius="1.5" Background="#141416" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2.5,0,0,0"/>
+                                </Border>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#222228"/>
+                                    <Setter TargetName="iconBd" Property="Background" Value="#A0A0AA"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#2C2C34"/>
+                                    <Setter TargetName="iconBd" Property="Background" Value="#C2C2CC"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Top bar icon button (e.g. Community / Friends) -->
+            <Style x:Key="TopBarIconButton" TargetType="Button">
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#222228"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#2C2C34"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Window control button (Minimize) -->
+            <Style x:Key="WindowControlButton" TargetType="Button">
+                <Setter Property="Width" Value="34"/>
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#222228"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#2C2C34"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Window control button (Close with red hover) -->
+            <Style x:Key="WindowCloseButton" TargetType="Button">
+                <Setter Property="Width" Value="34"/>
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#E81123"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#C40E1E"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Sidebar flyout menu item style -->
+            <Style x:Key="SidebarMenuItem" TargetType="Button">
+                <Setter Property="Height" Value="34"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Margin" Value="0,1"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#222228"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#2A2A32"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border BorderBrush="#353744" BorderThickness="1" CornerRadius="12" Background="#141416" Margin="1" SnapsToDevicePixels="True">
+    <Border BorderBrush="#25252A" BorderThickness="1" CornerRadius="12" Background="#141416" Margin="1" SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="56"/>
+                <RowDefinition Height="46"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- ══════ TOP NAVIGATION BAR (IDENTICAL TO BLUEBERRY CLIENT) ══════ -->
-            <Grid x:Name="TopBarGrid" Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseDown">
+            <!-- ══════ TOP BAR (MATCHING MELTY SCREENSHOT & CUSTOM FLOW LOGO) ══════ -->
+            <Grid x:Name="TopBarGrid" Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseDown" Height="46">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- LEFT: Flow Branding Logo + Text -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="22,0,0,0">
-                    <Image Source="/flowm.ico" Width="26" Height="26" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    <TextBlock Text="FLOW" Foreground="#FFFFFF" FontSize="16" FontWeight="ExtraBold"
-                               FontFamily="{StaticResource FlowBrandFont}" VerticalAlignment="Center"/>
+                <!-- LEFT: Sidebar Toggle [| ] + FLOW Logo (from user attachment) -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <Button Style="{StaticResource TopBarSidebarToggleBtn}" Click="SidebarToggle_Click" ToolTip="Navigation Menu"/>
+                    <Image Source="/Assets/flow_title_logo.png" Height="20" Stretch="Uniform" VerticalAlignment="Center"
+                           Margin="14,0,0,0" RenderOptions.BitmapScalingMode="HighQuality" Cursor="Hand" MouseLeftButtonDown="Logo_MouseDown"
+                           ToolTip="Flow Client"/>
                 </StackPanel>
 
-                <!-- CENTER: Navigation Menu (News, Account, Home, Versions, Settings) -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <!-- 1. News Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="News" Click="News_Click" Margin="4,0">
-                        <Button.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsNewsActive}" Value="True">
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Resources>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M18,8 A6,6 0 0,0 6,8 C6,15 3,17 3,17 H21 C21,17 18,15 18,8 M13.73,21 A2,2 0 0,1 10.27,21"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                  Fill="Transparent"
-                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="News" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                <!-- CENTER: Search Box (Capsule matching Melty) -->
+                <Border Grid.Column="1" Height="32" Width="440" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Background="#1A1918" BorderBrush="#2A2826" BorderThickness="1" CornerRadius="10" Padding="12,0" SnapsToDevicePixels="True">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Magnifying glass icon -->
+                        <Path Grid.Column="0" Data="M15.5,14 H14.71 L14.43,13.73 A6.47,6.47 0 0,0 16,9.5 A6.5,6.5 0 1,0 9.5,16 A6.47,6.47 0 0,0 13.73,14.43 L14,14.71 V15.5 L19,20.49 L20.49,19 L15.5,14 Z M9.5,14 A4.5,4.5 0 1,1 14,9.5 A4.5,4.5 0 0,1 9.5,14 Z"
+                              Fill="#7A7875" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                        <!-- Text Input & Placeholder -->
+                        <Grid Grid.Column="1" VerticalAlignment="Center">
+                            <TextBox x:Name="TopSearchTextBox"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Foreground="#FFFFFF"
+                                     CaretBrush="#60A5FA"
+                                     FontSize="12"
+                                     FontFamily="{StaticResource NunitoFont}"
+                                     VerticalAlignment="Center"
+                                     Padding="0,0"
+                                     KeyDown="TopSearchTextBox_KeyDown"
+                                     TextChanged="TopSearchTextBox_TextChanged"/>
+                            <TextBlock x:Name="TopSearchPlaceholder"
+                                       Text="Search mashups, games and players"
+                                       Foreground="#666460"
+                                       FontSize="12"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       IsHitTestVisible="False"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <!-- Shortcut key '/' badge -->
+                        <Border Grid.Column="2" Background="#262422" CornerRadius="4" Padding="6,1" VerticalAlignment="Center" Margin="8,0,0,0">
+                            <TextBlock Text="/" Foreground="#7E7B77" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- RIGHT: Community / Friends + Window Controls (Minimize, Close - NO Fullscreen) -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                    <!-- Community / Friends Icon (Toggles Account Menu) -->
+                    <Button Style="{StaticResource TopBarIconButton}" Click="Community_Click" ToolTip="Community &amp; Account" Margin="0,0,6,0">
+                        <Path Data="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+                              Fill="#8E8E98" Width="17" Height="17" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
 
-                    <!-- 2. Account Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Account" Click="Account_Click" Margin="4,0">
-                        <Button.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAccountActive}" Value="True">
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Resources>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M20,21 V19 A4,4 0 0,0 16,15 H8 A4,4 0 0,0 4,19 V21 M12,11 A4,4 0 1,0 12,3 A4,4 0 0,0 12,11 Z"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                  Fill="Transparent"
-                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="Account" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                    <!-- Minimize Button -->
+                    <Button Style="{StaticResource WindowControlButton}" Click="Minimize_Click" ToolTip="Minimize" Margin="0,0,2,0">
+                        <Path Data="M0,5 L10,5" Stroke="#8E8E98" StrokeThickness="1.5" Width="10" Height="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
 
-                    <!-- 3. Home Tab (Center) -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Home" Click="Home_Click" Margin="4,0">
-                        <Button.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsHomeActive}" Value="True">
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Resources>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M3,10 L12,3 L21,10 M5,9 V19 C5,19.6 5.4,20 6,20 H18 C18.6,20 19,19.6 19,19 V9"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                  Fill="Transparent"
-                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="Home" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-
-                    <!-- 4. Versions Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Versions" Click="Versions_Click" Margin="4,0">
-                        <Button.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsVersionsActive}" Value="True">
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Resources>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M12,2 L2,7 L12,12 L22,7 Z M2,17 L12,22 L22,17 M2,12 L12,17 L22,12"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                  Fill="Transparent"
-                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="Versions" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-
-                    <!-- 5. Settings Tab -->
-                    <Button Style="{StaticResource TopNavTabButton}" Tag="Settings" Click="Settings_Click" Margin="4,0">
-                        <Button.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource TopNavTabButton}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsSettingsActive}" Value="True">
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Resources>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Path Data="M12,15 A3,3 0 1,0 12,9 A3,3 0 1,0 12,15 Z M19.4,13 L21.7,9.2 L19.1,4.6 L16.4,5.7 C15.8,5.3 15.2,4.9 14.5,4.6 L14.1,1.7 L9.5,1.7 L9.1,4.6 C8.4,4.9 7.8,5.3 7.2,5.7 L4.5,4.6 L1.9,9.2 L4.2,11 C4.1,11.3 4.1,11.7 4.1,12 C4.1,12.3 4.1,12.7 4.2,13 L1.9,14.8 L4.5,19.4 L7.2,18.3 C7.8,18.7 8.4,19.1 9.1,19.4 L9.5,22.3 L14.1,22.3 L14.5,19.4 C15.2,19.1 15.8,18.7 16.4,18.3 L19.1,19.4 L21.7,14.8 Z"
-                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                  Fill="Transparent"
-                                  Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,3"/>
-                            <TextBlock Text="Settings" FontSize="11.5" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                    <!-- Close Button -->
+                    <Button Style="{StaticResource WindowCloseButton}" Click="Close_Click" ToolTip="Close">
+                        <Path Data="M1,1 L9,9 M9,1 L1,9" Stroke="#8E8E98" StrokeThickness="1.5" Width="10" Height="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
                 </StackPanel>
+            </Grid>
 
-                <!-- RIGHT: Account Profile Dropdown Pill (Crisp corners & border) -->
-                <Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,22,0">
-                    <Border x:Name="AccountPillBorder"
-                            Background="#18181B" BorderBrush="#27272A" BorderThickness="1" CornerRadius="6"
-                            Padding="7,4" Cursor="Hand" MouseLeftButtonDown="AccountPill_Click"
-                            SnapsToDevicePixels="True" UseLayoutRounding="True"
-                            ToolTip="Account Menu">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#222226"/>
-                                        <Setter Property="BorderBrush" Value="#333338"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <!-- Avatar Head -->
-                            <Border Width="22" Height="22" CornerRadius="4" Background="#222226" ClipToBounds="True" Margin="0,0,8,0"
-                                    SnapsToDevicePixels="True">
-                                <Image Source="{Binding PlayerAvatar}" Stretch="Uniform"
-                                       RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
-                            </Border>
-                            <!-- Player Name -->
-                            <TextBlock Text="{Binding PlayerName}" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="0,0,6,0"
-                                       MaxWidth="110" TextTrimming="CharacterEllipsis"/>
-                            <!-- Chevron Dropdown Arrow -->
-                            <Path Data="M 0,0 L 4,4 L 8,0" Stroke="#8E8E98" StrokeThickness="1.5"
-                                  VerticalAlignment="Center" Width="8" Height="4" Margin="0,1,2,0"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+            <!-- ══════ SIDEBAR NAVIGATION FLYOUT (TOGGLED BY [| ] BUTTON) ══════ -->
+            <Grid x:Name="SidebarNavOverlay" Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9998" Visibility="Collapsed">
+                <Border Background="#01000000" MouseLeftButtonDown="SidebarNavBackdrop_Click"/>
 
+                <Border Width="220" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,44,0,0"
+                        Background="#161619" BorderBrush="#2A2A30" BorderThickness="1"
+                        CornerRadius="10" Padding="8,8" SnapsToDevicePixels="True">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="28" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.75"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="NAVIGATION" Foreground="#606068" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" Margin="10,4,10,6"/>
+
+                        <!-- 1. Discover / Home -->
+                        <Button Style="{StaticResource SidebarMenuItem}" Click="NavDiscover_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M12,2 L14.5,9.5 L22,12 L14.5,14.5 L12,22 L9.5,14.5 L2,12 L9.5,9.5 Z"
+                                      Stroke="#A0A5B5" StrokeThickness="1.5" Width="15" Height="15" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Discover" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- 2. Library / Versions -->
+                        <Button Style="{StaticResource SidebarMenuItem}" Click="NavLibrary_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M12,2 L2,7 L12,12 L22,7 Z M2,17 L12,22 L22,17 M2,12 L12,17 L22,12"
+                                      Stroke="#A0A5B5" StrokeThickness="1.5" Width="15" Height="15" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Library" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- 3. News -->
+                        <Button Style="{StaticResource SidebarMenuItem}" Click="NavNews_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M18,8 A6,6 0 0,0 6,8 C6,15 3,17 3,17 H21 C21,17 18,15 18,8 M13.73,21 A2,2 0 0,1 10.27,21"
+                                      Stroke="#A0A5B5" StrokeThickness="1.5" Width="15" Height="15" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="News" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Rectangle Height="1" Fill="#282A34" Margin="4,6,4,6"/>
+
+                        <!-- 4. Settings -->
+                        <Button Style="{StaticResource SidebarMenuItem}" Click="NavSettings_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M12,15 A3,3 0 1,0 12,9 A3,3 0 1,0 12,15 Z M19.4,13 L21.7,9.2 L19.1,4.6 L16.4,5.7 C15.8,5.3 15.2,4.9 14.5,4.6 L14.1,1.7 L9.5,1.7 L9.1,4.6 C8.4,4.9 7.8,5.3 7.2,5.7 L4.5,4.6 L1.9,9.2 L4.2,11 C4.1,11.3 4.1,11.7 4.1,12 C4.1,12.3 4.1,12.7 4.2,13 L1.9,14.8 L4.5,19.4 L7.2,18.3 C7.8,18.7 8.4,19.1 9.1,19.4 L9.5,22.3 L14.1,22.3 L14.5,19.4 C15.2,19.1 15.8,18.7 16.4,18.3 L19.1,19.4 L21.7,14.8 Z"
+                                      Stroke="#A0A5B5" StrokeThickness="1.5" Width="15" Height="15" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Settings" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- 5. Account -->
+                        <Button Style="{StaticResource SidebarMenuItem}" Click="NavAccount_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M20,21 V19 A4,4 0 0,0 16,15 H8 A4,4 0 0,0 4,19 V21 M12,11 A4,4 0 1,0 12,3 A4,4 0 0,0 12,11 Z"
+                                      Stroke="#A0A5B5" StrokeThickness="1.5" Width="15" Height="15" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Account" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
             </Grid>
 
             <!-- ══════ MAIN CONTENT STAGE WITH DIRECTIONAL SLIDE ══════ -->
@@ -215,8 +334,8 @@
                 <!-- Backdrop that covers the full window: clicking outside closes the menu cleanly -->
                 <Border Background="#01000000" MouseLeftButtonDown="AccountMenuBackdrop_Click"/>
 
-                <!-- Dropdown Card anchored below the account pill in top-right -->
-                <Border Width="240" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,52,22,0"
+                <!-- Dropdown Card anchored below Community button in top-right -->
+                <Border Width="240" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,44,48,0"
                         Background="#1A1B22" BorderBrush="#2D2F3C" BorderThickness="1"
                         CornerRadius="10" Padding="14,14" SnapsToDevicePixels="True">
                     <Border.Effect>

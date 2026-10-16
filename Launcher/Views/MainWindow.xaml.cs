@@ -406,7 +406,15 @@ namespace Launcher.Views
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
+            {
+                if (e.ClickCount == 2)
+                {
+                    // Ignore double click to prevent maximize
+                    e.Handled = true;
+                    return;
+                }
                 DragMove();
+            }
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -432,6 +440,109 @@ namespace Launcher.Views
 
         private void News_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "News";
+
+        private void SidebarToggle_Click(object sender, RoutedEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = SidebarNavOverlay.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
+        private void SidebarNavBackdrop_Click(object sender, MouseButtonEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void NavDiscover_Click(object sender, RoutedEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+            NavigateTo("Home");
+        }
+
+        private void NavLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+            NavigateTo("Versions");
+        }
+
+        private void NavNews_Click(object sender, RoutedEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+            NavigateTo("News");
+        }
+
+        private void NavSettings_Click(object sender, RoutedEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+            NavigateTo("Settings");
+        }
+
+        private void NavAccount_Click(object sender, RoutedEventArgs e)
+        {
+            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+            NavigateTo("Account");
+        }
+
+        private void Community_Click(object sender, RoutedEventArgs e)
+        {
+            AccountMenuOverlay.Visibility = AccountMenuOverlay.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
+        private void Logo_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                NavigateTo("Home");
+                e.Handled = true;
+            }
+        }
+
+        private void TopSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            TopSearchPlaceholder.Visibility = string.IsNullOrEmpty(TopSearchTextBox.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void TopSearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var query = TopSearchTextBox.Text.Trim();
+                if (string.IsNullOrEmpty(query)) return;
+
+                if (query.Equals("home", StringComparison.OrdinalIgnoreCase) ||
+                    query.Equals("discover", StringComparison.OrdinalIgnoreCase))
+                {
+                    NavigateTo("Home");
+                }
+                else if (query.Equals("versions", StringComparison.OrdinalIgnoreCase) ||
+                         query.Equals("library", StringComparison.OrdinalIgnoreCase) ||
+                         query.Equals("mods", StringComparison.OrdinalIgnoreCase))
+                {
+                    NavigateTo("Versions");
+                }
+                else if (query.Equals("settings", StringComparison.OrdinalIgnoreCase))
+                {
+                    NavigateTo("Settings");
+                }
+                else if (query.Equals("news", StringComparison.OrdinalIgnoreCase))
+                {
+                    NavigateTo("News");
+                }
+                else if (query.Equals("account", StringComparison.OrdinalIgnoreCase) ||
+                         query.Equals("skin", StringComparison.OrdinalIgnoreCase))
+                {
+                    NavigateTo("Account");
+                }
+                else
+                {
+                    NavigateTo("Versions");
+                }
+            }
+        }
 
         private void AccountPill_Click(object sender, MouseButtonEventArgs e)
         {
@@ -576,6 +687,33 @@ namespace Launcher.Views
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key is Key.Oem2 or Key.Divide) // '/'
+            {
+                if (!TopSearchTextBox.IsFocused)
+                {
+                    TopSearchTextBox.Focus();
+                    TopSearchTextBox.SelectAll();
+                    e.Handled = true;
+                }
+            }
+            else if (e.Key == Key.Escape)
+            {
+                if (TopSearchTextBox.IsFocused)
+                {
+                    Keyboard.ClearFocus();
+                    e.Handled = true;
+                }
+                if (SidebarNavOverlay.Visibility == Visibility.Visible)
+                {
+                    SidebarNavOverlay.Visibility = Visibility.Collapsed;
+                    e.Handled = true;
+                }
+                if (AccountMenuOverlay.Visibility == Visibility.Visible)
+                {
+                    AccountMenuOverlay.Visibility = Visibility.Collapsed;
+                    e.Handled = true;
+                }
+            }
         }
 
         private void Quit_Click(object sender, RoutedEventArgs e)
