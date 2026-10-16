@@ -1,9 +1,9 @@
 {
-  "version": "1.3.0",
+  "version": "1.3.1",
   "releaseDate": "October 16, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.3.0: Brand new top bar design inspired by Melty with custom FLOW branding logo, sidebar toggle navigation flyout, interactive search capsule with '/' shortcut, community button, and dedicated window controls without fullscreen button.",
+  "releaseNotes": "Flow Client v1.3.1: Pixel-perfect Melty-style persistent left sidebar with Discover, Library, + Create, Settings, Check Updates, and Minecraft skin profile; and refined search capsule.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.0/FlowClient-v1.3.0.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.1/FlowClient-v1.3.1.zip"
 }
