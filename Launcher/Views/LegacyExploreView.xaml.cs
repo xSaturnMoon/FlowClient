@@ -17,7 +17,7 @@ using Microsoft.Win32;
 
 namespace Launcher.Views
 {
-    public partial class ExploreView : UserControl
+    public partial class LegacyExploreView : UserControl
     {
         private static readonly CultureInfo EnUs = new("en-US");
         private static readonly string[] Loaders = ["Vanilla", "Fabric", "Forge", "NeoForge", "Quilt"];
@@ -30,7 +30,7 @@ namespace Launcher.Views
         private List<MinecraftVersionInfo> _allVersions = new();
         private bool _isReady;
 
-        public ExploreView()
+        public LegacyExploreView()
         {
             DataContext = new ExploreViewModel();
             InitializeComponent();

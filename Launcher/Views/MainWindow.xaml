@@ -185,7 +185,7 @@
 
             <Style x:Key="SidebarLibraryBtnStyle" TargetType="Button" BasedOn="{StaticResource SidebarPillButton}">
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsVersionsActive}" Value="True">
+                    <DataTrigger Binding="{Binding IsLibraryActive}" Value="True">
                         <Setter Property="Background" Value="#262629"/>
                         <Setter Property="Foreground" Value="#FFFFFF"/>
                     </DataTrigger>

@@ -101,7 +101,8 @@ namespace Launcher.Views
             System.Windows.Controls.UserControl? created = key switch
             {
                 "Home" or "Launch"      => new LaunchView(),
-                "Versions" or "Explore" => new ExploreView(),
+                "Library" or "Versions" or "Explore" => new LibraryView(),
+                "LegacyExplore"         => new LegacyExploreView(),
                 "Cosmetics" or "Account"=> new AccountView(),
                 "News"                  => new NewsView(),
                 "Settings"              => new SettingsView(),
@@ -124,7 +125,7 @@ namespace Launcher.Views
                 {
                     _ = GetOrCreateView("News");
                     _ = GetOrCreateView("Account");
-                    _ = GetOrCreateView("Versions");
+                    _ = GetOrCreateView("Library");
                     _ = GetOrCreateView("Settings");
                 }
                 catch { }
@@ -255,7 +256,7 @@ namespace Launcher.Views
             });
         }
 
-        private static readonly string[] NavigationOrder = ["News", "Account", "Home", "Versions", "Settings"];
+        private static readonly string[] NavigationOrder = ["News", "Account", "Home", "Library", "Settings"];
         private string _currentDisplayedSection = "Home";
 
         private static int GetNavIndex(string? s) => (s ?? "").ToLowerInvariant() switch
@@ -263,7 +264,7 @@ namespace Launcher.Views
             "news"                  => 0,
             "account" or "cosmetics"=> 1,
             "home" or "launch"      => 2,
-            "versions" or "explore" => 3,
+            "library" or "versions" or "explore" => 3,
             "settings"              => 4,
             _                       => 2
         };
@@ -433,7 +434,7 @@ namespace Launcher.Views
             _viewModel.ActiveButton = "Home";
 
         private void Versions_Click(object sender, RoutedEventArgs e) =>
-            _viewModel.ActiveButton = "Versions";
+            _viewModel.ActiveButton = "Library";
 
         private void Cosmetics_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "Cosmetics";
@@ -461,19 +462,10 @@ namespace Launcher.Views
             NavigateTo("Home");
 
         private void NavLibrary_Click(object sender, RoutedEventArgs e) =>
-            NavigateTo("Versions");
+            NavigateTo("Library");
 
-        private void NavCreate_Click(object sender, RoutedEventArgs e)
-        {
-            NavigateTo("Versions");
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
-            {
-                if (GetOrCreateView("Versions") is ExploreView ev)
-                {
-                    ev.TriggerCreateInstance();
-                }
-            });
-        }
+        private void NavCreate_Click(object sender, RoutedEventArgs e) =>
+            NavigateTo("Library");
 
         private void NavSettings_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Settings");
@@ -708,7 +700,7 @@ namespace Launcher.Views
                          query.Equals("library", StringComparison.OrdinalIgnoreCase) ||
                          query.Equals("mods", StringComparison.OrdinalIgnoreCase))
                 {
-                    NavigateTo("Versions");
+                    NavigateTo("Library");
                 }
                 else if (query.Equals("settings", StringComparison.OrdinalIgnoreCase))
                 {
@@ -725,10 +717,10 @@ namespace Launcher.Views
                 }
                 else
                 {
-                    NavigateTo("Versions");
-                    if (GetOrCreateView("Versions") is ExploreView ev)
+                    NavigateTo("Library");
+                    if (GetOrCreateView("Library") is LibraryView lv)
                     {
-                        ev.ApplySearch(query);
+                        lv.ApplySearch(query);
                     }
                 }
             }
@@ -790,7 +782,7 @@ namespace Launcher.Views
             _viewModel.ActiveButton = "Home";
 
         private void Explore_Click(object sender, RoutedEventArgs e) =>
-            _viewModel.ActiveButton = "Versions";
+            _viewModel.ActiveButton = "Library";
 
         private void Account_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "Account";

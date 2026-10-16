@@ -1,4 +1,4 @@
-<UserControl x:Class="Launcher.Views.ExploreView"
+<UserControl x:Class="Launcher.Views.LegacyExploreView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:Launcher.ViewModels"
