@@ -157,8 +157,8 @@ namespace Launcher.Views
             {
                 var dialog = new OpenFileDialog
                 {
-                    Title = "Seleziona eseguibile Java (javaw.exe)",
-                    Filter = "Java Executable (javaw.exe;java.exe)|javaw.exe;java.exe|Tutti gli eseguibili (*.exe)|*.exe",
+                    Title = "Select Java Executable (javaw.exe)",
+                    Filter = "Java Executable (javaw.exe;java.exe)|javaw.exe;java.exe|All Executables (*.exe)|*.exe",
                     CheckFileExists = true
                 };
 
@@ -169,7 +169,7 @@ namespace Launcher.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Impossibile aprire il selettore di file:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Could not open file picker:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -212,7 +212,7 @@ namespace Launcher.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Impossibile aprire la cartella:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Could not open folder:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -225,12 +225,12 @@ namespace Launcher.Views
                     Clipboard.SetText(path);
                     if (btn.ToolTip is ToolTip tt)
                     {
-                        tt.Content = "Copiato!";
+                        tt.Content = "Copied!";
                         tt.IsOpen = true;
                     }
                     else
                     {
-                        btn.ToolTip = "Copiato!";
+                        btn.ToolTip = "Copied!";
                     }
                 }
                 catch { }
@@ -261,19 +261,19 @@ namespace Launcher.Views
             {
                 var report = Vm.GenerateDiagnosticReport();
                 Clipboard.SetText(report);
-                MessageBox.Show("Report diagnostico copiato negli appunti con successo!", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Diagnostic report copied to clipboard successfully!", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Errore nella copia del report:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Failed to copy report:\n{ex.Message}", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private void ResetDefaults_Click(object sender, RoutedEventArgs e)
         {
             var res = MessageBox.Show(
-                "Sei sicuro di voler ripristinare tutte le impostazioni predefinite di Flow Client?",
-                "Ripristina Impostazioni",
+                "Are you sure you want to reset all Flow Client settings to their default values?",
+                "Reset Settings",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
@@ -281,7 +281,7 @@ namespace Launcher.Views
             {
                 LauncherSettingsService.Instance.Save(new LauncherSettings());
                 OnLoaded(this, new RoutedEventArgs());
-                MessageBox.Show("Tutte le impostazioni sono state ripristinate ai valori predefiniti.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("All settings have been restored to default values.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -292,7 +292,7 @@ namespace Launcher.Views
             if (Vm.IsCheckingUpdate || Vm.IsUpdating) return;
 
             Vm.IsCheckingUpdate = true;
-            Vm.UpdateCheckMessage = "Controllo aggiornamenti in corso…";
+            Vm.UpdateCheckMessage = "Checking for updates…";
 
             try
             {
@@ -301,20 +301,20 @@ namespace Launcher.Views
                 if (res.UpdateAvailable)
                 {
                     _latestUpdateResult = res;
-                    Vm.LatestVersion = res.LatestVersion ?? "Nuova versione";
+                    Vm.LatestVersion = res.LatestVersion ?? "New version";
                     Vm.IsUpdateAvailable = true;
-                    Vm.UpdateCheckMessage = $"Nuova versione disponibile: v{res.LatestVersion}!";
+                    Vm.UpdateCheckMessage = $"Update available: v{res.LatestVersion}!";
                 }
                 else
                 {
                     _latestUpdateResult = null;
                     Vm.IsUpdateAvailable = false;
-                    Vm.UpdateCheckMessage = "Flow Client è già aggiornato all'ultima versione!";
+                    Vm.UpdateCheckMessage = "Flow Client is already up to date!";
                 }
             }
             catch (Exception ex)
             {
-                Vm.UpdateCheckMessage = $"Controllo fallito: {ex.Message}";
+                Vm.UpdateCheckMessage = $"Update check failed: {ex.Message}";
             }
             finally
             {
@@ -328,20 +328,32 @@ namespace Launcher.Views
                 return;
 
             var confirm = MessageBox.Show(
-                $"Vuoi scaricare e installare Flow Client v{_latestUpdateResult.LatestVersion} adesso?",
-                "Aggiornamento Flow Client",
+                $"Do you want to download and install Flow Client v{_latestUpdateResult.LatestVersion} now?",
+                "Flow Client Update",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
             if (confirm != MessageBoxResult.Yes) return;
 
             Vm.IsUpdating = true;
-            Vm.UpdateCheckMessage = "Download aggiornamento in corso…";
+            Vm.UpdateCheckMessage = "Starting download…";
 
             try
             {
                 var updates = new UpdateService();
-                var packagePath = await updates.DownloadAsync(_latestUpdateResult.DownloadUrl);
+                var progress = new Progress<(double percent, double downloadedMb, double totalMb)>(p =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Vm.UpdateCheckMessage = p.totalMb > 0
+                            ? $"Downloading: {(int)p.percent}% ({p.downloadedMb:0.1}/{p.totalMb:0.1} MB)…"
+                            : $"Downloading: {p.downloadedMb:0.1} MB…";
+                    });
+                });
+
+                var packagePath = await updates.DownloadAsync(_latestUpdateResult.DownloadUrl, progress);
+                Vm.UpdateCheckMessage = "Installing update & restarting…";
+
                 var scriptPath = updates.PrepareInstall(packagePath);
 
                 Process.Start(new ProcessStartInfo
@@ -351,13 +363,14 @@ namespace Launcher.Views
                     CreateNoWindow = true
                 });
 
-                Application.Current.Shutdown();
+                Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
+                Environment.Exit(0);
             }
             catch (Exception ex)
             {
                 Vm.IsUpdating = false;
-                Vm.UpdateCheckMessage = $"Aggiornamento fallito: {ex.Message}";
-                MessageBox.Show($"Impossibile completare l'aggiornamento:\n{ex.Message}", "Errore Aggiornamento", MessageBoxButton.OK, MessageBoxImage.Error);
+                Vm.UpdateCheckMessage = $"Update failed: {ex.Message}";
+                MessageBox.Show($"Could not complete update:\n{ex.Message}", "Update Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -86,17 +86,58 @@ namespace Launcher.Services
             if (hat == null)
                 return head;
 
-            var drawing = new DrawingVisual();
-            using (var ctx = drawing.RenderOpen())
+            return CompositeHeadAndHat(head, hat, AvatarSize);
+        }
+
+        private static BitmapSource CompositeHeadAndHat(BitmapSource head, BitmapSource hat, int size)
+        {
+            int stride = size * 4;
+            byte[] headPixels = new byte[size * stride];
+            byte[] hatPixels = new byte[size * stride];
+            head.CopyPixels(headPixels, stride, 0);
+            hat.CopyPixels(hatPixels, stride, 0);
+
+            byte[] resultPixels = new byte[size * stride];
+
+            for (int i = 0; i < headPixels.Length; i += 4)
             {
-                ctx.DrawImage(head, new Rect(0, 0, AvatarSize, AvatarSize));
-                ctx.DrawImage(hat, new Rect(0, 0, AvatarSize, AvatarSize));
+                byte dstB = headPixels[i];
+                byte dstG = headPixels[i + 1];
+                byte dstR = headPixels[i + 2];
+                byte dstA = headPixels[i + 3];
+
+                byte srcB = hatPixels[i];
+                byte srcG = hatPixels[i + 1];
+                byte srcR = hatPixels[i + 2];
+                byte srcA = hatPixels[i + 3];
+
+                if (srcA == 0)
+                {
+                    resultPixels[i] = dstB;
+                    resultPixels[i + 1] = dstG;
+                    resultPixels[i + 2] = dstR;
+                    resultPixels[i + 3] = dstA;
+                }
+                else if (srcA == 255)
+                {
+                    resultPixels[i] = srcB;
+                    resultPixels[i + 1] = srcG;
+                    resultPixels[i + 2] = srcR;
+                    resultPixels[i + 3] = 255;
+                }
+                else
+                {
+                    int invA = 255 - srcA;
+                    resultPixels[i] = (byte)((srcB * srcA + dstB * invA) / 255);
+                    resultPixels[i + 1] = (byte)((srcG * srcA + dstG * invA) / 255);
+                    resultPixels[i + 2] = (byte)((srcR * srcA + dstR * invA) / 255);
+                    resultPixels[i + 3] = (byte)Math.Min(255, srcA + (dstA * invA) / 255);
+                }
             }
 
-            var target = new RenderTargetBitmap(AvatarSize, AvatarSize, 96, 96, PixelFormats.Pbgra32);
-            target.Render(drawing);
-            target.Freeze();
-            return target;
+            var bitmap = BitmapSource.Create(size, size, 96, 96, PixelFormats.Bgra32, null, resultPixels, stride);
+            bitmap.Freeze();
+            return bitmap;
         }
 
         private static BitmapSource? UpscaleRegionNearest(BitmapSource source, int x, int y, int width, int height, int factor)

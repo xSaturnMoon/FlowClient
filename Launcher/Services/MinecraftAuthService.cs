@@ -157,10 +157,10 @@ namespace Launcher.Services
             var raw  = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
-                throw new Exception($"Errore Microsoft (step 1 – Device Code):\n{raw}");
+                throw new Exception($"Microsoft error (step 1 – Device Code):\n{raw}");
 
             var result = JsonSerializer.Deserialize<DeviceCodeResponse>(raw);
-            return result ?? throw new Exception("Risposta vuota dal server Microsoft.");
+            return result ?? throw new Exception("Empty response from Microsoft server.");
         }
 
         // ── Step 2 – Poll for MSA Token ───────────────────────────────────────
@@ -202,18 +202,18 @@ namespace Launcher.Services
                     switch (errorCode)
                     {
                         case "authorization_pending":
-                            status("In attesa della conferma su Microsoft...");
+                            status("Waiting for Microsoft authorization in browser…");
                             break;
                         case "slow_down":
                             interval += 5;
-                            status("Attendere...");
+                            status("Waiting…");
                             break;
                         case "expired_token":
-                            throw new Exception("Il codice è scaduto. Riprova.");
+                            throw new Exception("The code has expired. Please try again.");
                         case "access_denied":
-                            throw new Exception("Accesso negato. L'utente ha rifiutato l'autorizzazione.");
+                            throw new Exception("Access denied. The user declined authorization.");
                         default:
-                            throw new Exception($"Errore Microsoft (step 2): {errorCode}");
+                            throw new Exception($"Microsoft error (step 2): {errorCode}");
                     }
                 }
             }
@@ -236,13 +236,13 @@ namespace Launcher.Services
             var raw  = await resp.Content.ReadAsStringAsync(ct);
 
             if (!resp.IsSuccessStatusCode)
-                throw new Exception($"Errore nel rinnovo del token Microsoft:\n{raw}");
+                throw new Exception($"Error refreshing Microsoft token:\n{raw}");
 
             using var doc  = JsonDocument.Parse(raw);
             var root = doc.RootElement;
 
             var access  = root.GetProperty("access_token").GetString()
-                          ?? throw new Exception("access_token null dopo refresh.");
+                          ?? throw new Exception("Access token was null after refresh.");
             var newRefresh = root.TryGetProperty("refresh_token", out var rt)
                              ? (rt.GetString() ?? refreshToken) : refreshToken;
 
@@ -278,7 +278,7 @@ namespace Launcher.Services
             var raw  = await resp.Content.ReadAsStringAsync(ct);
 
             if (!resp.IsSuccessStatusCode)
-                throw new Exception($"Errore Xbox Live (step 4, HTTP {(int)resp.StatusCode}):\n{raw}");
+                throw new Exception($"Xbox Live error (step 4, HTTP {(int)resp.StatusCode}):\n{raw}");
 
             using var doc  = JsonDocument.Parse(raw);
             var root = doc.RootElement;
@@ -320,7 +320,7 @@ namespace Launcher.Services
             if (resp.StatusCode == HttpStatusCode.Unauthorized)
             {
                 // XErr codes: https://wiki.vg/Microsoft_Authentication_Scheme#Errors
-                string hint = "L'account Xbox non è autorizzato.";
+                string hint = "Xbox account is not authorized.";
                 try
                 {
                     using var doc = JsonDocument.Parse(raw);
@@ -329,12 +329,12 @@ namespace Launcher.Services
                         long code = xerr.GetInt64();
                         hint = code switch
                         {
-                            2148916233 => "L'account Microsoft non ha un account Xbox. Crea un account Xbox su xbox.com.",
-                            2148916235 => "Xbox non è disponibile nel tuo paese.",
+                            2148916233 => "The Microsoft account does not have an Xbox account. Create an Xbox profile at xbox.com.",
+                            2148916235 => "Xbox Live is not available in your country/region.",
                             2148916236 or
-                            2148916237 => "L'account richiede la verifica dell'età di un adulto.",
-                            2148916238 => "Questo account è di un minore. Associalo a un account familiare Xbox.",
-                            _          => $"Errore Xbox (XErr={code})."
+                            2148916237 => "The account requires adult age verification.",
+                            2148916238 => "This is a child account. Link it to an Xbox family group.",
+                            _          => $"Xbox error (XErr={code})."
                         };
                     }
                 }
@@ -343,7 +343,7 @@ namespace Launcher.Services
             }
 
             if (!resp.IsSuccessStatusCode)
-                throw new Exception($"Errore XSTS (HTTP {(int)resp.StatusCode}):\n{raw}");
+                throw new Exception($"XSTS error (HTTP {(int)resp.StatusCode}):\n{raw}");
 
             using var doc2 = JsonDocument.Parse(raw);
             return doc2.RootElement.GetProperty("Token").GetString()
@@ -366,7 +366,7 @@ namespace Launcher.Services
             var raw  = await resp.Content.ReadAsStringAsync(ct);
 
             if (!resp.IsSuccessStatusCode)
-                throw new Exception($"Errore Minecraft Services (HTTP {(int)resp.StatusCode}):\n{raw}");
+                throw new Exception($"Minecraft Services error (HTTP {(int)resp.StatusCode}):\n{raw}");
 
             using var doc = JsonDocument.Parse(raw);
             return doc.RootElement.GetProperty("access_token").GetString()
@@ -381,14 +381,14 @@ namespace Launcher.Services
             using var resp = await SendServicesAsync(req, mcToken, ct);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
-                throw new Exception("Questo account Microsoft non possiede Minecraft Java Edition.");
+                throw new Exception("This Microsoft account does not own Minecraft Java Edition.");
 
             var raw = await resp.Content.ReadAsStringAsync(ct);
             if (!resp.IsSuccessStatusCode)
-                throw new Exception($"Errore recupero profilo Minecraft (HTTP {(int)resp.StatusCode}):\n{raw}");
+                throw new Exception($"Failed to retrieve Minecraft profile (HTTP {(int)resp.StatusCode}):\n{raw}");
 
             var profile = JsonSerializer.Deserialize<MinecraftProfile>(raw, ProfileJsonOptions);
-            return profile ?? throw new Exception("Risposta profilo Minecraft non valida.");
+            return profile ?? throw new Exception("Invalid Minecraft profile response.");
         }
 
         // ── Public: Full Device Code auth flow ────────────────────────────────
@@ -396,19 +396,19 @@ namespace Launcher.Services
         public async Task<(MinecraftProfile profile, SavedAccount account)> AuthenticateAsync(
             DeviceCodeResponse deviceCode, Action<string> status, CancellationToken ct)
         {
-            status("In attesa della conferma su Microsoft...");
+            status("Waiting for Microsoft authorization…");
             var (msAccess, msRefresh) = await PollForMsaTokenAsync(deviceCode, status, ct);
 
-            status("Autenticazione Xbox Live...");
+            status("Authenticating with Xbox Live…");
             var (xblToken, uhs) = await AuthXboxLiveAsync(msAccess, ct);
 
-            status("Richiesta token XSTS...");
+            status("Requesting XSTS security token…");
             var xstsToken = await AuthXstsAsync(xblToken, ct);
 
-            status("Accesso a Minecraft Services...");
+            status("Signing into Minecraft Services…");
             var mcToken = await LoginMinecraftAsync(xstsToken, uhs, ct);
 
-            status("Recupero profilo Minecraft...");
+            status("Retrieving Minecraft profile…");
             var profile = await GetProfileAsync(mcToken, ct);
 
             var saved = new SavedAccount
@@ -435,21 +435,21 @@ namespace Launcher.Services
             SavedAccount saved, Action<string> status, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(saved.MsaRefreshToken))
-                throw new Exception("Nessun refresh token disponibile. Effettua di nuovo l'accesso.");
+                throw new Exception("No refresh token available. Please sign in again.");
 
-            status("Rinnovo sessione Microsoft...");
+            status("Refreshing Microsoft session…");
             var (msAccess, newRefresh) = await RefreshMsaTokenAsync(saved.MsaRefreshToken, ct);
 
-            status("Autenticazione Xbox Live...");
+            status("Authenticating with Xbox Live…");
             var (xblToken, uhs) = await AuthXboxLiveAsync(msAccess, ct);
 
-            status("Richiesta token XSTS...");
+            status("Requesting XSTS security token…");
             var xstsToken = await AuthXstsAsync(xblToken, ct);
 
-            status("Accesso a Minecraft Services...");
+            status("Signing into Minecraft Services…");
             var mcToken = await LoginMinecraftAsync(xstsToken, uhs, ct);
 
-            status("Recupero profilo Minecraft...");
+            status("Retrieving Minecraft profile…");
             var profile = await GetProfileAsync(mcToken, ct);
 
             var updated = new SavedAccount
@@ -567,7 +567,7 @@ namespace Launcher.Services
         public async Task<string> DownloadSkinToTempAsync(string skinUrl, CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(skinUrl))
-                throw new Exception("Nessuna skin attiva da applicare.");
+                throw new Exception("No active skin to apply.");
 
             var bytes = await Http.GetByteArrayAsync(skinUrl, ct);
             var path = Path.Combine(Path.GetTempPath(), $"flow_skin_{Guid.NewGuid():N}.png");

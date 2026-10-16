@@ -10,7 +10,17 @@ namespace Launcher.Helpers
     {
         public static async Task ShowAsync(WebView2 webView, string? html)
         {
-            await EnsureCoreAsync(webView);
+            try
+            {
+                await EnsureCoreAsync(webView).ConfigureAwait(true);
+            }
+            catch
+            {
+                return;
+            }
+
+            if (webView.CoreWebView2 == null)
+                return;
 
             var document = WrapDocument(ModrinthContentFormatter.ToDisplayHtml(html));
 
@@ -22,9 +32,20 @@ namespace Launcher.Helpers
             }
 
             webView.NavigationCompleted += OnCompleted;
-            webView.NavigateToString(document);
-            await tcs.Task.ConfigureAwait(true);
-            await ResizeToContentAsync(webView).ConfigureAwait(true);
+            try
+            {
+                webView.NavigateToString(document);
+                var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(3500)).ConfigureAwait(true);
+                webView.NavigationCompleted -= OnCompleted;
+                if (completedTask == tcs.Task)
+                {
+                    await ResizeToContentAsync(webView).ConfigureAwait(true);
+                }
+            }
+            catch
+            {
+                webView.NavigationCompleted -= OnCompleted;
+            }
         }
 
         public static async Task EnsureCoreAsync(WebView2 webView)

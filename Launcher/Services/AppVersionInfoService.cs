@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -18,7 +18,7 @@ namespace Launcher.Services
 
     public static class AppVersionInfoService
     {
-        private static readonly CultureInfo ItalianCulture = new("it-IT");
+        private static readonly CultureInfo EnCulture = new("en-US");
 
         private static readonly string TrackingFilePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -66,12 +66,12 @@ namespace Launcher.Services
                 if (File.Exists(asmPath))
                 {
                     var date = File.GetLastWriteTime(asmPath);
-                    return date.ToString("dd MMMM yyyy", ItalianCulture);
+                    return date.ToString("MMMM dd, yyyy", EnCulture);
                 }
             }
             catch { }
 
-            return DateTime.Now.ToString("dd MMMM yyyy", ItalianCulture);
+            return DateTime.Now.ToString("MMMM dd, yyyy", EnCulture);
         }
 
         public static DateTime GetDownloadOrInstallDate()
@@ -118,7 +118,7 @@ namespace Launcher.Services
         public static string GetDownloadOrInstallDateString()
         {
             var date = GetDownloadOrInstallDate();
-            return date.ToString("dd/MM/yyyy 'alle' HH:mm", ItalianCulture);
+            return date.ToString("MM/dd/yyyy 'at' HH:mm", EnCulture);
         }
 
         public static void RecordInstall(string version, DateTime? timestamp = null)

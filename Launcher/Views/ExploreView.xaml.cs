@@ -500,10 +500,22 @@ namespace Launcher.Views
             SelectInstance(inst.Id);
         }
 
+        public void ApplySearch(string query)
+        {
+            Vm.SearchQuery = query;
+            RefreshList();
+        }
+
         // ── Actions ───────────────────────────────────────────────────────────
 
         private async void Play_Click(object sender, RoutedEventArgs e)
         {
+            if (MinecraftProcessTracker.Instance.IsLaunching || MinecraftProcessTracker.Instance.IsRunning)
+            {
+                Vm.StatusMessage = "Minecraft is already launching or running.";
+                return;
+            }
+
             var id = GetActionId(sender) ?? Vm.SelectedInstanceId;
             if (id == null) return;
 

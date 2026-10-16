@@ -620,7 +620,8 @@ namespace Launcher.Views
                             UseShellExecute = true,
                             CreateNoWindow = true
                         });
-                        Application.Current.Shutdown();
+                        Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
+                        Environment.Exit(0);
                         return;
                     }
 
@@ -725,6 +726,10 @@ namespace Launcher.Views
                 else
                 {
                     NavigateTo("Versions");
+                    if (GetOrCreateView("Versions") is ExploreView ev)
+                    {
+                        ev.ApplySearch(query);
+                    }
                 }
             }
         }

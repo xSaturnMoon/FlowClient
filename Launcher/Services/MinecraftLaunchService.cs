@@ -142,11 +142,15 @@ namespace Launcher.Services
 
                 launchOptions.JavaPath = javaPath;
 
-                if (!string.IsNullOrWhiteSpace(instance.JvmArgs))
+                var jvmArgs = !string.IsNullOrWhiteSpace(instance.JvmArgs)
+                    ? instance.JvmArgs.Trim()
+                    : LauncherSettingsService.Instance.Current.CustomJvmArgs?.Trim();
+
+                if (!string.IsNullOrWhiteSpace(jvmArgs))
                 {
                     launchOptions.ExtraJvmArguments = new[]
                     {
-                        MArgument.FromCommandLine(instance.JvmArgs.Trim())
+                        MArgument.FromCommandLine(jvmArgs)
                     };
                 }
 
@@ -251,11 +255,17 @@ namespace Launcher.Services
                 version = await launcher.GetVersionAsync(versionName, cancellationToken);
             }
 
+            var fallback = launcher.GetJavaPath(version);
+            if (IsExistingFile(fallback))
+                return fallback!;
+
+            var sysJava = FindSystemJava();
+            if (IsExistingFile(sysJava))
+                return sysJava!;
+
             throw new InvalidOperationException(
-                "Could not download the Minecraft Java runtime for this version.\n\n" +
-                "FlowClient requires the official Mojang Java bundled with Minecraft. " +
-                "System Java installations (for example Eclipse Adoptium) are not used.\n\n" +
-                "Check your internet connection and try again.");
+                "Could not download or locate a Java runtime for this version.\n\n" +
+                "Please configure a custom Java executable in Settings or check your internet connection.");
         }
 
         private static bool IsBundledMinecraftJava(string? path)
@@ -507,6 +517,10 @@ namespace Launcher.Services
         {
             if (!string.IsNullOrWhiteSpace(instance.JavaPath) && File.Exists(instance.JavaPath))
                 return instance.JavaPath;
+
+            var globalCustom = LauncherSettingsService.Instance.Current.CustomJavaPath;
+            if (!string.IsNullOrWhiteSpace(globalCustom) && File.Exists(globalCustom))
+                return globalCustom;
 
             return null;
         }

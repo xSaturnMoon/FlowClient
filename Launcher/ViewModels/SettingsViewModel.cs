@@ -486,7 +486,7 @@ namespace Launcher.ViewModels
         public async Task<StorageCleanupResult> CleanTempFilesAsync()
         {
             IsCleaningStorage = true;
-            CleanupResultText = "Pulizia in corso…";
+            CleanupResultText = "Cleaning temporary files…";
             try
             {
                 var res = await Task.Run(() => StorageMaintenanceService.CleanTempAndCacheFiles());
@@ -503,7 +503,7 @@ namespace Launcher.ViewModels
         public async Task<StorageCleanupResult> CleanOldLogsAsync()
         {
             IsCleaningStorage = true;
-            CleanupResultText = "Pulizia log in corso…";
+            CleanupResultText = "Cleaning logs…";
             try
             {
                 var res = await Task.Run(() => StorageMaintenanceService.CleanOldLogsAndCrashes());
@@ -543,15 +543,15 @@ namespace Launcher.ViewModels
         public string LaunchBehaviorSummary =>
             PostLaunchAction switch
             {
-                LaunchPostAction.Minimize => "Riduci a icona",
-                LaunchPostAction.HideWhilePlaying => "Nascondi durante il gioco",
-                LaunchPostAction.CloseWhenGameReady => "Chiudi all'avvio del gioco",
-                _ => "Mantieni aperto"
+                LaunchPostAction.Minimize => "Minimize to taskbar",
+                LaunchPostAction.HideWhilePlaying => "Hide while playing",
+                LaunchPostAction.CloseWhenGameReady => "Close when game starts",
+                _ => "Keep open"
             };
 
-        public string FlowClientModSummary => EnableFlowClientMod ? "Attivo" : "Disattivato";
-        public string VoiceChatSummary => EnableVoiceChatMod ? "Installazione automatica" : "Disattivato";
-        public string DiscordRpcSummary => EnableDiscordRpc ? "Rich Presence attiva" : "Disattivato";
+        public string FlowClientModSummary => EnableFlowClientMod ? "Enabled" : "Disabled";
+        public string VoiceChatSummary => EnableVoiceChatMod ? "Automatic install" : "Disabled";
+        public string DiscordRpcSummary => EnableDiscordRpc ? "Rich Presence active" : "Disabled";
 
         public void LoadSystemInfo()
         {

@@ -200,7 +200,7 @@ namespace Launcher.Services
             try
             {
                 var stagedUpdateJson = Path.Combine(stagingDir, "Assets", "update.json");
-                var targetVer = "1.3.2";
+                var targetVer = GetCurrentVersion();
                 if (File.Exists(stagedUpdateJson))
                 {
                     using var doc = JsonDocument.Parse(File.ReadAllText(stagedUpdateJson));
@@ -216,19 +216,33 @@ namespace Launcher.Services
 
             var exePath = Path.Combine(installDir, "FlowClient.exe");
             var scriptPath = Path.Combine(UpdatesDirectory, "apply-update.cmd");
+            var currentPid = Environment.ProcessId;
             var script = $"""
                 @echo off
                 setlocal EnableDelayedExpansion
 
-                :: Wait for FlowClient.exe to release all file locks
+                set TARGET_PID={currentPid}
+
+                :: Wait up to 5 seconds for FlowClient PID to exit
+                set /a WAIT_COUNT=0
                 :waitloop
-                tasklist /FI "IMAGENAME eq FlowClient.exe" 2>nul | find /I "FlowClient.exe" >nul
+                tasklist /FI "PID eq %TARGET_PID%" 2>nul | find /I "%TARGET_PID%" >nul
                 if not errorlevel 1 (
+                    set /a WAIT_COUNT+=1
+                    if !WAIT_COUNT! geq 5 (
+                        goto forcekill
+                    )
                     timeout /t 1 /nobreak >nul
                     goto waitloop
                 )
+                goto doinstall
+
+                :forcekill
+                taskkill /F /PID %TARGET_PID% >nul 2>&1
+                taskkill /F /IM FlowClient.exe >nul 2>&1
                 timeout /t 1 /nobreak >nul
 
+                :doinstall
                 :: Terminate background probes if running
                 taskkill /F /IM FlowBatteryProbe.exe >nul 2>&1
                 taskkill /F /IM FlowMediaProbe.exe >nul 2>&1

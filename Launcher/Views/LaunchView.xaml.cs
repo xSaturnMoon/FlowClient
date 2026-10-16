@@ -567,11 +567,11 @@ namespace Launcher.Views
             {
                 if (SessionKeepAliveService.Instance.IsValidating)
                 {
-                    MessageBox.Show("Verifica sessione Microsoft in corso. Attendi qualche istante prima di avviare il gioco.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Microsoft session validation is in progress. Please wait a moment before launching the game.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                MessageBox.Show("Effettua l'accesso con il tuo account Microsoft prima di avviare il gioco.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please sign in with your Microsoft account before launching the game.", "Flow Client", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

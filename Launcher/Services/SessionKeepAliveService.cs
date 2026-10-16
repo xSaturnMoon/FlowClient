@@ -54,12 +54,12 @@ namespace Launcher.Services
             if (File.Exists(MinecraftAuthService.SavePath))
             {
                 State = SessionState.Validating;
-                StatusText = "Verifica sessione Microsoft in corso…";
+                StatusText = "Validating Microsoft session…";
             }
             else
             {
                 State = SessionState.NotLoggedIn;
-                StatusText = "Nessun account collegato";
+                StatusText = "No account connected";
             }
         }
 
@@ -67,7 +67,7 @@ namespace Launcher.Services
         {
             _account = account;
             State = SessionState.Ready;
-            StatusText = "Sessione attiva";
+            StatusText = "Session active";
             LastSuccessfulSync = DateTime.Now;
             _timer.Start();
             StateChanged?.Invoke(State, StatusText);
@@ -78,7 +78,7 @@ namespace Launcher.Services
             _timer.Stop();
             _account = null;
             State = SessionState.NotLoggedIn;
-            StatusText = "Nessun account collegato";
+            StatusText = "No account connected";
             StateChanged?.Invoke(State, StatusText);
         }
 
@@ -111,12 +111,12 @@ namespace Launcher.Services
             {
                 _account = null;
                 _startupValidationDone = true;
-                SetState(SessionState.NotLoggedIn, "Nessun account collegato");
+                SetState(SessionState.NotLoggedIn, "No account connected");
                 return false;
             }
 
             _account = saved;
-            SetState(SessionState.Validating, "Verifica sessione Microsoft in corso…");
+            SetState(SessionState.Validating, "Validating Microsoft session…");
 
             try
             {
@@ -133,7 +133,7 @@ namespace Launcher.Services
                         {
                             LastSuccessfulSync = DateTime.Now;
                             _startupValidationDone = true;
-                            SetState(SessionState.Ready, "Sessione verificata e attiva");
+                            SetState(SessionState.Ready, "Session verified and active");
                             SessionRefreshed?.Invoke(saved, profile);
                             _timer.Start();
                             return true;
@@ -153,7 +153,7 @@ namespace Launcher.Services
                         LauncherLogService.Instance.Warn("Rate-limited (HTTP 429) during validation; keeping existing session.");
                         LastSuccessfulSync = DateTime.Now;
                         _startupValidationDone = true;
-                        SetState(SessionState.Ready, "Sessione attiva");
+                        SetState(SessionState.Ready, "Session active");
                         _timer.Start();
                         return true;
                     }
@@ -162,7 +162,7 @@ namespace Launcher.Services
                         LauncherLogService.Instance.Warn("Network unreachable during validation; falling back to offline mode.");
                         LastSuccessfulSync = DateTime.Now;
                         _startupValidationDone = true;
-                        SetState(SessionState.OfflineReady, "Modalità offline (token valido)");
+                        SetState(SessionState.OfflineReady, "Offline mode (valid token)");
                         return true;
                     }
                 }
@@ -177,7 +177,7 @@ namespace Launcher.Services
                 // Rate-limited – keep session alive, never expire on 429
                 LauncherLogService.Instance.Warn("Rate-limited (HTTP 429) during startup; keeping existing session.");
                 _startupValidationDone = true;
-                SetState(SessionState.Ready, "Sessione attiva");
+                SetState(SessionState.Ready, "Session active");
                 _timer.Start();
                 return true;
             }
@@ -187,12 +187,12 @@ namespace Launcher.Services
                 if (_account != null && _account.TokenExpiry > DateTime.UtcNow && IsNetworkFailure(ex))
                 {
                     _startupValidationDone = true;
-                    SetState(SessionState.OfflineReady, "Modalità offline");
+                    SetState(SessionState.OfflineReady, "Offline mode");
                     return true;
                 }
 
                 _startupValidationDone = true;
-                SetState(SessionState.Expired, "Sessione scaduta");
+                SetState(SessionState.Expired, "Session expired");
                 RefreshFailed?.Invoke(ex);
                 return false;
             }
@@ -233,19 +233,19 @@ namespace Launcher.Services
         {
             if (_account == null)
             {
-                SetState(SessionState.NotLoggedIn, "Nessun account");
+                SetState(SessionState.NotLoggedIn, "No account");
                 return false;
             }
 
             if (string.IsNullOrEmpty(_account.MsaRefreshToken))
             {
-                SetState(SessionState.Expired, "Riconnessione necessaria");
-                RefreshFailed?.Invoke(new InvalidOperationException("Nessun refresh token disponibile."));
+                SetState(SessionState.Expired, "Reconnection required");
+                RefreshFailed?.Invoke(new InvalidOperationException("No refresh token available."));
                 return false;
             }
 
             _refreshing = true;
-            SetState(SessionState.Validating, "Rinnovo token Microsoft in corso…");
+            SetState(SessionState.Validating, "Renewing Microsoft token…");
 
             try
             {
@@ -261,7 +261,7 @@ namespace Launcher.Services
 
                 _account = updated;
                 LastSuccessfulSync = DateTime.Now;
-                SetState(SessionState.Ready, "Sessione attiva");
+                SetState(SessionState.Ready, "Session active");
                 SessionRefreshed?.Invoke(updated, profile);
                 StatusChanged?.Invoke("Session active");
                 _timer.Start();
@@ -272,11 +272,11 @@ namespace Launcher.Services
                 LauncherLogService.Instance.Error($"Session refresh failed: {ex.Message}");
                 if (_account != null && _account.TokenExpiry > DateTime.UtcNow && IsNetworkFailure(ex))
                 {
-                    SetState(SessionState.OfflineReady, "Modalità offline");
+                    SetState(SessionState.OfflineReady, "Offline mode");
                     return true;
                 }
 
-                SetState(SessionState.Expired, "Sessione scaduta");
+                SetState(SessionState.Expired, "Session expired");
                 RefreshFailed?.Invoke(ex);
                 StatusChanged?.Invoke("Waiting to reconnect");
                 return false;

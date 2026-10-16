@@ -245,7 +245,7 @@ namespace Launcher.Views
             // 30-second cooldown to prevent Mojang rate-limiting (HTTP 429)
             if ((DateTime.Now - _lastManualRefresh).TotalSeconds < 30)
             {
-                vm.LastSyncText = "Attendi prima di aggiornare di nuovo";
+                vm.LastSyncText = "Please wait before refreshing again";
                 return;
             }
             _lastManualRefresh = DateTime.Now;

@@ -166,13 +166,20 @@ namespace Launcher.Services
         {
             try
             {
-                var path = process.MainModule?.FileName ?? "";
-                if (path.Contains("java-runtime", StringComparison.OrdinalIgnoreCase) ||
-                    path.Contains("minecraft", StringComparison.OrdinalIgnoreCase) ||
-                    path.Contains("Eclipse Adoptium", StringComparison.OrdinalIgnoreCase) ||
-                    path.Contains("Adoptium", StringComparison.OrdinalIgnoreCase))
+                var title = process.MainWindowTitle;
+                if (!string.IsNullOrEmpty(title) &&
+                    (title.Contains("Minecraft", StringComparison.OrdinalIgnoreCase) ||
+                     title.Contains("FlowClient", StringComparison.OrdinalIgnoreCase)))
                 {
-                    return process.WorkingSet64 > 80_000_000;
+                    return true;
+                }
+
+                var path = process.MainModule?.FileName ?? "";
+                if (path.Contains("\\.minecraft\\", StringComparison.OrdinalIgnoreCase) ||
+                    path.Contains("FlowClient", StringComparison.OrdinalIgnoreCase) ||
+                    path.Contains("flow-runtime", StringComparison.OrdinalIgnoreCase))
+                {
+                    return process.WorkingSet64 > 60_000_000;
                 }
             }
             catch

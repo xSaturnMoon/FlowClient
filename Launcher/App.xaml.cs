@@ -9,6 +9,18 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var ex = args.ExceptionObject as Exception;
+            LauncherLogService.Instance.Error($"Unhandled domain exception: {ex?.Message}\n{ex?.StackTrace}");
+        };
+
+        System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            LauncherLogService.Instance.Error($"Unobserved task exception: {args.Exception?.Message}\n{args.Exception?.StackTrace}");
+            args.SetObserved();
+        };
+
         System.Threading.Tasks.Task.Run(MinecraftProcessTracker.Instance.CleanupStaleSessions);
 
         DispatcherUnhandledException += (_, args) =>

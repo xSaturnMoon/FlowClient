@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Launcher.Services
 {
@@ -16,11 +16,16 @@ namespace Launcher.Services
             SelectedInstanceChanged?.Invoke(id);
         }
 
-        public static void ForceSelect(string id)
+        public static void ForceSelect(string? id)
         {
-            if (string.IsNullOrEmpty(id)) return;
             SelectedInstanceId = id;
-            SelectedInstanceChanged?.Invoke(id);
+            SelectedInstanceChanged?.Invoke(id ?? string.Empty);
+        }
+
+        public static void ClearSelection()
+        {
+            SelectedInstanceId = null;
+            SelectedInstanceChanged?.Invoke(string.Empty);
         }
     }
 }

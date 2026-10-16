@@ -159,7 +159,8 @@ namespace Launcher.Views
                     UseShellExecute = true,
                     CreateNoWindow = true
                 });
-                Application.Current.Shutdown();
+                Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
+                Environment.Exit(0);
             }
             catch (Exception ex)
             {

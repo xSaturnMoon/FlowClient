@@ -41,11 +41,13 @@ namespace Launcher.Helpers
 
                     if (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps)
                     {
-                        var bytes = Http.GetByteArrayAsync(absolute).ConfigureAwait(false).GetAwaiter().GetResult();
-                        if (bytes.Length == 0 || LooksLikeSvg(bytes))
-                            return null;
-
-                        return DecodeBitmap(bytes);
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = absolute;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+                        bitmap.EndInit();
+                        return bitmap;
                     }
                 }
 

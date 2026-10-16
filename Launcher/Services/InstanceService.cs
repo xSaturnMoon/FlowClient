@@ -127,6 +127,14 @@ namespace Launcher.Services
                 if (Directory.Exists(dir)) Directory.Delete(dir, true);
             }
             catch { }
+            if (InstanceSelectionService.SelectedInstanceId == id)
+            {
+                var next = _instances.FirstOrDefault();
+                if (next != null)
+                    InstanceSelectionService.ForceSelect(next.Id);
+                else
+                    InstanceSelectionService.ClearSelection();
+            }
             InstancesChanged?.Invoke();
         }
 

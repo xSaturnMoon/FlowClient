@@ -197,11 +197,11 @@ namespace Launcher.Services
 
             if (totalBytes > 0)
             {
-                result.Message = $"✓ Liberati con successo {FormatBytes(totalBytes)} ({fileCount} file rimossi)!";
+                result.Message = $"✓ Successfully freed {FormatBytes(totalBytes)} ({fileCount} files removed)!";
             }
             else
             {
-                result.Message = "Nessun file temporaneo da rimuovere (spazio già ottimizzato).";
+                result.Message = "No temporary files to remove (already optimized).";
             }
 
             return result;
@@ -278,11 +278,11 @@ namespace Launcher.Services
 
             if (totalBytes > 0)
             {
-                result.Message = $"✓ Rimossi {fileCount} report e log storici ({FormatBytes(totalBytes)} liberati)!";
+                result.Message = $"✓ Removed {fileCount} historical reports and logs ({FormatBytes(totalBytes)} freed)!";
             }
             else
             {
-                result.Message = "Nessun report o log storico da eliminare.";
+                result.Message = "No historical logs or reports to delete.";
             }
 
             return result;
