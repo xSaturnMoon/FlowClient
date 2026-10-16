@@ -9,17 +9,17 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <Duration x:Key="NavAnimDuration">0:0:0.15</Duration>
         <!-- Carbon Theme Color Palette -->
-        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#0E0E10" />
-        <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="#08080A" />
-        <SolidColorBrush x:Key="BorderBrush" Color="#1C1C1E" />
+        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#101010" />
+        <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="#101010" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#1E1E1E" />
         <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
         <SolidColorBrush x:Key="TextMutedBrush" Color="#8E8E93" />
 
-        <FontFamily x:Key="FramerFont">pack://application:,,,/FlowClient;component/Fonts/#Nunito, pack://application:,,,/Fonts/#Nunito, ./Fonts/#Nunito, Nunito, Segoe UI, sans-serif</FontFamily>
-        <FontFamily x:Key="FlowBrandFont">pack://application:,,,/Fonts/Montserrat-SemiBold.ttf#Montserrat</FontFamily>
-        <FontFamily x:Key="NunitoFont">pack://application:,,,/FlowClient;component/Fonts/#Nunito, pack://application:,,,/Fonts/#Nunito, ./Fonts/#Nunito, Nunito, Segoe UI, sans-serif</FontFamily>
-        <FontFamily x:Key="NunitoRegularFont">pack://application:,,,/FlowClient;component/Fonts/#Nunito, pack://application:,,,/Fonts/#Nunito, ./Fonts/#Nunito, Nunito, Segoe UI, sans-serif</FontFamily>
-        <FontFamily x:Key="NunitoBoldFont">pack://application:,,,/FlowClient;component/Fonts/#Nunito, pack://application:,,,/Fonts/#Nunito, ./Fonts/#Nunito, Nunito, Segoe UI, sans-serif</FontFamily>
+        <FontFamily x:Key="FramerFont">pack://application:,,,/Fonts/#Nunito, pack://application:,,,/FlowClient;component/Fonts/#Nunito, Segoe UI, sans-serif</FontFamily>
+        <FontFamily x:Key="FlowBrandFont">pack://application:,,,/Fonts/Montserrat-SemiBold.ttf#Montserrat, Segoe UI, sans-serif</FontFamily>
+        <FontFamily x:Key="NunitoFont">pack://application:,,,/Fonts/#Nunito, pack://application:,,,/FlowClient;component/Fonts/#Nunito, Segoe UI, sans-serif</FontFamily>
+        <FontFamily x:Key="NunitoRegularFont">pack://application:,,,/Fonts/Nunito-Regular.ttf#Nunito, pack://application:,,,/Fonts/#Nunito, Segoe UI, sans-serif</FontFamily>
+        <FontFamily x:Key="NunitoBoldFont">pack://application:,,,/Fonts/Nunito-Bold.ttf#Nunito, pack://application:,,,/FlowClient;component/Fonts/Nunito-Bold.ttf#Nunito, pack://application:,,,/Fonts/#Nunito, Segoe UI, sans-serif</FontFamily>
 
         <!-- Global Nunito Font Defaults -->
         <Style TargetType="{x:Type TextBlock}">

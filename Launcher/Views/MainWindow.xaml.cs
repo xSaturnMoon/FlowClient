@@ -478,14 +478,109 @@ namespace Launcher.Views
         private void NavSettings_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Settings");
 
+        private bool _isSidebarCheckingUpdate = false;
+
+        private void AnimateSidebarArrowToSpinner()
+        {
+            var easeIn = new CubicEase { EasingMode = EasingMode.EaseIn };
+
+            SidebarCheckmarkScale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            SidebarCheckmarkScale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+            SidebarCheckmarkRotate.BeginAnimation(RotateTransform.AngleProperty, null);
+            SidebarUpdateCheckmark.BeginAnimation(UIElement.OpacityProperty, null);
+            SidebarUpdateCheckmark.Opacity = 0;
+            SidebarCheckmarkScale.ScaleX = 0;
+            SidebarCheckmarkScale.ScaleY = 0;
+
+            SidebarCrossScale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            SidebarCrossScale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+            SidebarCrossRotate.BeginAnimation(RotateTransform.AngleProperty, null);
+            SidebarUpdateCross.BeginAnimation(UIElement.OpacityProperty, null);
+            SidebarUpdateCross.Opacity = 0;
+            SidebarCrossScale.ScaleX = 0;
+            SidebarCrossScale.ScaleY = 0;
+
+            SidebarSpinnerScale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            SidebarSpinnerScale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+            SidebarSpinnerScale.ScaleX = 1.0;
+            SidebarSpinnerScale.ScaleY = 1.0;
+
+            SidebarUpdateSpinner.BeginAnimation(UIElement.OpacityProperty, null);
+            SidebarUpdateSpinner.Opacity = 0;
+
+            var arrowShrink = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(220)) { EasingFunction = easeIn };
+            var arrowFade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180));
+
+            SidebarUpdateArrowScale.BeginAnimation(ScaleTransform.ScaleXProperty, arrowShrink);
+            SidebarUpdateArrowScale.BeginAnimation(ScaleTransform.ScaleYProperty, arrowShrink);
+            SidebarUpdateArrow.BeginAnimation(UIElement.OpacityProperty, arrowFade);
+
+            SidebarUpdateCircle.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180)));
+
+            var spinnerFadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180));
+            SidebarUpdateSpinner.BeginAnimation(UIElement.OpacityProperty, spinnerFadeIn);
+
+            var spinRotate = new DoubleAnimation(0, 360, TimeSpan.FromMilliseconds(750))
+            {
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+            SidebarSpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, spinRotate);
+        }
+
+        private void AnimateSidebarSpinnerToCheckmark()
+        {
+            var easeOut = new BackEase { Amplitude = 0.5, EasingMode = EasingMode.EaseOut };
+            var cubicOut = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            SidebarSpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, null);
+            SidebarUpdateSpinner.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180)));
+            SidebarUpdateCircle.Opacity = 0;
+
+            var checkScale = new DoubleAnimation(0.2, 1, TimeSpan.FromMilliseconds(340)) { EasingFunction = easeOut };
+            var checkRotate = new DoubleAnimation(-35, 0, TimeSpan.FromMilliseconds(340)) { EasingFunction = cubicOut };
+            var checkFade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+
+            SidebarCheckmarkScale.BeginAnimation(ScaleTransform.ScaleXProperty, checkScale);
+            SidebarCheckmarkScale.BeginAnimation(ScaleTransform.ScaleYProperty, checkScale);
+            SidebarCheckmarkRotate.BeginAnimation(RotateTransform.AngleProperty, checkRotate);
+            SidebarUpdateCheckmark.BeginAnimation(UIElement.OpacityProperty, checkFade);
+        }
+
+        private async Task AnimateSidebarResetAsync()
+        {
+            await Task.Delay(2500);
+
+            var checkFadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(220));
+            SidebarUpdateCheckmark.BeginAnimation(UIElement.OpacityProperty, checkFadeOut);
+
+            var crossFadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(220));
+            SidebarUpdateCross.BeginAnimation(UIElement.OpacityProperty, crossFadeOut);
+
+            var resetEase = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var arrowGrow = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(260)) { EasingFunction = resetEase };
+            var arrowFadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(240));
+            var circleFadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(240));
+
+            SidebarUpdateArrowScale.BeginAnimation(ScaleTransform.ScaleXProperty, arrowGrow);
+            SidebarUpdateArrowScale.BeginAnimation(ScaleTransform.ScaleYProperty, arrowGrow);
+            SidebarUpdateArrow.BeginAnimation(UIElement.OpacityProperty, arrowFadeIn);
+            SidebarUpdateCircle.BeginAnimation(UIElement.OpacityProperty, circleFadeIn);
+        }
+
         private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
         {
+            if (_isSidebarCheckingUpdate) return;
+            _isSidebarCheckingUpdate = true;
+            AnimateSidebarArrowToSpinner();
+
             try
             {
                 var updates = new UpdateService();
                 var res = await updates.CheckAsync();
                 if (res.UpdateAvailable)
                 {
+                    AnimateSidebarSpinnerToCheckmark();
+
                     var msg = $"A new version (v{res.LatestVersion}) is available!\n\n" +
                               (!string.IsNullOrWhiteSpace(res.ReleaseNotes) ? $"Release Notes:\n{res.ReleaseNotes}\n\n" : "") +
                               "Do you want to download and install it now?";
@@ -493,6 +588,7 @@ namespace Launcher.Views
                     var prompt = MessageBox.Show(msg, "Flow Client Update", MessageBoxButton.YesNo, MessageBoxImage.Information);
                     if (prompt == MessageBoxResult.Yes && !string.IsNullOrEmpty(res.DownloadUrl))
                     {
+                        AnimateSidebarArrowToSpinner();
                         var packagePath = await updates.DownloadAsync(res.DownloadUrl);
                         var scriptPath = updates.PrepareInstall(packagePath);
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -502,16 +598,32 @@ namespace Launcher.Views
                             CreateNoWindow = true
                         });
                         Application.Current.Shutdown();
+                        return;
                     }
+
+                    _ = AnimateSidebarResetAsync();
                 }
                 else
                 {
+                    AnimateSidebarSpinnerToCheckmark();
                     MessageBox.Show("Flow Client is already up to date!", "Check Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = AnimateSidebarResetAsync();
                 }
             }
             catch (Exception ex)
             {
+                SidebarSpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, null);
+                SidebarUpdateSpinner.Opacity = 0;
+                var crossScale = new DoubleAnimation(0.2, 1.0, TimeSpan.FromMilliseconds(320));
+                SidebarCrossScale.BeginAnimation(ScaleTransform.ScaleXProperty, crossScale);
+                SidebarCrossScale.BeginAnimation(ScaleTransform.ScaleYProperty, crossScale);
+                SidebarUpdateCross.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200)));
                 MessageBox.Show($"Failed to check for updates: {ex.Message}", "Update Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = AnimateSidebarResetAsync();
+            }
+            finally
+            {
+                _isSidebarCheckingUpdate = false;
             }
         }
 
@@ -534,11 +646,26 @@ namespace Launcher.Views
             }
         }
 
-        private void TopSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void TopSearchTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TopSearchPlaceholder.Visibility = Visibility.Collapsed;
+        }
+
+        private void TopSearchTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TopSearchPlaceholder.Visibility = string.IsNullOrEmpty(TopSearchTextBox.Text)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+        }
+
+        private void TopSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (!TopSearchTextBox.IsFocused)
+            {
+                TopSearchPlaceholder.Visibility = string.IsNullOrEmpty(TopSearchTextBox.Text)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
         }
 
         private void TopSearchTextBox_KeyDown(object sender, KeyEventArgs e)

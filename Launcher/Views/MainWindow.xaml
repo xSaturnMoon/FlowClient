@@ -46,7 +46,7 @@
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
                                 <Border x:Name="iconBd" Width="20" Height="15" CornerRadius="4.5" Background="#727278" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True">
-                                    <Border x:Name="barCutout" Width="3.5" Height="9" CornerRadius="1.5" Background="#141416" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2.5,0,0,0"/>
+                                    <Border x:Name="barCutout" Width="3.5" Height="9" CornerRadius="1.5" Background="#101010" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2.5,0,0,0"/>
                                 </Border>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -214,7 +214,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border BorderBrush="#25252A" BorderThickness="1" CornerRadius="12" Background="#141416" Margin="1" SnapsToDevicePixels="True">
+    <Border BorderBrush="#1C1C1E" BorderThickness="1" CornerRadius="12" Background="#101010" Margin="1" SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="46"/>
@@ -239,7 +239,7 @@
 
                 <!-- CENTER: Search Box (True Capsule matching reference photo 2) -->
                 <Border Grid.Column="1" Height="34" Width="440" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Background="#222326" CornerRadius="17" Padding="14,0" SnapsToDevicePixels="True">
+                        Background="#1E1E22" CornerRadius="17" Padding="14,0" SnapsToDevicePixels="True">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -259,26 +259,31 @@
                                      Background="Transparent"
                                      BorderThickness="0"
                                      Foreground="#FFFFFF"
-                                     CaretBrush="#60A5FA"
+                                     CaretBrush="#FFFFFF"
                                      FontSize="12.5"
                                      FontWeight="SemiBold"
                                      FontFamily="{StaticResource NunitoFont}"
                                      VerticalAlignment="Center"
-                                     Padding="0,0"
+                                     Padding="2,0,0,0"
+                                     Margin="2,0,0,0"
+                                     GotFocus="TopSearchTextBox_GotFocus"
+                                     LostFocus="TopSearchTextBox_LostFocus"
                                      KeyDown="TopSearchTextBox_KeyDown"
                                      TextChanged="TopSearchTextBox_TextChanged"/>
                             <TextBlock x:Name="TopSearchPlaceholder"
                                        Text="Search mashups, games and players"
-                                       Foreground="#9D9D9E"
+                                       Foreground="#8A8A92"
                                        FontSize="12.5"
                                        FontWeight="SemiBold"
                                        FontFamily="{StaticResource NunitoFont}"
                                        IsHitTestVisible="False"
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"
+                                       Padding="2,0,0,0"
+                                       Margin="2,0,0,0"/>
                         </Grid>
 
                         <!-- Shortcut key '/' pill badge -->
-                        <Border Grid.Column="2" Background="#1A1B1D" CornerRadius="5" Padding="7,2" VerticalAlignment="Center" Margin="8,0,0,0">
+                        <Border Grid.Column="2" Background="#16161A" CornerRadius="5" Padding="7,2" VerticalAlignment="Center" Margin="8,0,0,0">
                             <TextBlock Text="/" Foreground="#717175" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </Grid>
@@ -312,8 +317,8 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- ══════ MELTY-STYLE LEFT SIDEBAR ══════ -->
-                <Border x:Name="SidebarContainer" Grid.Column="0" Width="195" Background="#141416"
-                        BorderBrush="#1C1C20" BorderThickness="0,0,1,0" ClipToBounds="True">
+                <Border x:Name="SidebarContainer" Grid.Column="0" Width="195" Background="#101010"
+                        BorderBrush="#1C1C1E" BorderThickness="0,0,1,0" ClipToBounds="True">
                     <Grid Margin="10,6,10,12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -330,14 +335,13 @@
                                         <ColumnDefinition Width="22"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="16" Height="16" CornerRadius="8"
-                                            Background="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Path Data="M 8,3.5 L 10.5,8 L 8,7 L 5.5,8 Z M 8,12.5 L 5.5,8 L 8,9 L 10.5,8 Z"
-                                              Fill="#141416" Stretch="Uniform" Width="8" Height="9" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="Discover" FontSize="13" FontWeight="SemiBold"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <!-- 100% Mathematically Symmetrical Compass (Compound Single Path with EvenOdd FillRule F0) -->
+                                    <Path Grid.Column="0" Width="16" Height="16" Stretch="Uniform"
+                                          Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                          Data="F0 M 10,1.5 A 8.5,8.5 0 1,0 10,18.5 A 8.5,8.5 0 1,0 10,1.5 Z M 13.89,6.11 L 11.41,11.41 L 6.11,13.89 L 8.59,8.59 Z"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Discover" FontSize="13.5" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </Grid>
                             </Button>
 
@@ -352,8 +356,8 @@
                                           Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
                                           StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                           Width="15" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Library" FontSize="13" FontWeight="SemiBold"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="Library" FontSize="13.5" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </Grid>
                             </Button>
 
@@ -368,8 +372,8 @@
                                           Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
                                           StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                           Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Create" FontSize="13" FontWeight="SemiBold"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="Create" FontSize="13.5" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </Grid>
                             </Button>
 
@@ -383,26 +387,98 @@
                                     <Path Grid.Column="0" Data="M19.4,13 C19.5,12.7 19.5,12.3 19.5,12 C19.5,11.7 19.5,11.3 19.4,11 L21.5,9.3 C21.7,9.1 21.8,8.9 21.6,8.6 L19.6,5.2 C19.5,4.9 19.2,4.8 19,4.9 L16.5,5.9 C16,5.5 15.4,5.2 14.8,4.9 L14.4,2.3 C14.4,2 14.1,1.8 13.9,1.8 L9.9,1.8 C9.6,1.8 9.4,2 9.3,2.3 L9,4.9 C8.4,5.2 7.8,5.5 7.3,5.9 L4.8,4.9 C4.5,4.8 4.3,4.9 4.1,5.2 L2.1,8.6 C2,8.9 2.1,9.1 2.2,9.3 L4.4,11 C4.3,11.3 4.3,11.7 4.3,12 C4.3,12.3 4.3,12.7 4.4,13 L2.2,14.7 C2.1,14.9 2,15.1 2.1,15.4 L4.1,18.8 C4.3,19.1 4.5,19.2 4.8,19.1 L7.3,18.1 C7.8,18.5 8.4,18.8 9,19.1 L9.3,21.7 C9.4,22 9.6,22.2 9.9,22.2 L13.9,22.2 C14.1,22.2 14.4,22 14.4,21.7 L14.8,19.1 C15.4,18.8 16,18.5 16.5,18.1 L19,19.1 C19.2,19.2 19.5,19.1 19.6,18.8 L21.6,15.4 C21.8,15.1 21.7,14.9 21.5,14.7 Z M12,15.5 C10.1,15.5 8.5,13.9 8.5,12 C8.5,10.1 10.1,8.5 12,8.5 C13.9,8.5 15.5,10.1 15.5,12 C15.5,13.9 13.9,15.5 12,15.5 Z"
                                           Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
                                           Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Settings" FontSize="13" FontWeight="SemiBold"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="Settings" FontSize="13.5" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </Grid>
                             </Button>
                         </StackPanel>
 
-                        <!-- BOTTOM NAVIGATION: Check Updates + Minecraft Profile -->
+                        <!-- BOTTOM NAVIGATION: Interactive Check Updates + Minecraft Profile -->
                         <StackPanel Grid.Row="2">
-                            <!-- Check Updates (replaces Join Discord) -->
+                            <!-- Check Updates (Interactive Animated Button) -->
                             <Button x:Name="NavCheckUpdatesBtn" Style="{StaticResource SidebarPillButton}" Click="CheckUpdates_Click" ToolTip="Check for launcher updates">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Path Grid.Column="0" Data="M 12,4 V 1 L 8,5 L 12,9 V 6 C 15.3,6 18,8.7 18,12 C 18,13 17.8,14 17.3,14.8 L 18.8,16.3 C 19.6,15 20,13.6 20,12 C 20,7.6 16.4,4 12,4 Z M 12,18 C 8.7,18 6,15.3 6,12 C 6,11 6.2,10 6.7,9.2 L 5.2,7.7 C 4.4,9 4,10.4 4,12 C 4,16.4 7.6,20 12,20 V 23 L 16,19 L 12,15 Z"
-                                          Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                          Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Check Updates" FontSize="12.5" FontWeight="SemiBold"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <!-- Interactive Update Icon with Outer Circle, Arrow, Spinning Arc, Checkmark, Cross -->
+                                    <Grid Grid.Column="0" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <!-- 1. Outer Circle of Update Icon -->
+                                        <Path x:Name="SidebarUpdateCircle"
+                                              Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2 Z"
+                                              StrokeThickness="1.6" Fill="Transparent"
+                                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                              Width="16" Height="16" Stretch="Uniform"
+                                              RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <ScaleTransform x:Name="SidebarUpdateCircleScale" ScaleX="1" ScaleY="1"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+
+                                        <!-- 2. Inner Down Arrow -->
+                                        <Path x:Name="SidebarUpdateArrow"
+                                              Data="M2,2 M22,22 M12,8.5 L12,14.5 M9,12.5 L12,15.5 L15,12.5"
+                                              StrokeThickness="1.6" Fill="Transparent"
+                                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                              Width="16" Height="16" Stretch="Uniform"
+                                              RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <ScaleTransform x:Name="SidebarUpdateArrowScale" ScaleX="1" ScaleY="1"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+
+                                        <!-- 3. Spinning arc (Windows 11 boot style) -->
+                                        <Path x:Name="SidebarUpdateSpinner"
+                                              Data="M2,2 M22,22 M12,2 A10,10 0 0,1 22,12"
+                                              StrokeThickness="1.8" Fill="Transparent"
+                                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                              Width="16" Height="16" Stretch="Uniform"
+                                              Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform x:Name="SidebarSpinnerScale" ScaleX="1" ScaleY="1"/>
+                                                    <RotateTransform x:Name="SidebarSpinnerRotate" Angle="0"/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+
+                                        <!-- 4. Checkmark (✓) -->
+                                        <Path x:Name="SidebarUpdateCheckmark"
+                                              Data="M4,12 L9,17 L20,6"
+                                              StrokeThickness="1.8" Fill="Transparent"
+                                              Stroke="#10B981"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                              Width="16" Height="16" Stretch="Uniform"
+                                              Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform x:Name="SidebarCheckmarkScale" ScaleX="0" ScaleY="0"/>
+                                                    <RotateTransform x:Name="SidebarCheckmarkRotate" Angle="-35"/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+
+                                        <!-- 5. Cross (✕) -->
+                                        <Path x:Name="SidebarUpdateCross"
+                                              Data="M4,4 L20,20 M20,4 L4,20"
+                                              StrokeThickness="1.8" Fill="Transparent"
+                                              Stroke="#EF4444"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                              Width="16" Height="16" Stretch="Uniform"
+                                              Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform x:Name="SidebarCrossScale" ScaleX="0" ScaleY="0"/>
+                                                    <RotateTransform x:Name="SidebarCrossRotate" Angle="90"/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Grid>
+                                    <TextBlock Grid.Column="1" Text="Check Updates" FontSize="13.5" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </Grid>
                             </Button>
 
@@ -419,13 +495,13 @@
                                             <Image Source="{Binding PlayerAvatar}" Stretch="UniformToFill"
                                                    RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
                                             <TextBlock Text="{Binding PlayerInitial}" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"
-                                                       FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                        Visibility="{Binding HasPlayerAvatar, Converter={StaticResource BoolToInverseVisibilityConverter}}"/>
                                         </Grid>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{Binding PlayerName}" FontSize="12.5" FontWeight="SemiBold"
+                                    <TextBlock Grid.Column="1" Text="{Binding PlayerName}" FontSize="13.5" FontWeight="Bold"
                                                Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" Margin="9,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="9,0,0,0" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Button>
                         </StackPanel>
