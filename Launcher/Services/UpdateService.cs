@@ -134,6 +134,17 @@ namespace Launcher.Services
             IProgress<double>? progress = null,
             CancellationToken ct = default)
         {
+            IProgress<(double percent, double downloadedMb, double totalMb)>? detailed = progress != null
+                ? new Progress<(double percent, double downloadedMb, double totalMb)>(p => progress.Report(p.percent))
+                : null;
+            return await DownloadAsync(downloadUrl, detailed, ct);
+        }
+
+        public async Task<string> DownloadAsync(
+            string downloadUrl,
+            IProgress<(double percent, double downloadedMb, double totalMb)>? progress,
+            CancellationToken ct = default)
+        {
             Directory.CreateDirectory(UpdatesDirectory);
 
             // Clean any previous downloaded updates so disk space is not wasted
@@ -142,25 +153,33 @@ namespace Launcher.Services
             var fileName = $"FlowClient-{Guid.NewGuid():N}.zip";
             var destPath = Path.Combine(UpdatesDirectory, fileName);
 
-            using var response = await Http.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, ct);
+            using var request = new HttpRequestMessage(HttpMethod.Get, downloadUrl);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.ParseAdd("*/*");
+
+            using var response = await Http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
             response.EnsureSuccessStatusCode();
 
             var total = response.Content.Headers.ContentLength ?? -1;
+            var totalMb = total > 0 ? total / (1024.0 * 1024.0) : 0;
+
             await using var input = await response.Content.ReadAsStreamAsync(ct);
             await using var output = File.Create(destPath);
 
-            var buffer = new byte[81920];
+            var buffer = new byte[131072]; // 128 KB buffer for fast downloads
             long readTotal = 0;
             int read;
             while ((read = await input.ReadAsync(buffer, ct)) > 0)
             {
                 await output.WriteAsync(buffer.AsMemory(0, read), ct);
                 readTotal += read;
-                if (total > 0)
-                    progress?.Report(readTotal * 100.0 / total);
+                var downloadedMb = readTotal / (1024.0 * 1024.0);
+                var percent = total > 0 ? (readTotal * 100.0 / total) : 0;
+                progress?.Report((percent, downloadedMb, totalMb));
             }
 
-            progress?.Report(100);
+            var finalMb = readTotal / (1024.0 * 1024.0);
+            progress?.Report((100, finalMb, totalMb > 0 ? totalMb : finalMb));
             return destPath;
         }
 
@@ -181,7 +200,7 @@ namespace Launcher.Services
             try
             {
                 var stagedUpdateJson = Path.Combine(stagingDir, "Assets", "update.json");
-                var targetVer = "1.0.3";
+                var targetVer = "1.3.2";
                 if (File.Exists(stagedUpdateJson))
                 {
                     using var doc = JsonDocument.Parse(File.ReadAllText(stagedUpdateJson));
@@ -199,12 +218,35 @@ namespace Launcher.Services
             var scriptPath = Path.Combine(UpdatesDirectory, "apply-update.cmd");
             var script = $"""
                 @echo off
-                timeout /t 2 /nobreak >nul
-                xcopy /E /Y /I "{stagingDir}\*" "{installDir}"
+                setlocal EnableDelayedExpansion
+
+                :: Wait for FlowClient.exe to release all file locks
+                :waitloop
+                tasklist /FI "IMAGENAME eq FlowClient.exe" 2>nul | find /I "FlowClient.exe" >nul
+                if not errorlevel 1 (
+                    timeout /t 1 /nobreak >nul
+                    goto waitloop
+                )
+                timeout /t 1 /nobreak >nul
+
+                :: Terminate background probes if running
+                taskkill /F /IM FlowBatteryProbe.exe >nul 2>&1
+                taskkill /F /IM FlowMediaProbe.exe >nul 2>&1
+
+                :: Copy new files
+                robocopy "{stagingDir}" "{installDir}" /E /IS /IT /NP /R:5 /W:1 >nul
+                if errorlevel 8 (
+                    xcopy /E /Y /I /R "{stagingDir}\*" "{installDir}" >nul 2>&1
+                )
+
+                :: Launch updated client
                 start "" "{exePath}"
+
+                :: Cleanup
+                timeout /t 2 /nobreak >nul
                 rmdir /S /Q "{stagingDir}" >nul 2>&1
                 del /Q "{UpdatesDirectory}\*.zip" >nul 2>&1
-                del "%~f0"
+                (goto) 2>nul & del "%~f0"
                 """;
 
             File.WriteAllText(scriptPath, script);
@@ -212,11 +254,16 @@ namespace Launcher.Services
         }
 
         /// <summary>
-        /// Returns the canonical install directory: %LOCALAPPDATA%\Programs\FlowClient
-        /// This is where the Inno Setup installer places the application.
+        /// Returns the directory where FlowClient is running or installed.
         /// </summary>
         public static string GetInstallDir()
         {
+            var currentBase = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (File.Exists(Path.Combine(currentBase, "FlowClient.exe")) || File.Exists(Path.Combine(currentBase, "FlowClient.dll")))
+            {
+                return currentBase;
+            }
+
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Programs", "FlowClient");

@@ -589,7 +589,30 @@ namespace Launcher.Views
                     if (prompt == MessageBoxResult.Yes && !string.IsNullOrEmpty(res.DownloadUrl))
                     {
                         AnimateSidebarArrowToSpinner();
-                        var packagePath = await updates.DownloadAsync(res.DownloadUrl);
+                        UpdateOverlay.Visibility = Visibility.Visible;
+                        UpdateOverlayStatus.Text = $"Downloading Flow Client v{res.LatestVersion}…";
+                        UpdateOverlayProgressBar.Value = 0;
+                        UpdateOverlayPercent.Text = "0%";
+                        UpdateOverlayDetails.Text = "Starting download…";
+
+                        var progress = new Progress<(double percent, double downloadedMb, double totalMb)>(p =>
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                UpdateOverlayProgressBar.Value = p.percent;
+                                UpdateOverlayPercent.Text = $"{(int)p.percent}%";
+                                UpdateOverlayDetails.Text = p.totalMb > 0
+                                    ? $"{p.downloadedMb:0.1} MB / {p.totalMb:0.1} MB"
+                                    : $"{p.downloadedMb:0.1} MB";
+                            });
+                        });
+
+                        var packagePath = await updates.DownloadAsync(res.DownloadUrl, progress);
+
+                        UpdateOverlayStatus.Text = "Extracting & Installing update…";
+                        UpdateOverlayDetails.Text = "Restarting Flow Client…";
+                        await Task.Delay(400);
+
                         var scriptPath = updates.PrepareInstall(packagePath);
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                         {

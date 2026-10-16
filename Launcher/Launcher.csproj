@@ -86,7 +86,7 @@
 
   <Target Name="CopyToDist" AfterTargets="Build">
     <ItemGroup>
-      <DistFiles Include="$(OutputPath)**\*.*" />
+      <DistFiles Include="$(OutputPath)**\*.*" Exclude="$(OutputPath)win-x64\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(DistFiles)" DestinationFolder="$(DistDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>

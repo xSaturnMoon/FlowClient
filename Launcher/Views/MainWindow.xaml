@@ -584,6 +584,46 @@
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <!-- ══════ IN-WINDOW UPDATE PROGRESS OVERLAY ══════ -->
+            <Grid x:Name="UpdateOverlay" Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="10000" Visibility="Collapsed">
+                <!-- Semi-transparent dark blur backdrop -->
+                <Border Background="#A0000000"/>
+
+                <!-- Update Modal Card -->
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="400"
+                        Background="#141416" BorderBrush="#25252A" BorderThickness="1"
+                        CornerRadius="14" Padding="28,24" SnapsToDevicePixels="True">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="36" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.8"/>
+                    </Border.Effect>
+                    <StackPanel HorizontalAlignment="Stretch">
+                        <!-- Icon + Title -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Image Source="/Assets/flow_title_logo.png" Height="20" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Flow Client Update" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Status text -->
+                        <TextBlock x:Name="UpdateOverlayStatus" Text="Downloading update..."
+                                   Foreground="#9E9EA6" FontSize="13" FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,14"/>
+
+                        <!-- Progress Bar Container -->
+                        <Border Height="8" Background="#222228" CornerRadius="4" ClipToBounds="True">
+                            <ProgressBar x:Name="UpdateOverlayProgressBar" Height="8" Minimum="0" Maximum="100" Value="0"
+                                         Foreground="#3B82F6" Background="Transparent" BorderThickness="0"/>
+                        </Border>
+
+                        <!-- Percentage & Download Size -->
+                        <Grid Margin="0,10,0,0">
+                            <TextBlock x:Name="UpdateOverlayDetails" Text="0 MB / 40 MB"
+                                       Foreground="#71717A" FontSize="11.5" FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Left"/>
+                            <TextBlock x:Name="UpdateOverlayPercent" Text="0%"
+                                       Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
     </Border>
 </Window>
