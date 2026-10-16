@@ -1,9 +1,9 @@
 {
-  "version": "1.2.9",
-  "releaseDate": "September 19, 2026",
+  "version": "1.3.0",
+  "releaseDate": "October 16, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.2.9: Complete redesign of the Versions section. Modern, minimalist 2-column layout mirroring Account view in full English. Replaced cluttered controls with streamlined instance management and dedicated Modrinth browser. Fixed collection concurrency crash on folder size calculation.",
+  "releaseNotes": "Flow Client v1.3.0: Brand new top bar design inspired by Melty with custom FLOW branding logo, sidebar toggle navigation flyout, interactive search capsule with '/' shortcut, community button, and dedicated window controls without fullscreen button.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.2.9/FlowClient-v1.2.9.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.0/FlowClient-v1.3.0.zip"
 }
