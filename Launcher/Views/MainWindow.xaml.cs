@@ -441,47 +441,82 @@ namespace Launcher.Views
         private void News_Click(object sender, RoutedEventArgs e) =>
             _viewModel.ActiveButton = "News";
 
+        private bool _isSidebarExpanded = true;
+
         private void SidebarToggle_Click(object sender, RoutedEventArgs e)
         {
-            SidebarNavOverlay.Visibility = SidebarNavOverlay.Visibility == Visibility.Visible
-                ? Visibility.Collapsed
-                : Visibility.Visible;
+            _isSidebarExpanded = !_isSidebarExpanded;
+            var targetWidth = _isSidebarExpanded ? 195.0 : 0.0;
+
+            var anim = new DoubleAnimation
+            {
+                To = targetWidth,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            SidebarContainer.BeginAnimation(WidthProperty, anim);
         }
 
-        private void SidebarNavBackdrop_Click(object sender, MouseButtonEventArgs e)
-        {
-            SidebarNavOverlay.Visibility = Visibility.Collapsed;
-        }
-
-        private void NavDiscover_Click(object sender, RoutedEventArgs e)
-        {
-            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+        private void NavDiscover_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Home");
-        }
 
-        private void NavLibrary_Click(object sender, RoutedEventArgs e)
-        {
-            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+        private void NavLibrary_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Versions");
+
+        private void NavCreate_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateTo("Versions");
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
+            {
+                if (GetOrCreateView("Versions") is ExploreView ev)
+                {
+                    ev.TriggerCreateInstance();
+                }
+            });
         }
 
-        private void NavNews_Click(object sender, RoutedEventArgs e)
-        {
-            SidebarNavOverlay.Visibility = Visibility.Collapsed;
-            NavigateTo("News");
-        }
-
-        private void NavSettings_Click(object sender, RoutedEventArgs e)
-        {
-            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+        private void NavSettings_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Settings");
+
+        private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var updates = new UpdateService();
+                var res = await updates.CheckAsync();
+                if (res.UpdateAvailable)
+                {
+                    var msg = $"A new version (v{res.LatestVersion}) is available!\n\n" +
+                              (!string.IsNullOrWhiteSpace(res.ReleaseNotes) ? $"Release Notes:\n{res.ReleaseNotes}\n\n" : "") +
+                              "Do you want to download and install it now?";
+
+                    var prompt = MessageBox.Show(msg, "Flow Client Update", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    if (prompt == MessageBoxResult.Yes && !string.IsNullOrEmpty(res.DownloadUrl))
+                    {
+                        var packagePath = await updates.DownloadAsync(res.DownloadUrl);
+                        var scriptPath = updates.PrepareInstall(packagePath);
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = scriptPath,
+                            UseShellExecute = true,
+                            CreateNoWindow = true
+                        });
+                        Application.Current.Shutdown();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Flow Client is already up to date!", "Check Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to check for updates: {ex.Message}", "Update Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
-        private void NavAccount_Click(object sender, RoutedEventArgs e)
-        {
-            SidebarNavOverlay.Visibility = Visibility.Collapsed;
+        private void Profile_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Account");
-        }
 
         private void Community_Click(object sender, RoutedEventArgs e)
         {
@@ -701,11 +736,6 @@ namespace Launcher.Views
                 if (TopSearchTextBox.IsFocused)
                 {
                     Keyboard.ClearFocus();
-                    e.Handled = true;
-                }
-                if (SidebarNavOverlay.Visibility == Visibility.Visible)
-                {
-                    SidebarNavOverlay.Visibility = Visibility.Collapsed;
                     e.Handled = true;
                 }
                 if (AccountMenuOverlay.Visibility == Visibility.Visible)

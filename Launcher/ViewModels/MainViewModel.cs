@@ -50,9 +50,12 @@ namespace Launcher.ViewModels
                 {
                     _playerName = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(PlayerInitial));
                 }
             }
         }
+
+        public string PlayerInitial => string.IsNullOrWhiteSpace(_playerName) ? "P" : _playerName.Substring(0, 1).ToUpperInvariant();
 
         public ImageSource? PlayerAvatar
         {

@@ -306,6 +306,11 @@ namespace Launcher.Views
 
         // ── Create ────────────────────────────────────────────────────────────
 
+        public void TriggerCreateInstance()
+        {
+            NewInstance_Click(this, new RoutedEventArgs());
+        }
+
         private void NewInstance_Click(object sender, RoutedEventArgs e)
         {
             var vm = Vm;
