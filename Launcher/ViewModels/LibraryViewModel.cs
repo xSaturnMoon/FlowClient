@@ -1,8 +1,10 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 using Launcher.Helpers;
 using Launcher.Models;
 using Launcher.Services;
@@ -210,6 +212,10 @@ namespace Launcher.ViewModels
                     OnPropertyChanged(nameof(IsTexturesTabSelected));
                     OnPropertyChanged(nameof(IsShadersTabSelected));
                     OnPropertyChanged(nameof(IsModrinthTabSelected));
+                    if (IsModsTabSelected)
+                    {
+                        LoadInstalledMods();
+                    }
                 }
             }
         }
@@ -285,6 +291,97 @@ namespace Launcher.ViewModels
         }
 
         public ObservableCollection<InstalledContent> SettingsMods { get; } = new();
+        public ObservableCollection<ModItemViewModel> InstalledMods { get; } = new();
+        public bool HasInstalledMods => InstalledMods.Count > 0;
+        public string ModsCountText => $"{InstalledMods.Count} {(InstalledMods.Count == 1 ? "mod" : "mods")} installed";
+
+        public void LoadInstalledMods()
+        {
+            InstalledMods.Clear();
+            if (SelectedSettingsInstance == null)
+            {
+                OnPropertyChanged(nameof(HasInstalledMods));
+                OnPropertyChanged(nameof(ModsCountText));
+                return;
+            }
+
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst == null)
+            {
+                OnPropertyChanged(nameof(HasInstalledMods));
+                OnPropertyChanged(nameof(ModsCountText));
+                return;
+            }
+
+            _instanceService.SyncModsFromDisk(inst);
+            var modsDir = _instanceService.GetModsPath(inst.Id);
+
+            foreach (var mod in inst.Mods)
+            {
+                var info = ModMetadataService.GetModInfo(modsDir, mod.FileName, mod.IconUrl);
+                var vm = new ModItemViewModel(
+                    string.IsNullOrWhiteSpace(info.Title) ? mod.Title : info.Title,
+                    info.Subtitle,
+                    info.IconPath,
+                    info.CleanFileName,
+                    info.IsEnabled);
+                InstalledMods.Add(vm);
+            }
+
+            OnPropertyChanged(nameof(HasInstalledMods));
+            OnPropertyChanged(nameof(ModsCountText));
+        }
+
+        public void ToggleMod(ModItemViewModel mod)
+        {
+            if (SelectedSettingsInstance == null) return;
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst == null) return;
+
+            var modsDir = _instanceService.GetModsPath(inst.Id);
+            var clean = mod.FileName;
+            if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                clean = clean[..^".disabled".Length];
+
+            var enabledPath = Path.Combine(modsDir, clean);
+            var disabledPath = Path.Combine(modsDir, clean + ".disabled");
+
+            try
+            {
+                if (mod.IsEnabled)
+                {
+                    // Was enabled -> disable it: rename to .jar.disabled
+                    if (File.Exists(enabledPath))
+                    {
+                        File.Move(enabledPath, disabledPath, overwrite: true);
+                    }
+                    mod.IsEnabled = false;
+                }
+                else
+                {
+                    // Was disabled -> enable it: rename to .jar
+                    if (File.Exists(disabledPath))
+                    {
+                        File.Move(disabledPath, enabledPath, overwrite: true);
+                    }
+                    mod.IsEnabled = true;
+                }
+
+                var content = inst.Mods.FirstOrDefault(m => m.FileName.Equals(clean, StringComparison.OrdinalIgnoreCase)
+                    || m.FileName.Equals(clean + ".disabled", StringComparison.OrdinalIgnoreCase));
+                if (content != null)
+                {
+                    content.Enabled = mod.IsEnabled;
+                    content.FileName = clean;
+                }
+                _instanceService.Save(inst);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not toggle mod: {ex.Message}", "Mod Toggle", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
         public bool HasSettingsMods => SettingsMods.Count > 0;
 
         public void SetRam(int mb) => SettingsRamMb = mb;
@@ -408,6 +505,8 @@ namespace Launcher.ViewModels
             OnPropertyChanged(nameof(SettingsJvmArgs));
             OnPropertyChanged(nameof(HasSettingsMods));
 
+            LoadInstalledMods();
+
             IsViewingSettings = true;
             VersionSettingsModeChanged?.Invoke(true, item);
         }
@@ -513,6 +612,47 @@ namespace Launcher.ViewModels
                 }
             }
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
+
+    public class ModItemViewModel : INotifyPropertyChanged
+    {
+        private bool _isEnabled;
+
+        public ModItemViewModel(string title, string subtitle, string iconPath, string fileName, bool isEnabled)
+        {
+            Title = title;
+            Subtitle = subtitle;
+            IconUrl = iconPath;
+            FileName = fileName;
+            _isEnabled = isEnabled;
+        }
+
+        public string Title { get; set; }
+        public string Subtitle { get; set; }
+        public string IconUrl { get; set; }
+        public string FileName { get; set; }
+
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set
+            {
+                if (_isEnabled != value)
+                {
+                    _isEnabled = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(StatusText));
+                    OnPropertyChanged(nameof(StatusForeground));
+                }
+            }
+        }
+
+        public string StatusText => IsEnabled ? "Active" : "Disabled";
+        public Brush StatusForeground => IsEnabled ? Brushes.White : new SolidColorBrush(Color.FromRgb(0x7E, 0x7E, 0x84));
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propName = null)

@@ -67,5 +67,13 @@ namespace Launcher.Views
                 Vm.SetRam(mb);
             }
         }
+
+        private void ModToggle_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModItemViewModel mod)
+            {
+                Vm.ToggleMod(mod);
+            }
+        }
     }
 }

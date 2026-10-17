@@ -195,6 +195,39 @@
             </Setter>
         </Style>
 
+        <!-- Modern Toggle Switch Style -->
+        <Style x:Key="ModernToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Width="46" Height="26" VerticalAlignment="Center">
+                            <Border x:Name="Track" Background="#28282E" CornerRadius="13" SnapsToDevicePixels="True"/>
+                            <Ellipse x:Name="Knob" Width="20" Height="20" Fill="#6E6E76"
+                                     HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Center"
+                                     SnapsToDevicePixels="True">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.3" Color="#000000"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background" Value="#FFFFFF"/>
+                                <Setter TargetName="Knob" Property="Fill" Value="#121214"/>
+                                <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="Knob" Property="Margin" Value="0,0,3,0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Track" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Pure Settings Gear Button (1.5x Larger, No Circle Container, No Blue) -->
         <Style x:Key="CenterSettingsCleanButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="52"/>
@@ -608,9 +641,91 @@
                                     Margin="4,0,4,16"/>
                         </StackPanel>
 
-                        <!-- ══════════════ TAB 2: MODS (EMPTY) ══════════════ -->
-                        <Grid Visibility="{Binding IsModsTabSelected, Converter={StaticResource BoolToVis}}">
-                        </Grid>
+                        <!-- ══════════════ TAB 2: MODS ══════════════ -->
+                        <StackPanel Visibility="{Binding IsModsTabSelected, Converter={StaticResource BoolToVis}}">
+                            <!-- Mods Header: Title + Count + Open Folder Button -->
+                            <Grid Margin="4,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="INSTALLED MODS" FontSize="11" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93"/>
+                                    <TextBlock Text="{Binding ModsCountText}" FontSize="11" FontWeight="SemiBold"
+                                               FontFamily="{StaticResource NunitoFont}" Foreground="#66666E" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                        Click="OpenModsFolder_Click" Margin="0"/>
+                            </Grid>
+
+                            <!-- Installed Mods Items List -->
+                            <ItemsControl ItemsSource="{Binding InstalledMods}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1E1E22" BorderThickness="0" CornerRadius="14"
+                                                Padding="14,10" Margin="0,0,0,8" SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- 1. Mod Image / Icon -->
+                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center">
+                                                    <!-- Fallback vector cube icon -->
+                                                    <Border Background="#26262B" CornerRadius="10">
+                                                        <Path Data="M 12 1.75 L 3.25 6.8 V 16.95 L 12 22 L 20.75 16.95 V 6.8 L 12 1.75 Z M 12 4.1 L 18.5 7.85 L 12 11.6 L 5.5 7.85 L 12 4.1 Z M 5.25 9.85 L 11 13.15 V 19.9 L 5.25 16.55 V 9.85 Z M 13 19.9 V 13.15 L 18.75 9.85 V 16.55 L 13 19.9 Z"
+                                                              Fill="#8E8E93" Width="20" Height="20" Stretch="Uniform"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <!-- Actual Mod Icon image -->
+                                                    <Border CornerRadius="10" ClipToBounds="True">
+                                                        <Image Source="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
+                                                               Width="42" Height="42" Stretch="UniformToFill"
+                                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    </Border>
+                                                </Grid>
+
+                                                <!-- 2. Mod Title & Subtitle / Filename -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,14,0">
+                                                    <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold"
+                                                               FontFamily="{StaticResource NunitoBoldFont}" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Subtitle}" Foreground="#7E7E84" FontSize="11"
+                                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+
+                                                <!-- 3. Toggle Action (Activate / Deactivate) -->
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusForeground}"
+                                                               FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"
+                                                               VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                                    <CheckBox IsChecked="{Binding IsEnabled, Mode=OneWay}"
+                                                              Click="ModToggle_Click"
+                                                              Style="{StaticResource ModernToggleSwitchStyle}"
+                                                              ToolTip="Click to enable or disable this mod"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Empty state if no mods -->
+                            <Border Background="#161619" BorderThickness="0" CornerRadius="16" Padding="32" Margin="0,10,0,0"
+                                    Visibility="{Binding HasInstalledMods, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="No mods installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Click 'Open Mods Folder' above or drop your .jar mod files into the instance folder."
+                                               Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,16"/>
+                                    <Button Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="OpenModsFolder_Click" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
 
                         <!-- ══════════════ TAB 3: TEXTURES (EMPTY) ══════════════ -->
                         <Grid Visibility="{Binding IsTexturesTabSelected, Converter={StaticResource BoolToVis}}">
