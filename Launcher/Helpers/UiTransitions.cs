@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -156,9 +158,11 @@ namespace Launcher.Helpers
             // ── 2. Root content: subtle scale up (0.97 → 1) ────────────────
             if (window.Content is FrameworkElement root)
             {
-                var scale = new ScaleTransform(0.97, 0.97);
-                root.RenderTransformOrigin = new Point(0.5, 0.5);
-                root.RenderTransform = scale;
+                var (scale, trans) = EnsureTransformGroup(root, new Point(0.5, 0.5));
+                scale.ScaleX = 0.97;
+                scale.ScaleY = 0.97;
+                trans.X = 0;
+                trans.Y = 0;
 
                 var sx = new DoubleAnimation(0.97, 1.0, TimeSpan.FromMilliseconds(500)) { EasingFunction = ease };
                 var sy = new DoubleAnimation(0.97, 1.0, TimeSpan.FromMilliseconds(500)) { EasingFunction = ease };
@@ -263,6 +267,153 @@ namespace Launcher.Helpers
             };
             windowFade.Completed += (_, _) => onCompleted();
             window.BeginAnimation(UIElement.OpacityProperty, windowFade);
+        }
+
+        /// <summary>
+        /// Fast, fluid window close transition mimicking native modern Windows behavior.
+        /// </summary>
+        public static void PlayWindowCloseAnimation(Window window, Action onCompleted)
+        {
+            if (!AnimationsEnabled)
+            {
+                onCompleted();
+                return;
+            }
+
+            var ease = new CubicEase { EasingMode = EasingMode.EaseIn };
+            const double dur = 160;
+
+            if (window.Content is FrameworkElement root)
+            {
+                var (scale, trans) = EnsureTransformGroup(root, new Point(0.5, 0.5));
+                var sx = new DoubleAnimation(1.0, 0.95, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+                var sy = new DoubleAnimation(1.0, 0.95, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+                var ty = new DoubleAnimation(0, 12, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+
+                scale.BeginAnimation(ScaleTransform.ScaleXProperty, sx);
+                scale.BeginAnimation(ScaleTransform.ScaleYProperty, sy);
+                trans.BeginAnimation(TranslateTransform.YProperty, ty);
+            }
+
+            var fade = new DoubleAnimation(window.Opacity, 0, TimeSpan.FromMilliseconds(dur))
+            {
+                EasingFunction = ease
+            };
+            fade.Completed += (_, _) => onCompleted();
+            window.BeginAnimation(UIElement.OpacityProperty, fade);
+        }
+
+        /// <summary>
+        /// Smooth minimize transition scaling towards the bottom taskbar with fade.
+        /// </summary>
+        public static void PlayWindowMinimizeAnimation(Window window, Action onCompleted)
+        {
+            if (!AnimationsEnabled)
+            {
+                onCompleted();
+                return;
+            }
+
+            var ease = new CubicEase { EasingMode = EasingMode.EaseIn };
+            const double dur = 150;
+
+            if (window.Content is FrameworkElement root)
+            {
+                var (scale, trans) = EnsureTransformGroup(root, new Point(0.5, 0.85));
+                var sx = new DoubleAnimation(1.0, 0.88, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+                var sy = new DoubleAnimation(1.0, 0.88, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+                var ty = new DoubleAnimation(0, 32, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+
+                scale.BeginAnimation(ScaleTransform.ScaleXProperty, sx);
+                scale.BeginAnimation(ScaleTransform.ScaleYProperty, sy);
+                trans.BeginAnimation(TranslateTransform.YProperty, ty);
+            }
+
+            var fade = new DoubleAnimation(window.Opacity, 0, TimeSpan.FromMilliseconds(dur))
+            {
+                EasingFunction = ease
+            };
+            fade.Completed += (_, _) =>
+            {
+                onCompleted();
+                // Reset transforms and restore opacity ready for restore
+                window.Opacity = 1;
+                if (window.Content is FrameworkElement r && r.RenderTransform is TransformGroup g)
+                {
+                    var s = g.Children.OfType<ScaleTransform>().FirstOrDefault();
+                    if (s != null) { s.ScaleX = 1; s.ScaleY = 1; }
+                    var t = g.Children.OfType<TranslateTransform>().FirstOrDefault();
+                    if (t != null) { t.X = 0; t.Y = 0; }
+                }
+            };
+            window.BeginAnimation(UIElement.OpacityProperty, fade);
+        }
+
+        /// <summary>
+        /// Smooth restore transition expanding smoothly out of the taskbar with fade-in.
+        /// </summary>
+        public static void PlayWindowRestoreAnimation(Window window)
+        {
+            if (!AnimationsEnabled)
+            {
+                window.Opacity = 1;
+                return;
+            }
+
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            const double dur = 190;
+
+            window.Opacity = 0;
+            if (window.Content is FrameworkElement root)
+            {
+                var (scale, trans) = EnsureTransformGroup(root, new Point(0.5, 0.85));
+                scale.ScaleX = 0.90;
+                scale.ScaleY = 0.90;
+                trans.Y = 24;
+
+                var sx = new DoubleAnimation(0.90, 1.0, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+                var sy = new DoubleAnimation(0.90, 1.0, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+                var ty = new DoubleAnimation(24, 0, TimeSpan.FromMilliseconds(dur)) { EasingFunction = ease };
+
+                scale.BeginAnimation(ScaleTransform.ScaleXProperty, sx);
+                scale.BeginAnimation(ScaleTransform.ScaleYProperty, sy);
+                trans.BeginAnimation(TranslateTransform.YProperty, ty);
+            }
+
+            var fade = new DoubleAnimation(0, 1.0, TimeSpan.FromMilliseconds(dur))
+            {
+                EasingFunction = ease
+            };
+            window.BeginAnimation(UIElement.OpacityProperty, fade);
+        }
+
+        private static (ScaleTransform scale, TranslateTransform trans) EnsureTransformGroup(FrameworkElement element, Point origin)
+        {
+            element.RenderTransformOrigin = origin;
+            if (element.RenderTransform is TransformGroup group)
+            {
+                var s = group.Children.OfType<ScaleTransform>().FirstOrDefault();
+                if (s == null)
+                {
+                    s = new ScaleTransform(1, 1);
+                    group.Children.Add(s);
+                }
+                var t = group.Children.OfType<TranslateTransform>().FirstOrDefault();
+                if (t == null)
+                {
+                    t = new TranslateTransform(0, 0);
+                    group.Children.Add(t);
+                }
+                return (s, t);
+            }
+
+            var newGroup = new TransformGroup();
+            var newScale = new ScaleTransform(1, 1);
+            var newTrans = new TranslateTransform(0, 0);
+            newGroup.Children.Add(newScale);
+            newGroup.Children.Add(newTrans);
+            element.RenderTransform = newGroup;
+            return (newScale, newTrans);
         }
     }
 }

@@ -35,6 +35,8 @@ namespace Launcher.Views
 
         private const int GWL_STYLE = -16;
         private const int WS_MAXIMIZEBOX = 0x00010000;
+        private const int WS_MINIMIZEBOX = 0x00020000;
+        private const int WS_SYSMENU = 0x00080000;
         private const int SWP_FRAMECHANGED = 0x0020;
         private const int SWP_NOMOVE = 0x0002;
         private const int SWP_NOSIZE = 0x0001;
@@ -42,6 +44,10 @@ namespace Launcher.Views
         private const int SWP_NOOWNERZORDER = 0x0200;
 
         #endregion
+
+        private bool _isMinimizing = false;
+        private bool _wasMinimized = false;
+        private bool _isClosingAnimated = false;
 
         public MainWindow()
         {
@@ -77,10 +83,14 @@ namespace Launcher.Views
                 // Discord Rich Presence
                 DiscordRpcService.Instance.Start();
                 DiscordRpcService.Instance.SetPresenceInLauncher();
+
+                // Version Settings sidebar morphing
+                LibraryViewModel.VersionSettingsModeChanged += OnVersionSettingsModeChanged;
             };
             Closed += (_, _) =>
             {
                 DiscordRpcService.Instance.Stop();
+                LibraryViewModel.VersionSettingsModeChanged -= OnVersionSettingsModeChanged;
                 MinecraftProcessTracker.Instance.ProcessStarted -= OnGameProcessStarted;
                 MinecraftProcessTracker.Instance.ProcessExited -= OnGameProcessExited;
                 MinecraftProcessTracker.Instance.ReleaseRunningGame();
@@ -142,9 +152,9 @@ namespace Launcher.Views
                 var hwnd = helper.Handle;
                 if (hwnd != IntPtr.Zero)
                 {
-                    var style = GetWindowLongPtr(hwnd, GWL_STYLE);
-                    style = new IntPtr(style.ToInt64() & ~WS_MAXIMIZEBOX);
-                    SetWindowLongPtr(hwnd, GWL_STYLE, style);
+                    var style = GetWindowLongPtr(hwnd, GWL_STYLE).ToInt64();
+                    style = (style | WS_MINIMIZEBOX | WS_SYSMENU) & ~WS_MAXIMIZEBOX;
+                    SetWindowLongPtr(hwnd, GWL_STYLE, new IntPtr(style));
 
                     // Refresh window frame to apply changes
                     SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0,
@@ -156,13 +166,25 @@ namespace Launcher.Views
                 // Ignore errors in window API calls
             }
 
-            // Prevent maximization via Windows snap and programmatic changes
+            // Prevent maximization via Windows snap and handle native-like window restore animations
             StateChanged += (s, e) =>
             {
                 if (WindowState == WindowState.Maximized)
                 {
                     WindowState = WindowState.Normal;
                     Dispatcher.BeginInvoke(() => SetHalfScreenSize());
+                }
+                else if (WindowState == WindowState.Normal)
+                {
+                    if (_wasMinimized)
+                    {
+                        _wasMinimized = false;
+                        UiTransitions.PlayWindowRestoreAnimation(this);
+                    }
+                }
+                else if (WindowState == WindowState.Minimized)
+                {
+                    _wasMinimized = true;
                 }
             };
         }
@@ -424,11 +446,47 @@ namespace Launcher.Views
                 DragMove();
         }
 
-        private void Minimize_Click(object sender, RoutedEventArgs e) =>
-            SystemCommands.MinimizeWindow(this);
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isMinimizing) return;
 
-        private void Close_Click(object sender, RoutedEventArgs e) =>
-            SystemCommands.CloseWindow(this);
+            if (!LauncherSettingsService.Instance.Current.UiAnimations)
+            {
+                WindowState = WindowState.Minimized;
+                return;
+            }
+
+            _isMinimizing = true;
+            _wasMinimized = true;
+            UiTransitions.PlayWindowMinimizeAnimation(this, onCompleted: () =>
+            {
+                WindowState = WindowState.Minimized;
+                _isMinimizing = false;
+            });
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            if (!_isClosingAnimated && LauncherSettingsService.Instance.Current.UiAnimations)
+            {
+                e.Cancel = true;
+                _isClosingAnimated = true;
+                IsHitTestVisible = false;
+                UiTransitions.PlayWindowCloseAnimation(this, onCompleted: () =>
+                {
+                    _isClosingAnimated = true;
+                    Close();
+                });
+                return;
+            }
+
+            base.OnClosing(e);
+        }
 
         public void Home_Click(object? sender = null, RoutedEventArgs? e = null) =>
             _viewModel.ActiveButton = "Home";
@@ -458,11 +516,135 @@ namespace Launcher.Views
             SidebarContainer.BeginAnimation(WidthProperty, anim);
         }
 
-        private void NavDiscover_Click(object sender, RoutedEventArgs e) =>
-            NavigateTo("Home");
+        private bool _isInVersionSettingsMode;
 
-        private void NavLibrary_Click(object sender, RoutedEventArgs e) =>
+        private void OnVersionSettingsModeChanged(bool isInSettings, LibraryCardItemViewModel? item)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                _isInVersionSettingsMode = isInSettings;
+                AnimateSidebarVersionSettingsMode(isInSettings);
+            });
+        }
+
+        private void AnimateSidebarVersionSettingsMode(bool isInSettings)
+        {
+            var duration = TimeSpan.FromMilliseconds(200);
+            var cubic = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            if (isInSettings)
+            {
+                // Active button styling for Info tab
+                NavDiscoverBtn.SetCurrentValue(BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29)));
+                NavDiscoverBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
+                NavLibraryBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
+                NavLibraryBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
+
+                // 1. Discover -> Info
+                var fadeOutDiscover = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
+                fadeOutDiscover.Completed += (_, _) =>
+                {
+                    NavDiscoverDefaultPanel.Visibility = Visibility.Collapsed;
+                    NavDiscoverInfoPanel.Visibility = Visibility.Visible;
+                    NavDiscoverInfoPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
+                };
+                NavDiscoverDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutDiscover);
+
+                // 2. Library -> Mod
+                var fadeOutLibrary = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
+                fadeOutLibrary.Completed += (_, _) =>
+                {
+                    NavLibraryDefaultPanel.Visibility = Visibility.Collapsed;
+                    NavLibraryModPanel.Visibility = Visibility.Visible;
+                    NavLibraryModPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
+                };
+                NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutLibrary);
+
+                // 3. Create -> Collapse
+                var collapseCreate = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
+                var fadeCreate = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                collapseCreate.Completed += (_, _) => NavCreateContainer.Visibility = Visibility.Collapsed;
+                NavCreateContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseCreate);
+                NavCreateContainer.BeginAnimation(UIElement.OpacityProperty, fadeCreate);
+
+                // 4. Settings -> Collapse
+                var collapseSettings = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
+                var fadeSettings = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                collapseSettings.Completed += (_, _) => NavSettingsContainer.Visibility = Visibility.Collapsed;
+                NavSettingsContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseSettings);
+                NavSettingsContainer.BeginAnimation(UIElement.OpacityProperty, fadeSettings);
+            }
+            else
+            {
+                // Restore button styling
+                NavDiscoverBtn.ClearValue(BackgroundProperty);
+                NavDiscoverBtn.ClearValue(ForegroundProperty);
+                NavLibraryBtn.ClearValue(BackgroundProperty);
+                NavLibraryBtn.ClearValue(ForegroundProperty);
+
+                // 1. Info -> Discover
+                var fadeOutInfo = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
+                fadeOutInfo.Completed += (_, _) =>
+                {
+                    NavDiscoverInfoPanel.Visibility = Visibility.Collapsed;
+                    NavDiscoverDefaultPanel.Visibility = Visibility.Visible;
+                    NavDiscoverDefaultPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
+                };
+                NavDiscoverInfoPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutInfo);
+
+                // 2. Mod -> Library
+                var fadeOutMod = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
+                fadeOutMod.Completed += (_, _) =>
+                {
+                    NavLibraryModPanel.Visibility = Visibility.Collapsed;
+                    NavLibraryDefaultPanel.Visibility = Visibility.Visible;
+                    NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
+                };
+                NavLibraryModPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutMod);
+
+                // 3. Create -> Expand
+                NavCreateContainer.Visibility = Visibility.Visible;
+                var expandCreate = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                var fadeInCreate = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                NavCreateContainer.BeginAnimation(FrameworkElement.HeightProperty, expandCreate);
+                NavCreateContainer.BeginAnimation(UIElement.OpacityProperty, fadeInCreate);
+
+                // 4. Settings -> Expand
+                NavSettingsContainer.Visibility = Visibility.Visible;
+                var expandSettings = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                var fadeInSettings = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                NavSettingsContainer.BeginAnimation(FrameworkElement.HeightProperty, expandSettings);
+                NavSettingsContainer.BeginAnimation(UIElement.OpacityProperty, fadeInSettings);
+            }
+        }
+
+        private void NavDiscover_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode)
+            {
+                // Select Info tab in version settings mode
+                NavDiscoverBtn.SetCurrentValue(BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29)));
+                NavDiscoverBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
+                NavLibraryBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
+                NavLibraryBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
+                return;
+            }
+            NavigateTo("Home");
+        }
+
+        private void NavLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode)
+            {
+                // Select Mod tab in version settings mode
+                NavLibraryBtn.SetCurrentValue(BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29)));
+                NavLibraryBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
+                NavDiscoverBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
+                NavDiscoverBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
+                return;
+            }
             NavigateTo("Library");
+        }
 
         private void NavCreate_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Library");
@@ -657,6 +839,10 @@ namespace Launcher.Views
         {
             if (e.ChangedButton == MouseButton.Left)
             {
+                if (_isInVersionSettingsMode)
+                {
+                    (_viewCache.GetValueOrDefault("Library") as LibraryView)?.Vm?.CloseSettings();
+                }
                 NavigateTo("Home");
                 e.Handled = true;
             }
@@ -898,9 +1084,7 @@ namespace Launcher.Views
             // Disable all input immediately so the user can't click again during animation
             IsHitTestVisible = false;
 
-            UiTransitions.PlayExitAnimation(
-                this, TopBarGrid, null, ContentBorder,
-                onCompleted: () => Application.Current.Shutdown());
+            UiTransitions.PlayWindowCloseAnimation(this, onCompleted: () => Application.Current.Shutdown());
         }
     }
 }

@@ -35,6 +35,7 @@ namespace Launcher.Services
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlowLauncher");
 
         private static readonly string FlowUpdatesDir = Path.Combine(FlowAppData, "updates");
+        private static readonly string FlowVersionsDir = Path.Combine(FlowAppData, "FlowVersions");
 
         private static readonly string MinecraftDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft");
@@ -102,6 +103,32 @@ namespace Launcher.Services
                     foreach (var file in Directory.EnumerateFiles(FlowAppData, "*.log.*"))
                     {
                         try { info.LogsAndCrashesBytes += new FileInfo(file).Length; } catch { }
+                    }
+                }
+                catch { }
+            }
+
+            // FlowVersions isolated instances: logs and crash-reports
+            if (Directory.Exists(FlowVersionsDir))
+            {
+                try
+                {
+                    foreach (var verDir in Directory.EnumerateDirectories(FlowVersionsDir))
+                    {
+                        var crashDir = Path.Combine(verDir, "crash-reports");
+                        if (Directory.Exists(crashDir))
+                        {
+                            info.LogsAndCrashesBytes += GetDirectorySizeSafe(crashDir);
+                        }
+
+                        var logsDir = Path.Combine(verDir, "logs");
+                        if (Directory.Exists(logsDir))
+                        {
+                            foreach (var gz in Directory.EnumerateFiles(logsDir, "*.log.gz"))
+                            {
+                                try { info.LogsAndCrashesBytes += new FileInfo(gz).Length; } catch { }
+                            }
+                        }
                     }
                 }
                 catch { }
@@ -191,6 +218,38 @@ namespace Launcher.Services
                 catch { }
             }
 
+            // 3. Clean %LOCALAPPDATA%\Programs\FlowClient leftover zips and obsolete win-x64 cache
+            var programsDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Programs", "FlowClient");
+            if (Directory.Exists(programsDir))
+            {
+                try
+                {
+                    foreach (var z in Directory.EnumerateFiles(programsDir, "*.zip"))
+                    {
+                        try
+                        {
+                            var len = new FileInfo(z).Length;
+                            File.Delete(z);
+                            totalBytes += len;
+                            fileCount++;
+                        }
+                        catch { }
+                    }
+
+                    var obsoleteWinX64 = Path.Combine(programsDir, "win-x64");
+                    if (Directory.Exists(obsoleteWinX64))
+                    {
+                        var sz = GetDirectorySizeSafe(obsoleteWinX64);
+                        Directory.Delete(obsoleteWinX64, recursive: true);
+                        totalBytes += sz;
+                        dirCount++;
+                    }
+                }
+                catch { }
+            }
+
             result.BytesFreed = totalBytes;
             result.FilesDeleted = fileCount;
             result.DirectoriesDeleted = dirCount;
@@ -268,6 +327,49 @@ namespace Launcher.Services
                             fileCount++;
                         }
                         catch { }
+                    }
+                }
+                catch { }
+            }
+
+            // Clean isolated FlowVersions logs & crash reports
+            if (Directory.Exists(FlowVersionsDir))
+            {
+                try
+                {
+                    foreach (var verDir in Directory.EnumerateDirectories(FlowVersionsDir))
+                    {
+                        var crashDir = Path.Combine(verDir, "crash-reports");
+                        if (Directory.Exists(crashDir))
+                        {
+                            foreach (var f in Directory.EnumerateFiles(crashDir, "*.txt"))
+                            {
+                                try
+                                {
+                                    var len = new FileInfo(f).Length;
+                                    File.Delete(f);
+                                    totalBytes += len;
+                                    fileCount++;
+                                }
+                                catch { }
+                            }
+                        }
+
+                        var logsDir = Path.Combine(verDir, "logs");
+                        if (Directory.Exists(logsDir))
+                        {
+                            foreach (var f in Directory.EnumerateFiles(logsDir, "*.log.gz"))
+                            {
+                                try
+                                {
+                                    var len = new FileInfo(f).Length;
+                                    File.Delete(f);
+                                    totalBytes += len;
+                                    fileCount++;
+                                }
+                                catch { }
+                            }
+                        }
                     }
                 }
                 catch { }

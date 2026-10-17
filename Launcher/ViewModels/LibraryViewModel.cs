@@ -192,16 +192,20 @@ namespace Launcher.ViewModels
             OnPropertyChanged(nameof(IsEmpty));
         }
 
+        public static event Action<bool, LibraryCardItemViewModel?>? VersionSettingsModeChanged;
+
         public void OpenSettings(LibraryCardItemViewModel item)
         {
             SelectedSettingsInstance = item;
             IsViewingSettings = true;
+            VersionSettingsModeChanged?.Invoke(true, item);
         }
 
         public void CloseSettings()
         {
             IsViewingSettings = false;
             SelectedSettingsInstance = null;
+            VersionSettingsModeChanged?.Invoke(false, null);
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? propName = null)
