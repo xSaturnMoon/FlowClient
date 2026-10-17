@@ -132,22 +132,44 @@ namespace Launcher.ViewModels
             var v = (mcVersion ?? "").ToLowerInvariant().Trim();
             var n = (name ?? "").ToLowerInvariant().Trim();
 
-            if (v.StartsWith("1.21") || v.StartsWith("26.") || n.Contains("1.21") || n.Contains("26.") || n.Contains("trial"))
+            // 26.1 (The Garden Awakens / Pale Garden & Creaking)
+            if (v.StartsWith("26.1") || n.Contains("26.1") || n.Contains("garden") || n.Contains("creaking") || n.Contains("pale"))
+                return "pack://application:,,,/Assets/Versions/26_1.jpg";
+
+            // 26.2 (Bundles of Bravery)
+            if (v.StartsWith("26.2") || n.Contains("26.2") || n.Contains("bundle"))
+                return "pack://application:,,,/Assets/Versions/26_2.jpg";
+
+            // 26.3 (Spring to Life)
+            if (v.StartsWith("26.3") || n.Contains("26.3") || n.Contains("spring") || n.Contains("mount"))
+                return "pack://application:,,,/Assets/Versions/26_3.jpg";
+
+            // Any other 26.x
+            if (v.StartsWith("26.") || n.Contains("26."))
+                return "pack://application:,,,/Assets/Versions/26_1.jpg";
+
+            // 1.21 Tricky Trials (Breeze & Alex Lunar action crop)
+            if (v.StartsWith("1.21") || n.Contains("1.21") || n.Contains("trial") || n.Contains("breeze"))
                 return "pack://application:,,,/Assets/Versions/1_21.jpg";
 
-            if (v.StartsWith("1.20") || n.Contains("1.20") || n.Contains("trail"))
+            // 1.20 Trails & Tales (Sniffers & Cherry Blossom)
+            if (v.StartsWith("1.20") || n.Contains("1.20") || n.Contains("trail") || n.Contains("sniffer"))
                 return "pack://application:,,,/Assets/Versions/1_20.jpg";
 
-            if (v.StartsWith("1.19") || n.Contains("1.19") || n.Contains("wild"))
+            // 1.19 The Wild Update
+            if (v.StartsWith("1.19") || n.Contains("1.19") || n.Contains("wild") || n.Contains("warden"))
                 return "pack://application:,,,/Assets/Versions/1_19.jpg";
 
-            if (v.StartsWith("1.18") || v.StartsWith("1.17") || n.Contains("1.18") || n.Contains("1.17") || n.Contains("cave"))
+            // 1.18 & 1.17 Caves & Cliffs
+            if (v.StartsWith("1.18") || v.StartsWith("1.17") || n.Contains("1.18") || n.Contains("1.17") || n.Contains("cave") || n.Contains("cliff"))
                 return "pack://application:,,,/Assets/Versions/1_18.jpg";
 
+            // 1.16 & 1.15 Nether Update
             if (v.StartsWith("1.16") || v.StartsWith("1.15") || n.Contains("1.16") || n.Contains("1.15") || n.Contains("nether"))
                 return "pack://application:,,,/Assets/Versions/1_16.jpg";
 
-            if (v.StartsWith("1.14") || v.StartsWith("1.13") || n.Contains("1.14") || n.Contains("1.13") || n.Contains("village"))
+            // 1.14 & 1.13 Village & Pillage
+            if (v.StartsWith("1.14") || v.StartsWith("1.13") || n.Contains("1.14") || n.Contains("1.13") || n.Contains("village") || n.Contains("pillage"))
                 return "pack://application:,,,/Assets/Versions/1_14.jpg";
 
             return "pack://application:,,,/Assets/Versions/default.jpg";
@@ -210,7 +232,12 @@ namespace Launcher.ViewModels
                 // If it's a distinctive custom name like "Beauty" or "new build", display it prominently
                 if (!string.IsNullOrWhiteSpace(n) &&
                     !n.Equals("New Instance", StringComparison.OrdinalIgnoreCase) &&
-                    !n.Equals(MinecraftVersion, StringComparison.OrdinalIgnoreCase))
+                    !n.Equals(MinecraftVersion, StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Fabric {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Forge {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"NeoForge {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Quilt {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Vanilla {MinecraftVersion}", StringComparison.OrdinalIgnoreCase))
                 {
                     return n.ToUpperInvariant();
                 }
@@ -233,11 +260,16 @@ namespace Launcher.ViewModels
                 var n = (Name ?? "").Trim();
                 if (!string.IsNullOrWhiteSpace(n) &&
                     !n.Equals("New Instance", StringComparison.OrdinalIgnoreCase) &&
-                    !n.Equals(MinecraftVersion, StringComparison.OrdinalIgnoreCase))
+                    !n.Equals(MinecraftVersion, StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Fabric {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Forge {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"NeoForge {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Quilt {MinecraftVersion}", StringComparison.OrdinalIgnoreCase) &&
+                    !n.Equals($"Vanilla {MinecraftVersion}", StringComparison.OrdinalIgnoreCase))
                 {
                     return $"{Loader} • {MinecraftVersion}";
                 }
-                return $"{Loader} {MinecraftVersion}";
+                return Loader;
             }
         }
 
