@@ -213,10 +213,25 @@ namespace Launcher.ViewModels
                 OnPropertyChanged(nameof(RamUsagePercentText));
                 OnPropertyChanged(nameof(RamUsageRatio));
                 OnPropertyChanged(nameof(IsRamWarningVisible));
+                OnPropertyChanged(nameof(IsRam2Selected));
+                OnPropertyChanged(nameof(IsRam4Selected));
+                OnPropertyChanged(nameof(IsRam6Selected));
+                OnPropertyChanged(nameof(IsRam8Selected));
+                OnPropertyChanged(nameof(IsRam12Selected));
+                OnPropertyChanged(nameof(IsRam16Selected));
             }
         }
 
-        public string DefaultRamGbText => $"{_defaultRamMb / 1024.0:F0} GB";
+        public int MaxRamMb => Math.Max(16384, _systemTotalRamMb > 0 ? _systemTotalRamMb : 16384);
+
+        public string DefaultRamGbText => $"{_defaultRamMb / 1024.0:F1} GB ({_defaultRamMb} MB)";
+
+        public bool IsRam2Selected => _defaultRamMb == 2048;
+        public bool IsRam4Selected => _defaultRamMb == 4096;
+        public bool IsRam6Selected => _defaultRamMb == 6144;
+        public bool IsRam8Selected => _defaultRamMb == 8192;
+        public bool IsRam12Selected => _defaultRamMb == 12288;
+        public bool IsRam16Selected => _defaultRamMb == 16384;
 
         public double RamUsageRatio => _systemTotalRamMb > 0
             ? Math.Min(1.0, (double)_defaultRamMb / _systemTotalRamMb)
@@ -228,7 +243,7 @@ namespace Launcher.ViewModels
             {
                 if (_systemTotalRamMb <= 0) return $"{_defaultRamMb / 1024} GB";
                 var pct = (int)Math.Round(((double)_defaultRamMb / _systemTotalRamMb) * 100);
-                return $"{pct}% della RAM totale ({_totalRam})";
+                return $"{pct}% of system RAM ({_totalRam})";
             }
         }
 
@@ -265,13 +280,46 @@ namespace Launcher.ViewModels
         public int GameWidth
         {
             get => _gameWidth;
-            set { if (_gameWidth != value) { _gameWidth = value; OnPropertyChanged(); } }
+            set
+            {
+                if (_gameWidth != value)
+                {
+                    _gameWidth = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsResFhd));
+                    OnPropertyChanged(nameof(IsResHdPlus));
+                    OnPropertyChanged(nameof(IsResHd));
+                    OnPropertyChanged(nameof(IsRes2K));
+                }
+            }
         }
 
         public int GameHeight
         {
             get => _gameHeight;
-            set { if (_gameHeight != value) { _gameHeight = value; OnPropertyChanged(); } }
+            set
+            {
+                if (_gameHeight != value)
+                {
+                    _gameHeight = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsResFhd));
+                    OnPropertyChanged(nameof(IsResHdPlus));
+                    OnPropertyChanged(nameof(IsResHd));
+                    OnPropertyChanged(nameof(IsRes2K));
+                }
+            }
+        }
+
+        public bool IsResFhd => GameWidth == 1920 && GameHeight == 1080;
+        public bool IsResHdPlus => GameWidth == 1600 && GameHeight == 900;
+        public bool IsResHd => GameWidth == 1280 && GameHeight == 720;
+        public bool IsRes2K => GameWidth == 2560 && GameHeight == 1440;
+
+        public void SetResolution(int width, int height)
+        {
+            GameWidth = width;
+            GameHeight = height;
         }
 
         public bool IsGameFullscreen
@@ -311,6 +359,7 @@ namespace Launcher.ViewModels
                 if (match.Success && double.TryParse(match.Groups[1].Value.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var gb))
                 {
                     _systemTotalRamMb = (int)(gb * 1024);
+                    OnPropertyChanged(nameof(MaxRamMb));
                     OnPropertyChanged(nameof(RamUsagePercentText));
                     OnPropertyChanged(nameof(RamUsageRatio));
                     OnPropertyChanged(nameof(IsRamWarningVisible));

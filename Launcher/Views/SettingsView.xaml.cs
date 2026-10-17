@@ -151,6 +151,18 @@ namespace Launcher.Views
             }
         }
 
+        private void ResolutionPreset_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string tag)
+            {
+                var parts = tag.Split('x');
+                if (parts.Length == 2 && int.TryParse(parts[0], out var w) && int.TryParse(parts[1], out var h))
+                {
+                    Vm.SetResolution(w, h);
+                }
+            }
+        }
+
         private void BrowseJava_Click(object sender, RoutedEventArgs e)
         {
             try

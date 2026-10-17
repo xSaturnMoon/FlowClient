@@ -125,14 +125,26 @@ namespace Launcher.Services
                     UserType = "msa"
                 };
 
+                var globalSettings = LauncherSettingsService.Instance.Current;
+                var effectiveRam = (instance.RamMb > 0 && instance.RamMb != 4096)
+                    ? instance.RamMb
+                    : (globalSettings.DefaultRamMb > 0 ? globalSettings.DefaultRamMb : 4096);
+                var effectiveWidth = (instance.Width > 0 && instance.Width != 1920)
+                    ? instance.Width
+                    : (globalSettings.GameWidth > 0 ? globalSettings.GameWidth : 1920);
+                var effectiveHeight = (instance.Height > 0 && instance.Height != 1080)
+                    ? instance.Height
+                    : (globalSettings.GameHeight > 0 ? globalSettings.GameHeight : 1080);
+                var effectiveFullscreen = instance.Fullscreen || globalSettings.IsGameFullscreen;
+
                 var launchOptions = new MLaunchOption
                 {
                     Session = session,
                     Path = mcPath,
-                    MaximumRamMb = Math.Clamp(instance.RamMb, 1024, 32768),
-                    ScreenWidth = instance.Width > 0 ? instance.Width : 1920,
-                    ScreenHeight = instance.Height > 0 ? instance.Height : 1080,
-                    FullScreen = instance.Fullscreen,
+                    MaximumRamMb = Math.Clamp(effectiveRam, 1024, 32768),
+                    ScreenWidth = effectiveWidth,
+                    ScreenHeight = effectiveHeight,
+                    FullScreen = effectiveFullscreen,
                     GameLauncherName = "FlowClient",
                     ArgumentDictionary = new Dictionary<string, string>
                     {
