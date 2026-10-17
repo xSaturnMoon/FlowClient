@@ -75,5 +75,25 @@ namespace Launcher.Views
                 Vm.ToggleMod(mod);
             }
         }
+
+        private void OpenTexturesFolder_Click(object sender, RoutedEventArgs e) => Vm.OpenTexturesFolder();
+
+        private void OpenShadersFolder_Click(object sender, RoutedEventArgs e) => Vm.OpenShadersFolder();
+
+        private void TextureToggle_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModItemViewModel pack)
+            {
+                Vm.ToggleTexture(pack);
+            }
+        }
+
+        private void ShaderToggle_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModItemViewModel pack)
+            {
+                Vm.ToggleShader(pack);
+            }
+        }
     }
 }

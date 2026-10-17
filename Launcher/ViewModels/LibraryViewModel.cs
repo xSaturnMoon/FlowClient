@@ -216,6 +216,14 @@ namespace Launcher.ViewModels
                     {
                         LoadInstalledMods();
                     }
+                    else if (IsTexturesTabSelected)
+                    {
+                        LoadInstalledTextures();
+                    }
+                    else if (IsShadersTabSelected)
+                    {
+                        LoadInstalledShaders();
+                    }
                 }
             }
         }
@@ -294,6 +302,14 @@ namespace Launcher.ViewModels
         public ObservableCollection<ModItemViewModel> InstalledMods { get; } = new();
         public bool HasInstalledMods => InstalledMods.Count > 0;
         public string ModsCountText => $"{InstalledMods.Count} {(InstalledMods.Count == 1 ? "mod" : "mods")} installed";
+
+        public ObservableCollection<ModItemViewModel> InstalledTextures { get; } = new();
+        public bool HasInstalledTextures => InstalledTextures.Count > 0;
+        public string TexturesCountText => $"{InstalledTextures.Count} {(InstalledTextures.Count == 1 ? "texture pack" : "texture packs")} available";
+
+        public ObservableCollection<ModItemViewModel> InstalledShaders { get; } = new();
+        public bool HasInstalledShaders => InstalledShaders.Count > 0;
+        public string ShadersCountText => $"{InstalledShaders.Count} {(InstalledShaders.Count == 1 ? "shader pack" : "shader packs")} available";
 
         public void LoadInstalledMods()
         {
@@ -419,6 +435,195 @@ namespace Launcher.ViewModels
             });
         }
 
+        public void LoadInstalledTextures()
+        {
+            InstalledTextures.Clear();
+            var dir = GlobalContentService.ResourcePacksDirectory;
+            Directory.CreateDirectory(dir);
+
+            var list = new List<ModItemViewModel>();
+            foreach (var entry in Directory.EnumerateFileSystemEntries(dir))
+            {
+                var rawName = Path.GetFileName(entry);
+                if (string.IsNullOrEmpty(rawName) || rawName.StartsWith('.')) continue;
+
+                var clean = rawName;
+                if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                    clean = clean[..^".disabled".Length];
+
+                if (!clean.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) && !Directory.Exists(entry))
+                    continue;
+
+                var info = PackMetadataService.GetResourcePackInfo(dir, rawName);
+                var vm = new ModItemViewModel(
+                    info.Title,
+                    info.Subtitle,
+                    info.IconPath,
+                    info.CleanFileName,
+                    info.IsEnabled);
+                list.Add(vm);
+            }
+
+            foreach (var vm in list.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase))
+            {
+                InstalledTextures.Add(vm);
+            }
+
+            OnPropertyChanged(nameof(HasInstalledTextures));
+            OnPropertyChanged(nameof(TexturesCountText));
+        }
+
+        public void ToggleTexture(ModItemViewModel pack)
+        {
+            var dir = GlobalContentService.ResourcePacksDirectory;
+            var clean = pack.FileName;
+            if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                clean = clean[..^".disabled".Length];
+
+            var enabledPath = Path.Combine(dir, clean);
+            var disabledPath = Path.Combine(dir, clean + ".disabled");
+
+            try
+            {
+                if (pack.IsEnabled)
+                {
+                    if (File.Exists(enabledPath))
+                        File.Move(enabledPath, disabledPath, overwrite: true);
+                    else if (Directory.Exists(enabledPath))
+                        Directory.Move(enabledPath, disabledPath);
+                    pack.IsEnabled = false;
+                }
+                else
+                {
+                    if (File.Exists(disabledPath))
+                        File.Move(disabledPath, enabledPath, overwrite: true);
+                    else if (Directory.Exists(disabledPath))
+                        Directory.Move(disabledPath, enabledPath);
+                    pack.IsEnabled = true;
+                }
+
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var globalService = new GlobalContentService();
+                        globalService.SyncToAllInstanceDirectories(_instanceService);
+                    }
+                    catch { }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not toggle texture pack: {ex.Message}", "Texture Pack Toggle", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
+        public void OpenTexturesFolder()
+        {
+            var dir = GlobalContentService.ResourcePacksDirectory;
+            Directory.CreateDirectory(dir);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = dir,
+                UseShellExecute = true
+            });
+        }
+
+        public void LoadInstalledShaders()
+        {
+            InstalledShaders.Clear();
+            var dir = GlobalContentService.ShadersDirectory;
+            Directory.CreateDirectory(dir);
+
+            var list = new List<ModItemViewModel>();
+            foreach (var entry in Directory.EnumerateFileSystemEntries(dir))
+            {
+                var rawName = Path.GetFileName(entry);
+                if (string.IsNullOrEmpty(rawName) || rawName.StartsWith('.')) continue;
+                if (rawName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) continue;
+
+                var clean = rawName;
+                if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                    clean = clean[..^".disabled".Length];
+
+                if (!clean.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) && !Directory.Exists(entry))
+                    continue;
+
+                var info = PackMetadataService.GetShaderPackInfo(dir, rawName);
+                var vm = new ModItemViewModel(
+                    info.Title,
+                    info.Subtitle,
+                    info.IconPath,
+                    info.CleanFileName,
+                    info.IsEnabled);
+                list.Add(vm);
+            }
+
+            foreach (var vm in list.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase))
+            {
+                InstalledShaders.Add(vm);
+            }
+
+            OnPropertyChanged(nameof(HasInstalledShaders));
+            OnPropertyChanged(nameof(ShadersCountText));
+        }
+
+        public void ToggleShader(ModItemViewModel pack)
+        {
+            var dir = GlobalContentService.ShadersDirectory;
+            var clean = pack.FileName;
+            if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                clean = clean[..^".disabled".Length];
+
+            var enabledPath = Path.Combine(dir, clean);
+            var disabledPath = Path.Combine(dir, clean + ".disabled");
+
+            try
+            {
+                if (pack.IsEnabled)
+                {
+                    if (File.Exists(enabledPath))
+                        File.Move(enabledPath, disabledPath, overwrite: true);
+                    else if (Directory.Exists(enabledPath))
+                        Directory.Move(enabledPath, disabledPath);
+                    pack.IsEnabled = false;
+                }
+                else
+                {
+                    if (File.Exists(disabledPath))
+                        File.Move(disabledPath, enabledPath, overwrite: true);
+                    else if (Directory.Exists(disabledPath))
+                        Directory.Move(disabledPath, enabledPath);
+                    pack.IsEnabled = true;
+                }
+
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var globalService = new GlobalContentService();
+                        globalService.SyncToAllInstanceDirectories(_instanceService);
+                    }
+                    catch { }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not toggle shader pack: {ex.Message}", "Shader Pack Toggle", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
+        public void OpenShadersFolder()
+        {
+            var dir = GlobalContentService.ShadersDirectory;
+            Directory.CreateDirectory(dir);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = dir,
+                UseShellExecute = true
+            });
+        }
+
         public void DuplicateCurrentInstance()
         {
             if (SelectedSettingsInstance == null) return;
@@ -513,6 +718,8 @@ namespace Launcher.ViewModels
             OnPropertyChanged(nameof(HasSettingsMods));
 
             LoadInstalledMods();
+            LoadInstalledTextures();
+            LoadInstalledShaders();
 
             IsViewingSettings = true;
             VersionSettingsModeChanged?.Invoke(true, item);

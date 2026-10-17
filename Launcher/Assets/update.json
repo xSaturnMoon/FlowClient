@@ -1,9 +1,9 @@
 {
-  "version": "1.4.2",
+  "version": "1.4.3",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.4.2: Neutral grey close button hover, high-resolution rounded mod icons with A-Z alphabetical sorting and clean backgrounds, custom modern dark scrollbars, seamless sidebar restoration on profile click, and crisp full-stroke bottom corner window borders.",
+  "releaseNotes": "Flow Client v1.4.3: Added global Textures and Shaders management matching Mods design with toggles, icons, and folder access.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.2/FlowClient-v1.4.2.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.3/FlowClient-v1.4.3.zip"
 }

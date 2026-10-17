@@ -183,20 +183,28 @@ namespace Launcher.Services
 
         private static bool IsPackArchive(string fileName)
         {
-            var ext = Path.GetExtension(fileName);
+            var raw = fileName;
+            if (raw.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                raw = raw[..^".disabled".Length];
+
+            var ext = Path.GetExtension(raw);
             return ext.Equals(".zip", StringComparison.OrdinalIgnoreCase)
                 || ext.Equals(".jar", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool LooksLikePackDirectory(string path)
         {
-            if (File.Exists(Path.Combine(path, "pack.mcmeta")))
+            var cleanPath = path;
+            if (cleanPath.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                cleanPath = cleanPath[..^".disabled".Length];
+
+            if (File.Exists(Path.Combine(cleanPath, "pack.mcmeta")))
                 return true;
 
-            if (Directory.Exists(Path.Combine(path, "assets")))
+            if (Directory.Exists(Path.Combine(cleanPath, "assets")))
                 return true;
 
-            return Directory.Exists(Path.Combine(path, "shaders"));
+            return Directory.Exists(Path.Combine(cleanPath, "shaders"));
         }
 
         private static void TryDeleteEntry(string path)
@@ -218,22 +226,52 @@ namespace Launcher.Services
 
             Directory.CreateDirectory(targetDirectory);
 
+            var sourceFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var file in Directory.EnumerateFiles(sourceDirectory))
             {
                 var name = Path.GetFileName(file);
                 if (string.IsNullOrEmpty(name) || name.StartsWith('.'))
                     continue;
 
-                File.Copy(file, Path.Combine(targetDirectory, name), overwrite: true);
+                sourceFiles.Add(name);
+                var dest = Path.Combine(targetDirectory, name);
+                try
+                {
+                    if (!File.Exists(dest) || File.GetLastWriteTimeUtc(file) > File.GetLastWriteTimeUtc(dest))
+                    {
+                        File.Copy(file, dest, overwrite: true);
+                    }
+                }
+                catch { }
             }
 
+            foreach (var targetFile in Directory.EnumerateFiles(targetDirectory))
+            {
+                var name = Path.GetFileName(targetFile);
+                if (!sourceFiles.Contains(name))
+                {
+                    try { File.Delete(targetFile); } catch { }
+                }
+            }
+
+            var sourceDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var subdir in Directory.EnumerateDirectories(sourceDirectory))
             {
                 var name = Path.GetFileName(subdir);
                 if (string.IsNullOrEmpty(name) || name.StartsWith('.'))
                     continue;
 
+                sourceDirs.Add(name);
                 MirrorDirectory(subdir, Path.Combine(targetDirectory, name));
+            }
+
+            foreach (var targetSubdir in Directory.EnumerateDirectories(targetDirectory))
+            {
+                var name = Path.GetFileName(targetSubdir);
+                if (!sourceDirs.Contains(name))
+                {
+                    try { Directory.Delete(targetSubdir, true); } catch { }
+                }
             }
         }
     }
