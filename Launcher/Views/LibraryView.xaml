@@ -12,12 +12,12 @@
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!-- Back Button Style for Instance Settings -->
+        <!-- Back Button Style for Instance Settings (Clean Neutral, No Blue) -->
         <Style x:Key="LibraryBackBtnStyle" TargetType="Button">
-            <Setter Property="Background" Value="#181920"/>
-            <Setter Property="BorderBrush" Value="#2A2B36"/>
+            <Setter Property="Background" Value="#18181D"/>
+            <Setter Property="BorderBrush" Value="#2E2E36"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Foreground" Value="#D0D0D5"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="14,8"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -32,8 +32,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#22242D"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#282830"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#60606D"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -42,29 +42,58 @@
             </Setter>
         </Style>
 
-        <!-- Center Settings Button Style inside Card -->
-        <Style x:Key="CenterSettingsPillButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="48"/>
-            <Setter Property="Height" Value="48"/>
+        <!-- Pure Settings Gear Button (1.5x Larger, No Circle Container, No Blue) -->
+        <Style x:Key="CenterSettingsCleanButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="52"/>
+            <Setter Property="Height" Value="52"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="BtnBorder"
-                                Background="#D0181822"
-                                BorderBrush="#60FFFFFF"
-                                BorderThickness="1.5"
-                                CornerRadius="24">
+                        <Grid Background="Transparent" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform x:Name="GearScale" ScaleX="1.0" ScaleY="1.0"/>
+                            </Grid.RenderTransform>
+                            <!-- 1.5x Larger Gear (36px), Drop Shadow for maximum contrast, No Circle -->
                             <Path x:Name="GearPath"
                                   Data="M 12 15 C 10.343 15 9 13.657 9 12 C 9 10.343 10.343 9 12 9 C 13.657 9 15 10.343 15 12 C 15 13.657 13.657 15 12 15 Z M 19.43 12.98 C 19.47 12.66 19.5 12.34 19.5 12 C 19.5 11.66 19.47 11.34 19.43 11.02 L 21.54 9.37 C 21.73 9.22 21.78 8.95 21.66 8.73 L 19.66 5.27 C 19.54 5.05 19.27 4.97 19.05 5.05 L 16.56 6.05 C 16.04 5.65 15.48 5.32 14.87 5.07 L 14.49 2.42 C 14.46 2.18 14.25 2 14 2 L 10 2 C 9.75 2 9.54 2.18 9.51 2.42 L 9.13 5.07 C 8.52 5.32 7.96 5.66 7.44 6.05 L 4.95 5.05 C 4.73 4.96 4.46 5.05 4.34 5.27 L 2.34 8.73 C 2.21 8.95 2.27 9.22 2.46 9.37 L 4.57 11.02 C 4.53 11.34 4.5 11.67 4.5 12 C 4.5 12.33 4.53 12.66 4.57 12.98 L 2.46 14.63 C 2.27 14.78 2.21 15.05 2.34 15.27 L 4.34 18.73 C 4.46 18.95 4.72 19.03 4.95 18.95 L 7.44 17.95 C 7.96 18.35 8.52 18.68 9.13 18.93 L 9.51 21.58 C 9.54 21.82 9.75 22 10 22 L 14 22 C 14.25 22 14.46 21.82 14.49 21.58 L 14.87 18.93 C 15.48 18.68 16.04 18.34 16.56 17.95 L 19.05 18.95 C 19.28 19.04 19.54 18.95 19.66 18.73 L 21.66 15.27 C 21.78 15.05 21.73 14.78 21.54 14.63 L 19.43 12.98 Z"
-                                  Fill="#FFFFFF" Width="20" Height="20" Stretch="Uniform"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                                  Fill="#EEEEEE" Width="36" Height="36" Stretch="Uniform"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.95" Color="#000000"/>
+                                </Path.Effect>
+                            </Path>
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="BtnBorder" Property="Background" Value="#3B82F6"/>
-                                <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#FFFFFF"/>
+                                <Setter TargetName="GearPath" Property="Fill" Value="#FFFFFF"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="GearScale"
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="1.14" Duration="0:0:0.12"/>
+                                            <DoubleAnimation Storyboard.TargetName="GearScale"
+                                                             Storyboard.TargetProperty="ScaleY"
+                                                             To="1.14" Duration="0:0:0.12"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="GearScale"
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="1.0" Duration="0:0:0.12"/>
+                                            <DoubleAnimation Storyboard.TargetName="GearScale"
+                                                             Storyboard.TargetProperty="ScaleY"
+                                                             To="1.0" Duration="0:0:0.12"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -72,14 +101,14 @@
             </Setter>
         </Style>
 
-        <!-- Installed Version Card DataTemplate -->
+        <!-- Horizontal Lunar-Style Version Card DataTemplate -->
         <DataTemplate x:Key="InstalledVersionCardTemplate">
             <Border x:Name="CardRoot"
-                    Width="185" Height="260"
-                    Margin="0,0,22,22"
-                    CornerRadius="16"
-                    Background="#16171B"
-                    BorderBrush="#25262E"
+                    Width="320" Height="155"
+                    Margin="0,0,24,24"
+                    CornerRadius="12"
+                    Background="#141518"
+                    BorderBrush="#25262D"
                     BorderThickness="1.5"
                     Cursor="Hand"
                     ClipToBounds="True"
@@ -90,91 +119,92 @@
                 </Border.RenderTransform>
 
                 <Grid>
-                    <!-- Background layers -->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="168"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                    <!-- 1. Full Background Version Artwork Image -->
+                    <Border CornerRadius="12" ClipToBounds="True">
+                        <Image Source="{Binding ArtworkUri}"
+                               Stretch="UniformToFill"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border>
 
-                        <!-- Top Poster Artwork Area -->
-                        <Border Grid.Row="0" CornerRadius="16,16,0,0" ClipToBounds="True">
-                            <Grid>
-                                <!-- Atmospheric Gradient -->
-                                <Border>
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#252733" Offset="0.0"/>
-                                            <GradientStop Color="#191B24" Offset="0.6"/>
-                                            <GradientStop Color="#14151C" Offset="1.0"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
+                    <!-- 2. Dark Vignette / Contrast Overlay for perfect text readability -->
+                    <Border CornerRadius="12" ClipToBounds="True">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#55000000" Offset="0.0"/>
+                                <GradientStop Color="#25000000" Offset="0.45"/>
+                                <GradientStop Color="#85000000" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
 
-                                <!-- Stylized Minecraft Visual Centerpiece -->
-                                <Image Source="/Assets/grass_block.png" Width="76" Height="76"
-                                       Opacity="0.45" Stretch="Uniform"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       RenderOptions.BitmapScalingMode="HighQuality"/>
-
-                                <!-- Badges row on top of poster -->
-                                <Grid Margin="10,10,10,0" VerticalAlignment="Top">
-                                    <!-- Loader Badge -->
-                                    <Border Background="#90000000" CornerRadius="6" Padding="6,3" HorizontalAlignment="Left">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="{Binding LoaderIconUri}" Width="13" Height="13" Margin="0,0,4,0"
-                                                   VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Loader}" Foreground="#E0E0E6" FontSize="10.5" FontWeight="Bold"
-                                                       FontFamily="{StaticResource NunitoFont}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Version Badge -->
-                                    <Border Background="#90000000" CornerRadius="6" Padding="7,3" HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding MinecraftVersion}" Foreground="#60A5FA" FontSize="11" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoFont}"/>
-                                    </Border>
-                                </Grid>
-
-                                <!-- Gradient shade toward bottom of top half -->
-                                <Border VerticalAlignment="Bottom" Height="36">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#00000000" Offset="0.0"/>
-                                            <GradientStop Color="#16171B" Offset="1.0"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
+                    <!-- 3. Top Badges (Loader + Version) -->
+                    <Grid Margin="12,10,12,0" VerticalAlignment="Top">
+                        <!-- Loader Pill Top-Left -->
+                        <Border Background="#A0000000" CornerRadius="6" Padding="7,3" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding LoaderIconUri}" Width="13" Height="13" Margin="0,0,5,0"
+                                       VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Loader}" Foreground="#E5E5E8" FontSize="11" FontWeight="Bold"
+                                           FontFamily="{StaticResource NunitoFont}"/>
+                            </StackPanel>
                         </Border>
 
-                        <!-- Bottom Details Area -->
-                        <Grid Grid.Row="1" Margin="14,6,14,12">
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Name}" Foreground="#FFFFFF" FontSize="14.5" FontWeight="Bold"
-                                           FontFamily="{StaticResource NunitoBoldFont}" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Text="{Binding LastPlayedText, StringFormat='Last played: {0}'}"
-                                           Foreground="#787985" FontSize="11" Margin="0,4,0,0"
-                                           FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis"/>
-                            </StackPanel>
-                        </Grid>
+                        <!-- Version Pill Top-Right -->
+                        <Border Background="#A0000000" CornerRadius="6" Padding="8,3" HorizontalAlignment="Right">
+                            <TextBlock Text="{Binding MinecraftVersion}" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}"/>
+                        </Border>
                     </Grid>
 
-                    <!-- Active Selection Border Highlight -->
-                    <Border BorderBrush="#3B82F6" BorderThickness="2" CornerRadius="16"
-                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVis}}"
-                            IsHitTestVisible="False"/>
+                    <!-- 4. Prominent Center Title & Subtitle (Like Lunar Client) -->
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="14,0">
+                        <TextBlock Text="{Binding DisplayTitle}"
+                                   Foreground="#FFFFFF"
+                                   FontSize="23"
+                                   FontWeight="ExtraBold"
+                                   FontFamily="{StaticResource NunitoBoldFont}"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxWidth="290">
+                            <TextBlock.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.9" Color="#000000"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                        <TextBlock Text="{Binding SubtitleText}"
+                                   Foreground="#D2D2D8"
+                                   FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource NunitoFont}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,2,0,0">
+                            <TextBlock.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="1" Opacity="0.8" Color="#000000"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </StackPanel>
 
-                    <!-- Grayish Overlay (Fades in on hover) -->
+                    <!-- 5. Active Selection Border Highlight (Neutral Crisp White, No Blue) -->
+                    <Border BorderBrush="#FFFFFF" BorderThickness="2" CornerRadius="12"
+                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVis}}"
+                            IsHitTestVisible="False">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.45" Color="#FFFFFF"/>
+                        </Border.Effect>
+                    </Border>
+
+                    <!-- 6. Grayish Dimming Overlay (Fades in on hover) -->
                     <Border x:Name="HoverOverlay"
-                            Background="#45121216"
-                            CornerRadius="16"
+                            Background="#50000000"
+                            CornerRadius="12"
                             Opacity="0"
                             IsHitTestVisible="False"/>
 
-                    <!-- Centered Settings Icon (Fades in on hover) -->
+                    <!-- 7. Centered Settings Icon (1.5x Bigger, No Circle, No Blue) -->
                     <Button x:Name="CenterSettingsBtn"
-                            Style="{StaticResource CenterSettingsPillButtonStyle}"
+                            Style="{StaticResource CenterSettingsCleanButtonStyle}"
                             Opacity="0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -183,42 +213,42 @@
                 </Grid>
             </Border>
 
-            <!-- Interactive Hover Animations (Zoom, Gray Dim, Center Settings Icon) -->
+            <!-- Card Hover Triggers: Zoom, Gray Dim, Center Settings Icon -->
             <DataTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <!-- Scale up slightly (Zoom) -->
+                                <!-- Scale up slightly -->
                                 <DoubleAnimation Storyboard.TargetName="CardScale"
                                                  Storyboard.TargetProperty="ScaleX"
-                                                 To="1.04" Duration="0:0:0.18">
+                                                 To="1.03" Duration="0:0:0.18">
                                     <DoubleAnimation.EasingFunction>
                                         <CubicEase EasingMode="EaseOut"/>
                                     </DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="CardScale"
                                                  Storyboard.TargetProperty="ScaleY"
-                                                 To="1.04" Duration="0:0:0.18">
+                                                 To="1.03" Duration="0:0:0.18">
                                     <DoubleAnimation.EasingFunction>
                                         <CubicEase EasingMode="EaseOut"/>
                                     </DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
 
-                                <!-- Grayish Dim Overlay -->
+                                <!-- Grayish Dimming -->
                                 <DoubleAnimation Storyboard.TargetName="HoverOverlay"
                                                  Storyboard.TargetProperty="Opacity"
                                                  To="1.0" Duration="0:0:0.18"/>
 
-                                <!-- Center Settings Button -->
+                                <!-- Show Center Settings Button -->
                                 <DoubleAnimation Storyboard.TargetName="CenterSettingsBtn"
                                                  Storyboard.TargetProperty="Opacity"
                                                  To="1.0" Duration="0:0:0.18"/>
 
-                                <!-- Border illumination -->
+                                <!-- Border highlight (clean neutral gray, no blue) -->
                                 <ColorAnimation Storyboard.TargetName="CardRoot"
                                                 Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                To="#424452" Duration="0:0:0.18"/>
+                                                To="#505058" Duration="0:0:0.18"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -241,12 +271,12 @@
                                     </DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
 
-                                <!-- Remove Grayish Overlay -->
+                                <!-- Remove Grayish Dimming -->
                                 <DoubleAnimation Storyboard.TargetName="HoverOverlay"
                                                  Storyboard.TargetProperty="Opacity"
                                                  To="0.0" Duration="0:0:0.18"/>
 
-                                <!-- Hide Center Settings Button -->
+                                <!-- Hide Settings Button -->
                                 <DoubleAnimation Storyboard.TargetName="CenterSettingsBtn"
                                                  Storyboard.TargetProperty="Opacity"
                                                  To="0.0" Duration="0:0:0.18"/>
@@ -254,7 +284,7 @@
                                 <!-- Return Border color -->
                                 <ColorAnimation Storyboard.TargetName="CardRoot"
                                                 Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                To="#25262E" Duration="0:0:0.18"/>
+                                                To="#25262D" Duration="0:0:0.18"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -272,7 +302,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Top Header: "Installed Version" styled identical to reference image "Browse by game" -->
+            <!-- Top Header: "Installed Version" styled after reference image -->
             <Grid Grid.Row="0" Margin="36,28,36,18">
                 <TextBlock Text="Installed Version"
                            Foreground="#FFFFFF"
@@ -282,14 +312,14 @@
                            VerticalAlignment="Center"/>
             </Grid>
 
-            <!-- Main Scrollable Area for Version Cards -->
+            <!-- Main Scrollable Area for Horizontal Poster Cards -->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           Padding="36,6,14,32"
                           FocusVisualStyle="{x:Null}">
                 <Grid>
-                    <!-- Cards Grid -->
+                    <!-- Horizontal Cards Grid -->
                     <ItemsControl ItemsSource="{Binding FilteredVersions}"
                                   ItemTemplate="{StaticResource InstalledVersionCardTemplate}">
                         <ItemsControl.ItemsPanel>
@@ -300,14 +330,14 @@
                     </ItemsControl>
 
                     <!-- Empty State (When no instances are found) -->
-                    <Border Background="#14151B" BorderBrush="#20212A" BorderThickness="1" CornerRadius="16"
+                    <Border Background="#14151B" BorderBrush="#20212A" BorderThickness="1" CornerRadius="12"
                             Padding="36,32" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,60,0,0"
                             Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="📦" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,12"/>
                             <TextBlock Text="No Installed Versions Found" Foreground="#FFFFFF" FontSize="18" FontWeight="Bold"
                                        FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Installed Minecraft versions will appear here as rounded poster cards."
+                            <TextBlock Text="Installed Minecraft versions will appear here as horizontal banner cards."
                                        Foreground="#72737D" FontSize="13" FontFamily="{StaticResource NunitoFont}"
                                        HorizontalAlignment="Center" Margin="0,6,0,0"/>
                         </StackPanel>
@@ -316,7 +346,7 @@
             </ScrollViewer>
         </Grid>
 
-        <!-- ══════════════ 2. INSTANCE SETTINGS PAGE (EMPTY / CLEAN PLACEHOLDER) ══════════════ -->
+        <!-- ══════════════ 2. INSTANCE SETTINGS PAGE (CLEAN / EMPTY PLACEHOLDER) ══════════════ -->
         <Grid Visibility="{Binding IsViewingSettings, Converter={StaticResource BoolToVis}}"
               Margin="36,24,36,32">
             <Grid.RowDefinitions>
@@ -326,7 +356,7 @@
 
             <!-- Navigation Bar & Header for Specific Instance -->
             <StackPanel Grid.Row="0">
-                <!-- Back Button to Library -->
+                <!-- Back Button to Library (Neutral, No Blue) -->
                 <Button Style="{StaticResource LibraryBackBtnStyle}" Click="BackToLibrary_Click" Margin="0,0,0,18" HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="M 12,2 L 4,10 L 12,18"
@@ -338,18 +368,18 @@
                     </StackPanel>
                 </Button>
 
-                <!-- Instance Banner -->
-                <Border Background="#14151B" BorderBrush="#23242E" BorderThickness="1" CornerRadius="14" Padding="22,18" Margin="0,0,0,24">
+                <!-- Instance Banner (Artwork + Name + Tags) -->
+                <Border Background="#14151B" BorderBrush="#24252D" BorderThickness="1" CornerRadius="12" Padding="20,16" Margin="0,0,0,24">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Icon / Loader Badge -->
-                        <Border Grid.Column="0" Width="52" Height="52" CornerRadius="12" Background="#1D202A" Margin="0,0,18,0">
-                            <Image Source="{Binding SelectedSettingsInstance.LoaderIconUri}" Width="30" Height="30"
-                                   Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <!-- Artwork Thumbnail -->
+                        <Border Grid.Column="0" Width="80" Height="48" CornerRadius="8" ClipToBounds="True" Margin="0,0,18,0">
+                            <Image Source="{Binding SelectedSettingsInstance.ArtworkUri}" Stretch="UniformToFill"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
 
                         <!-- Name & Metadata Pills -->
@@ -357,15 +387,15 @@
                             <TextBlock Text="{Binding SelectedSettingsInstance.Name}" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold"
                                        FontFamily="{StaticResource NunitoBoldFont}"/>
                             <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                <Border Background="#1E293B" CornerRadius="6" Padding="8,3" Margin="0,0,8,0">
+                                <Border Background="#1E1F26" CornerRadius="6" Padding="8,3" Margin="0,0,8,0">
                                     <TextBlock Text="{Binding SelectedSettingsInstance.MinecraftVersion, StringFormat='Minecraft {0}'}"
-                                               Foreground="#60A5FA" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                               Foreground="#FFFFFF" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                 </Border>
-                                <Border Background="#2E1C25" CornerRadius="6" Padding="8,3" Margin="0,0,8,0">
+                                <Border Background="#25252E" CornerRadius="6" Padding="8,3" Margin="0,0,8,0">
                                     <TextBlock Text="{Binding SelectedSettingsInstance.Loader}"
-                                               Foreground="#F472B6" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
+                                               Foreground="#D5D5DC" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoFont}"/>
                                 </Border>
-                                <Border Background="#1E1E26" CornerRadius="6" Padding="8,3">
+                                <Border Background="#1C1C22" CornerRadius="6" Padding="8,3">
                                     <TextBlock Text="{Binding SelectedSettingsInstance.LastPlayedText, StringFormat='Last played: {0}'}"
                                                Foreground="#858592" FontSize="11" FontFamily="{StaticResource NunitoFont}"/>
                                 </Border>
@@ -376,17 +406,17 @@
             </StackPanel>
 
             <!-- Clean / Empty Container (Ready for next features) -->
-            <Border Grid.Row="1" Background="#121317" BorderBrush="#202129" BorderThickness="1.5" CornerRadius="16" Padding="32">
+            <Border Grid.Row="1" Background="#121317" BorderBrush="#202129" BorderThickness="1.5" CornerRadius="12" Padding="32">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="500">
-                    <Border Background="#1B1C24" Width="64" Height="64" CornerRadius="32" Margin="0,0,0,18" HorizontalAlignment="Center">
+                    <Border Background="#1A1B22" Width="64" Height="64" CornerRadius="32" Margin="0,0,0,18" HorizontalAlignment="Center">
                         <Path Data="M 12 15 C 10.343 15 9 13.657 9 12 C 9 10.343 10.343 9 12 9 C 13.657 9 15 10.343 15 12 C 15 13.657 13.657 15 12 15 Z M 19.43 12.98 C 19.47 12.66 19.5 12.34 19.5 12 C 19.5 11.66 19.47 11.34 19.43 11.02 L 21.54 9.37 C 21.73 9.22 21.78 8.95 21.66 8.73 L 19.66 5.27 C 19.54 5.05 19.27 4.97 19.05 5.05 L 16.56 6.05 C 16.04 5.65 15.48 5.32 14.87 5.07 L 14.49 2.42 C 14.46 2.18 14.25 2 14 2 L 10 2 C 9.75 2 9.54 2.18 9.51 2.42 L 9.13 5.07 C 8.52 5.32 7.96 5.66 7.44 6.05 L 4.95 5.05 C 4.73 4.96 4.46 5.05 4.34 5.27 L 2.34 8.73 C 2.21 8.95 2.27 9.22 2.46 9.37 L 4.57 11.02 C 4.53 11.34 4.5 11.67 4.5 12 C 4.5 12.33 4.53 12.66 4.57 12.98 L 2.46 14.63 C 2.27 14.78 2.21 15.05 2.34 15.27 L 4.34 18.73 C 4.46 18.95 4.72 19.03 4.95 18.95 L 7.44 17.95 C 7.96 18.35 8.52 18.68 9.13 18.93 L 9.51 21.58 C 9.54 21.82 9.75 22 10 22 L 14 22 C 14.25 22 14.46 21.82 14.49 21.58 L 14.87 18.93 C 15.48 18.68 16.04 18.34 16.56 17.95 L 19.05 18.95 C 19.28 19.04 19.54 18.95 19.66 18.73 L 21.66 15.27 C 21.78 15.05 21.73 14.78 21.54 14.63 L 19.43 12.98 Z"
-                              Fill="#7E8295" Width="26" Height="26" Stretch="Uniform"
+                              Fill="#80808C" Width="26" Height="26" Stretch="Uniform"
                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <TextBlock Text="Version Settings" Foreground="#FFFFFF" FontSize="18" FontWeight="Bold"
                                FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
                     <TextBlock Text="This configuration view is clean and prepared for upcoming features."
-                               Foreground="#6E7080" FontSize="13" TextAlignment="Center" Margin="0,8,0,0"
+                               Foreground="#70707C" FontSize="13" TextAlignment="Center" Margin="0,8,0,0"
                                FontFamily="{StaticResource NunitoFont}"/>
                 </StackPanel>
             </Border>
