@@ -14,6 +14,8 @@ namespace Launcher.ViewModels
     public class LibraryViewModel : INotifyPropertyChanged
     {
         private readonly InstanceService _instanceService = new();
+        private readonly ModrinthService _modrinthService = new();
+        private readonly ModInstallService _modInstallService = new();
         private bool _isViewingSettings;
         private LibraryCardItemViewModel? _selectedSettingsInstance;
         private string _searchQuery = "";
@@ -223,6 +225,10 @@ namespace Launcher.ViewModels
                     else if (IsShadersTabSelected)
                     {
                         LoadInstalledShaders();
+                    }
+                    else if (IsModrinthTabSelected)
+                    {
+                        LoadModrinthContent();
                     }
                 }
             }
@@ -624,6 +630,583 @@ namespace Launcher.ViewModels
             });
         }
 
+        public void DeleteMod(ModItemViewModel mod)
+        {
+            if (mod == null || !mod.CanDelete || SelectedSettingsInstance == null) return;
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst == null) return;
+
+            var modsDir = _instanceService.GetModsPath(inst.Id);
+            var clean = mod.FileName;
+            if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                clean = clean[..^".disabled".Length];
+
+            try
+            {
+                var p1 = Path.Combine(modsDir, clean);
+                var p2 = Path.Combine(modsDir, clean + ".disabled");
+                if (File.Exists(p1)) File.Delete(p1);
+                if (File.Exists(p2)) File.Delete(p2);
+
+                inst.Mods.RemoveAll(m => m.FileName.Equals(clean, StringComparison.OrdinalIgnoreCase) ||
+                                         m.FileName.Equals(clean + ".disabled", StringComparison.OrdinalIgnoreCase) ||
+                                         m.Title.Equals(mod.Title, StringComparison.OrdinalIgnoreCase));
+                _instanceService.Save(inst);
+
+                InstalledMods.Remove(mod);
+                OnPropertyChanged(nameof(HasInstalledMods));
+                OnPropertyChanged(nameof(ModsCountText));
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not delete mod: {ex.Message}", "Delete Mod", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
+        public void DeleteTexture(ModItemViewModel pack)
+        {
+            if (pack == null || !pack.CanDelete) return;
+            var dir = GlobalContentService.ResourcePacksDirectory;
+            var clean = pack.FileName;
+            if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                clean = clean[..^".disabled".Length];
+
+            try
+            {
+                var p1 = Path.Combine(dir, clean);
+                var p2 = Path.Combine(dir, clean + ".disabled");
+                if (File.Exists(p1)) File.Delete(p1);
+                if (File.Exists(p2)) File.Delete(p2);
+                if (Directory.Exists(p1)) Directory.Delete(p1, true);
+                if (Directory.Exists(p2)) Directory.Delete(p2, true);
+
+                InstalledTextures.Remove(pack);
+                OnPropertyChanged(nameof(HasInstalledTextures));
+                OnPropertyChanged(nameof(TexturesCountText));
+
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var globalService = new GlobalContentService();
+                        globalService.SyncToAllInstanceDirectories(_instanceService);
+                    }
+                    catch { }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not delete texture pack: {ex.Message}", "Delete Texture Pack", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
+        public void DeleteShader(ModItemViewModel pack)
+        {
+            if (pack == null || !pack.CanDelete) return;
+            var dir = GlobalContentService.ShadersDirectory;
+            var clean = pack.FileName;
+            if (clean.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+                clean = clean[..^".disabled".Length];
+
+            try
+            {
+                var p1 = Path.Combine(dir, clean);
+                var p2 = Path.Combine(dir, clean + ".disabled");
+                if (File.Exists(p1)) File.Delete(p1);
+                if (File.Exists(p2)) File.Delete(p2);
+                if (Directory.Exists(p1)) Directory.Delete(p1, true);
+                if (Directory.Exists(p2)) Directory.Delete(p2, true);
+
+                InstalledShaders.Remove(pack);
+                OnPropertyChanged(nameof(HasInstalledShaders));
+                OnPropertyChanged(nameof(ShadersCountText));
+
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var globalService = new GlobalContentService();
+                        globalService.SyncToAllInstanceDirectories(_instanceService);
+                    }
+                    catch { }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not delete shader pack: {ex.Message}", "Delete Shader Pack", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
+        public void ImportMod()
+        {
+            if (SelectedSettingsInstance == null) return;
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Import Minecraft Mod",
+                Filter = "Minecraft Mods (*.jar)|*.jar|All Files (*.*)|*.*",
+                Multiselect = true
+            };
+            if (dlg.ShowDialog() == true && dlg.FileNames.Length > 0)
+            {
+                var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+                if (inst == null) return;
+                var modsDir = _instanceService.GetModsPath(inst.Id);
+                Directory.CreateDirectory(modsDir);
+                foreach (var src in dlg.FileNames)
+                {
+                    try
+                    {
+                        var dest = Path.Combine(modsDir, Path.GetFileName(src));
+                        File.Copy(src, dest, overwrite: true);
+                    }
+                    catch { }
+                }
+                LoadInstalledMods();
+            }
+        }
+
+        public void ImportTexture()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Import Resource Pack",
+                Filter = "Resource Packs (*.zip)|*.zip|All Files (*.*)|*.*",
+                Multiselect = true
+            };
+            if (dlg.ShowDialog() == true && dlg.FileNames.Length > 0)
+            {
+                var dir = GlobalContentService.ResourcePacksDirectory;
+                Directory.CreateDirectory(dir);
+                foreach (var src in dlg.FileNames)
+                {
+                    try
+                    {
+                        var dest = Path.Combine(dir, Path.GetFileName(src));
+                        File.Copy(src, dest, overwrite: true);
+                    }
+                    catch { }
+                }
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var globalService = new GlobalContentService();
+                        globalService.SyncToAllInstanceDirectories(_instanceService);
+                    }
+                    catch { }
+                });
+                LoadInstalledTextures();
+            }
+        }
+
+        public void ImportShader()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Import Shader Pack",
+                Filter = "Shader Packs (*.zip)|*.zip|All Files (*.*)|*.*",
+                Multiselect = true
+            };
+            if (dlg.ShowDialog() == true && dlg.FileNames.Length > 0)
+            {
+                var dir = GlobalContentService.ShadersDirectory;
+                Directory.CreateDirectory(dir);
+                foreach (var src in dlg.FileNames)
+                {
+                    try
+                    {
+                        var dest = Path.Combine(dir, Path.GetFileName(src));
+                        File.Copy(src, dest, overwrite: true);
+                    }
+                    catch { }
+                }
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var globalService = new GlobalContentService();
+                        globalService.SyncToAllInstanceDirectories(_instanceService);
+                    }
+                    catch { }
+                });
+                LoadInstalledShaders();
+            }
+        }
+
+        // ══════════════ MODRINTH CATEGORY VIEWMODEL PROPERTIES & METHODS ══════════════
+        private string _modrinthSubtype = "mod"; // "mod", "resourcepack", "shader"
+        public string ModrinthSubtype
+        {
+            get => _modrinthSubtype;
+            set
+            {
+                if (_modrinthSubtype != value)
+                {
+                    _modrinthSubtype = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsModrinthModsSelected));
+                    OnPropertyChanged(nameof(IsModrinthTexturesSelected));
+                    OnPropertyChanged(nameof(IsModrinthShadersSelected));
+                    OnPropertyChanged(nameof(ModrinthStatusText));
+                    LoadModrinthContent();
+                }
+            }
+        }
+
+        public bool IsModrinthModsSelected => _modrinthSubtype == "mod";
+        public bool IsModrinthTexturesSelected => _modrinthSubtype == "resourcepack";
+        public bool IsModrinthShadersSelected => _modrinthSubtype == "shader";
+
+        private string _modrinthSearchQuery = "";
+        public string ModrinthSearchQuery
+        {
+            get => _modrinthSearchQuery;
+            set
+            {
+                if (_modrinthSearchQuery != value)
+                {
+                    _modrinthSearchQuery = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableCollection<ModrinthItemViewModel> ModrinthItems { get; } = new();
+
+        private bool _isModrinthLoading;
+        public bool IsModrinthLoading
+        {
+            get => _isModrinthLoading;
+            set
+            {
+                if (_isModrinthLoading != value)
+                {
+                    _isModrinthLoading = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool HasModrinthItems => ModrinthItems.Count > 0;
+
+        public string ModrinthStatusText
+        {
+            get
+            {
+                var mc = SelectedSettingsInstance?.MinecraftVersion ?? "Unknown";
+                var loader = SelectedSettingsInstance?.Loader ?? "Vanilla";
+                if (_modrinthSubtype == "mod")
+                    return $"Minecraft {mc} • {loader}";
+                if (_modrinthSubtype == "resourcepack")
+                    return $"Minecraft {mc} • Global Resource Packs";
+                return $"Minecraft {mc} • Global Shader Packs";
+            }
+        }
+
+        public void LoadModrinthContent()
+        {
+            _ = SearchModrinthAsync(_modrinthSearchQuery);
+        }
+
+        public async Task SearchModrinthAsync(string? query = null)
+        {
+            if (SelectedSettingsInstance == null) return;
+            IsModrinthLoading = true;
+            ModrinthItems.Clear();
+            OnPropertyChanged(nameof(HasModrinthItems));
+
+            var mcVersion = SelectedSettingsInstance.MinecraftVersion;
+            var loader = _modrinthSubtype == "mod" ? SelectedSettingsInstance.Loader : null;
+            if (loader == "Vanilla") loader = null;
+
+            var q = query?.Trim() ?? "";
+
+            try
+            {
+                var hits = await _modrinthService.SearchAsync(q, _modrinthSubtype, mcVersion, loader, limit: 20);
+
+                var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+                var installedModsList = inst?.Mods ?? new List<InstalledContent>();
+
+                foreach (var hit in hits)
+                {
+                    var item = new ModrinthItemViewModel
+                    {
+                        ProjectId = hit.ProjectId,
+                        Slug = hit.Slug,
+                        Title = hit.Title,
+                        Description = hit.Description,
+                        Author = hit.Author,
+                        IconUrl = hit.IconUrl,
+                        Downloads = hit.Downloads,
+                        ProjectType = _modrinthSubtype
+                    };
+
+                    // Check if already installed
+                    if (_modrinthSubtype == "mod")
+                    {
+                        var isBundled = hit.Slug.Contains("flowclient") || hit.Title.Contains("Flow Client") ||
+                                        hit.Slug.Contains("voicechat") || hit.Title.Contains("Voice Chat");
+                        var isInstalled = installedModsList.Any(m => m.ProjectId == hit.ProjectId ||
+                                                                     string.Equals(m.Slug, hit.Slug, StringComparison.OrdinalIgnoreCase))
+                                          || InstalledMods.Any(m => m.Title.Equals(hit.Title, StringComparison.OrdinalIgnoreCase) ||
+                                                                    m.FileName.Contains(hit.Slug, StringComparison.OrdinalIgnoreCase));
+                        item.IsInstalled = isInstalled;
+                        item.CanUninstall = !isBundled;
+                    }
+                    else if (_modrinthSubtype == "resourcepack")
+                    {
+                        var isInstalled = InstalledTextures.Any(t => t.Title.Equals(hit.Title, StringComparison.OrdinalIgnoreCase) ||
+                                                                    t.FileName.Contains(hit.Slug, StringComparison.OrdinalIgnoreCase));
+                        item.IsInstalled = isInstalled;
+                        item.CanUninstall = true;
+                    }
+                    else if (_modrinthSubtype == "shader")
+                    {
+                        var isInstalled = InstalledShaders.Any(s => s.Title.Equals(hit.Title, StringComparison.OrdinalIgnoreCase) ||
+                                                                   s.FileName.Contains(hit.Slug, StringComparison.OrdinalIgnoreCase));
+                        item.IsInstalled = isInstalled;
+                        item.CanUninstall = true;
+                    }
+
+                    ModrinthItems.Add(item);
+
+                    // Fetch versions in background
+                    _ = LoadVersionsForItemAsync(item, mcVersion, loader);
+                }
+            }
+            catch { }
+            finally
+            {
+                IsModrinthLoading = false;
+                OnPropertyChanged(nameof(HasModrinthItems));
+            }
+        }
+
+        private async Task LoadVersionsForItemAsync(ModrinthItemViewModel item, string mcVersion, string? loader)
+        {
+            try
+            {
+                var versions = await _modrinthService.GetVersionsAsync(item.ProjectId, mcVersion, loader);
+                System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+                {
+                    item.AvailableVersions.Clear();
+                    foreach (var v in versions)
+                    {
+                        var file = v.Files.FirstOrDefault(f => f.Primary) ?? v.Files.FirstOrDefault();
+                        if (file != null)
+                        {
+                            item.AvailableVersions.Add(new ModrinthVersionItemViewModel
+                            {
+                                VersionId = v.Id,
+                                VersionNumber = v.VersionNumber,
+                                Name = v.Name,
+                                DisplayName = string.IsNullOrWhiteSpace(v.VersionNumber) ? v.Name : v.VersionNumber,
+                                DownloadUrl = file.Url,
+                                FileName = file.Filename
+                            });
+                        }
+                    }
+
+                    if (item.AvailableVersions.Count > 0)
+                    {
+                        item.SelectedVersion = item.AvailableVersions[0];
+                    }
+                    item.OnPropertyChanged(nameof(item.HasMultipleVersions));
+                });
+            }
+            catch { }
+        }
+
+        public async Task InstallModrinthItemAsync(ModrinthItemViewModel item)
+        {
+            if (item == null || item.IsInstalling || SelectedSettingsInstance == null) return;
+            item.IsInstalling = true;
+
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst == null)
+            {
+                item.IsInstalling = false;
+                return;
+            }
+
+            try
+            {
+                if (item.SelectedVersion == null)
+                {
+                    var mc = inst.MinecraftVersion;
+                    var ld = item.ProjectType == "mod" ? (inst.Loader == "Vanilla" ? null : inst.Loader) : null;
+                    var vers = await _modrinthService.GetVersionsAsync(item.ProjectId, mc, ld);
+                    if (vers.Count > 0)
+                    {
+                        var v = vers[0];
+                        var file = v.Files.FirstOrDefault(f => f.Primary) ?? v.Files.FirstOrDefault();
+                        if (file != null)
+                        {
+                            item.SelectedVersion = new ModrinthVersionItemViewModel
+                            {
+                                VersionId = v.Id,
+                                VersionNumber = v.VersionNumber,
+                                Name = v.Name,
+                                DisplayName = v.VersionNumber,
+                                DownloadUrl = file.Url,
+                                FileName = file.Filename
+                            };
+                        }
+                    }
+                }
+
+                if (item.SelectedVersion == null)
+                {
+                    System.Windows.MessageBox.Show("No compatible download file found for this item.", "Install", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                    item.IsInstalling = false;
+                    return;
+                }
+
+                if (item.ProjectType == "mod")
+                {
+                    await _modInstallService.InstallModAsync(inst, item.SelectedVersion.VersionId);
+                    LoadInstalledMods();
+                }
+                else if (item.ProjectType == "resourcepack")
+                {
+                    var dir = GlobalContentService.ResourcePacksDirectory;
+                    Directory.CreateDirectory(dir);
+                    var bytes = await _modrinthService.DownloadFileAsync(item.SelectedVersion.DownloadUrl);
+                    var targetFile = Path.Combine(dir, item.SelectedVersion.FileName);
+                    await File.WriteAllBytesAsync(targetFile, bytes);
+                    _ = Task.Run(() =>
+                    {
+                        try
+                        {
+                            var globalService = new GlobalContentService();
+                            globalService.SyncToAllInstanceDirectories(_instanceService);
+                        }
+                        catch { }
+                    });
+                    LoadInstalledTextures();
+                }
+                else if (item.ProjectType == "shader")
+                {
+                    var dir = GlobalContentService.ShadersDirectory;
+                    Directory.CreateDirectory(dir);
+                    var bytes = await _modrinthService.DownloadFileAsync(item.SelectedVersion.DownloadUrl);
+                    var targetFile = Path.Combine(dir, item.SelectedVersion.FileName);
+                    await File.WriteAllBytesAsync(targetFile, bytes);
+                    _ = Task.Run(() =>
+                    {
+                        try
+                        {
+                            var globalService = new GlobalContentService();
+                            globalService.SyncToAllInstanceDirectories(_instanceService);
+                        }
+                        catch { }
+                    });
+                    LoadInstalledShaders();
+                }
+
+                item.IsInstalled = true;
+                item.CanUninstall = true;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Failed to install {item.Title}: {ex.Message}", "Install Failed", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+            finally
+            {
+                item.IsInstalling = false;
+            }
+        }
+
+        public void UninstallModrinthItem(ModrinthItemViewModel item)
+        {
+            if (item == null || !item.CanUninstall || SelectedSettingsInstance == null) return;
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst == null) return;
+
+            try
+            {
+                if (item.ProjectType == "mod")
+                {
+                    var modsDir = _instanceService.GetModsPath(inst.Id);
+                    var entry = inst.Mods.FirstOrDefault(m => m.ProjectId == item.ProjectId ||
+                                                              string.Equals(m.Slug, item.Slug, StringComparison.OrdinalIgnoreCase) ||
+                                                              string.Equals(m.Title, item.Title, StringComparison.OrdinalIgnoreCase));
+                    if (entry != null)
+                    {
+                        var p1 = Path.Combine(modsDir, entry.FileName);
+                        var p2 = Path.Combine(modsDir, entry.FileName + ".disabled");
+                        if (File.Exists(p1)) File.Delete(p1);
+                        if (File.Exists(p2)) File.Delete(p2);
+                        inst.Mods.Remove(entry);
+                        _instanceService.Save(inst);
+                    }
+                    else
+                    {
+                        foreach (var f in Directory.GetFiles(modsDir, "*.jar*"))
+                        {
+                            var fn = Path.GetFileName(f).ToLowerInvariant();
+                            if (fn.Contains(item.Slug.ToLowerInvariant()) || (!string.IsNullOrEmpty(item.SelectedVersion?.FileName) && fn.Contains(item.SelectedVersion.FileName.ToLowerInvariant())))
+                            {
+                                File.Delete(f);
+                            }
+                        }
+                    }
+                    LoadInstalledMods();
+                }
+                else if (item.ProjectType == "resourcepack")
+                {
+                    var dir = GlobalContentService.ResourcePacksDirectory;
+                    foreach (var f in Directory.GetFiles(dir))
+                    {
+                        var fn = Path.GetFileName(f).ToLowerInvariant();
+                        if (fn.Contains(item.Slug.ToLowerInvariant()) || fn.Contains(item.Title.ToLowerInvariant()) || (!string.IsNullOrEmpty(item.SelectedVersion?.FileName) && fn.Contains(item.SelectedVersion.FileName.ToLowerInvariant())))
+                        {
+                            File.Delete(f);
+                        }
+                    }
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            var globalService = new GlobalContentService();
+                            globalService.SyncToAllInstanceDirectories(_instanceService);
+                        }
+                        catch { }
+                    });
+                    LoadInstalledTextures();
+                }
+                else if (item.ProjectType == "shader")
+                {
+                    var dir = GlobalContentService.ShadersDirectory;
+                    foreach (var f in Directory.GetFiles(dir))
+                    {
+                        var fn = Path.GetFileName(f).ToLowerInvariant();
+                        if (fn.Contains(item.Slug.ToLowerInvariant()) || fn.Contains(item.Title.ToLowerInvariant()) || (!string.IsNullOrEmpty(item.SelectedVersion?.FileName) && fn.Contains(item.SelectedVersion.FileName.ToLowerInvariant())))
+                        {
+                            File.Delete(f);
+                        }
+                    }
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            var globalService = new GlobalContentService();
+                            globalService.SyncToAllInstanceDirectories(_instanceService);
+                        }
+                        catch { }
+                    });
+                    LoadInstalledShaders();
+                }
+
+                item.IsInstalled = false;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not uninstall {item.Title}: {ex.Message}", "Uninstall", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
         public void DuplicateCurrentInstance()
         {
             if (SelectedSettingsInstance == null) return;
@@ -720,6 +1303,8 @@ namespace Launcher.ViewModels
             LoadInstalledMods();
             LoadInstalledTextures();
             LoadInstalledShaders();
+            if (IsModrinthTabSelected)
+                LoadModrinthContent();
 
             IsViewingSettings = true;
             VersionSettingsModeChanged?.Invoke(true, item);
@@ -850,6 +1435,20 @@ namespace Launcher.ViewModels
         public string IconUrl { get; set; }
         public string FileName { get; set; }
 
+        public bool CanDelete
+        {
+            get
+            {
+                var fn = (FileName ?? "").ToLowerInvariant();
+                var t = (Title ?? "").ToLowerInvariant();
+                if (fn.Contains("flowclient") || t.Contains("flow client") || t.Contains("flowclient"))
+                    return false;
+                if (fn.Contains("voicechat") || t.Contains("voice chat") || fn.Contains("voice-chat"))
+                    return false;
+                return true;
+            }
+        }
+
         public bool HasIcon => !string.IsNullOrWhiteSpace(IconUrl) && (
             IconUrl.StartsWith("pack:", StringComparison.OrdinalIgnoreCase) ||
             IconUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
@@ -875,6 +1474,131 @@ namespace Launcher.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
+
+    public class ModrinthVersionItemViewModel : INotifyPropertyChanged
+    {
+        public string VersionId { get; set; } = "";
+        public string VersionNumber { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string DisplayName { get; set; } = "";
+        public string DownloadUrl { get; set; } = "";
+        public string FileName { get; set; } = "";
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
+
+    public class ModrinthItemViewModel : INotifyPropertyChanged
+    {
+        private bool _isInstalled;
+        private bool _isInstalling;
+        private string _statusMessage = "";
+        private ModrinthVersionItemViewModel? _selectedVersion;
+
+        public string ProjectId { get; set; } = "";
+        public string Slug { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Author { get; set; } = "";
+        public string? IconUrl { get; set; }
+        public long Downloads { get; set; }
+        public string ProjectType { get; set; } = "mod";
+        public bool CanUninstall { get; set; } = true;
+
+        public bool HasIcon => !string.IsNullOrWhiteSpace(IconUrl) &&
+            (IconUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
+             IconUrl.StartsWith("pack:", StringComparison.OrdinalIgnoreCase) ||
+             File.Exists(IconUrl));
+
+        public string DownloadsText
+        {
+            get
+            {
+                if (Downloads >= 1_000_000) return $"{(Downloads / 1_000_000.0):0.#}M";
+                if (Downloads >= 1_000) return $"{(Downloads / 1_000.0):0.#}K";
+                return Downloads.ToString();
+            }
+        }
+
+        public string SubtitleText => string.IsNullOrWhiteSpace(Author)
+            ? $"{DownloadsText} downloads"
+            : $"by {Author} • {DownloadsText} downloads";
+
+        public ObservableCollection<ModrinthVersionItemViewModel> AvailableVersions { get; } = new();
+
+        public ModrinthVersionItemViewModel? SelectedVersion
+        {
+            get => _selectedVersion;
+            set
+            {
+                if (_selectedVersion != value)
+                {
+                    _selectedVersion = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(SelectedVersionNumberText));
+                }
+            }
+        }
+
+        public string SelectedVersionNumberText => SelectedVersion?.DisplayName ?? "Latest";
+
+        public bool HasMultipleVersions => AvailableVersions.Count > 1;
+
+        public bool IsInstalled
+        {
+            get => _isInstalled;
+            set
+            {
+                if (_isInstalled != value)
+                {
+                    _isInstalled = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(InstallButtonText));
+                    OnPropertyChanged(nameof(ShowInstallButton));
+                    OnPropertyChanged(nameof(ShowUninstallButton));
+                    OnPropertyChanged(nameof(ShowIncludedBadge));
+                }
+            }
+        }
+
+        public bool IsInstalling
+        {
+            get => _isInstalling;
+            set
+            {
+                if (_isInstalling != value)
+                {
+                    _isInstalling = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(InstallButtonText));
+                }
+            }
+        }
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set
+            {
+                if (_statusMessage != value)
+                {
+                    _statusMessage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string InstallButtonText => IsInstalling ? "Installing…" : (IsInstalled ? "Installed" : "Install");
+
+        public bool ShowInstallButton => !IsInstalled;
+        public bool ShowUninstallButton => IsInstalled && CanUninstall;
+        public bool ShowIncludedBadge => IsInstalled && !CanUninstall;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string? propName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
     }
 }

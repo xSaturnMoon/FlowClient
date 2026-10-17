@@ -95,5 +95,72 @@ namespace Launcher.Views
                 Vm.ToggleShader(pack);
             }
         }
+
+        private void ImportMod_Click(object sender, RoutedEventArgs e) => Vm.ImportMod();
+
+        private void ImportTexture_Click(object sender, RoutedEventArgs e) => Vm.ImportTexture();
+
+        private void ImportShader_Click(object sender, RoutedEventArgs e) => Vm.ImportShader();
+
+        private void DeleteMod_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModItemViewModel mod)
+            {
+                Vm.DeleteMod(mod);
+            }
+        }
+
+        private void DeleteTexture_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModItemViewModel pack)
+            {
+                Vm.DeleteTexture(pack);
+            }
+        }
+
+        private void DeleteShader_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModItemViewModel pack)
+            {
+                Vm.DeleteShader(pack);
+            }
+        }
+
+        private void ModrinthSubtype_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string subtype)
+            {
+                Vm.ModrinthSubtype = subtype;
+            }
+        }
+
+        private void ModrinthSearch_Click(object sender, RoutedEventArgs e)
+        {
+            _ = Vm.SearchModrinthAsync(Vm.ModrinthSearchQuery);
+        }
+
+        private void ModrinthSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                _ = Vm.SearchModrinthAsync(Vm.ModrinthSearchQuery);
+            }
+        }
+
+        private void InstallModrinthItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModrinthItemViewModel item)
+            {
+                _ = Vm.InstallModrinthItemAsync(item);
+            }
+        }
+
+        private void UninstallModrinthItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ModrinthItemViewModel item)
+            {
+                Vm.UninstallModrinthItem(item);
+            }
+        }
     }
 }

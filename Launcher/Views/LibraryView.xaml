@@ -195,7 +195,7 @@
             </Setter>
         </Style>
 
-        <!-- Modern Toggle Switch Style -->
+        <!-- Modern Animated Toggle Switch Style -->
         <Style x:Key="ModernToggleSwitchStyle" TargetType="CheckBox">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -203,10 +203,20 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <Grid Width="46" Height="26" VerticalAlignment="Center">
-                            <Border x:Name="Track" Background="#28282E" CornerRadius="13" SnapsToDevicePixels="True"/>
-                            <Ellipse x:Name="Knob" Width="20" Height="20" Fill="#6E6E76"
+                            <Border x:Name="Track" CornerRadius="13" SnapsToDevicePixels="True">
+                                <Border.Background>
+                                    <SolidColorBrush x:Name="TrackBrush" Color="#28282E"/>
+                                </Border.Background>
+                            </Border>
+                            <Ellipse x:Name="Knob" Width="20" Height="20"
                                      HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Center"
-                                     SnapsToDevicePixels="True">
+                                     SnapsToDevicePixels="True" RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.Fill>
+                                    <SolidColorBrush x:Name="KnobBrush" Color="#6E6E76"/>
+                                </Ellipse.Fill>
+                                <Ellipse.RenderTransform>
+                                    <TranslateTransform x:Name="KnobTranslate" X="0"/>
+                                </Ellipse.RenderTransform>
                                 <Ellipse.Effect>
                                     <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.3" Color="#000000"/>
                                 </Ellipse.Effect>
@@ -216,8 +226,49 @@
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="Track" Property="Background" Value="#FFFFFF"/>
                                 <Setter TargetName="Knob" Property="Fill" Value="#121214"/>
-                                <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right"/>
-                                <Setter TargetName="Knob" Property="Margin" Value="0,0,3,0"/>
+                                <Setter TargetName="Knob" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TranslateTransform X="20"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Knob"
+                                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                             To="20" Duration="0:0:0.18">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <ColorAnimation Storyboard.TargetName="Track"
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FFFFFF" Duration="0:0:0.18"/>
+                                            <ColorAnimation Storyboard.TargetName="Knob"
+                                                            Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                                            To="#121214" Duration="0:0:0.18"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Knob"
+                                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                             To="0" Duration="0:0:0.18">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <ColorAnimation Storyboard.TargetName="Track"
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#28282E" Duration="0:0:0.18"/>
+                                            <ColorAnimation Storyboard.TargetName="Knob"
+                                                            Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                                            To="#6E6E76" Duration="0:0:0.18"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Track" Property="Opacity" Value="0.9"/>
@@ -226,6 +277,136 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- Clean Icon Delete Button Style -->
+        <Style x:Key="IconDeleteButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ComboBox Style for Modrinth Versions -->
+        <Style x:Key="ModrinthVersionComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Foreground" Value="#EEEEEE"/>
+            <Setter Property="Background" Value="#25252B"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontFamily" Value="{StaticResource NunitoBoldFont}"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="10,0,8,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="#EEEEEE"/>
+                        <Setter Property="Background" Value="#1C1C20"/>
+                        <Setter Property="FontSize" Value="11.5"/>
+                        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
+                        <Setter Property="Padding" Value="12,7"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="#2B2B33"/>
+                                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="#383842"/>
+                                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" Focusable="False" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Border" CornerRadius="14" Background="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=Background}"
+                                                Padding="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=Padding}" SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ContentPresenter Grid.Column="0" Content="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=SelectionBoxItem}"
+                                                                  ContentTemplate="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=SelectionBoxItemTemplate}"
+                                                                  VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <Path Grid.Column="1" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#8E8E93" Width="8" Height="5" Margin="6,0,2,0" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Border" Property="Background" Value="#2F2F37"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <Popup x:Name="PART_Popup" AllowsTransparency="True" IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Placement="Bottom" Focusable="False" MaxHeight="200">
+                                <Border x:Name="DropDownBorder" Background="#1C1C20" BorderBrush="#2B2B32" BorderThickness="1" CornerRadius="10" Margin="0,4,0,0" SnapsToDevicePixels="True">
+                                    <ScrollViewer SnapsToDevicePixels="True" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Circular"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Subtab Pills for Modrinth Categories -->
+        <Style x:Key="ModrinthSubTabModsBtnStyle" TargetType="Button" BasedOn="{StaticResource SettingsSubTabPillStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsModrinthModsSelected}" Value="True">
+                    <Setter Property="Background" Value="#FFFFFF"/>
+                    <Setter Property="Foreground" Value="#101010"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ModrinthSubTabTexturesBtnStyle" TargetType="Button" BasedOn="{StaticResource SettingsSubTabPillStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsModrinthTexturesSelected}" Value="True">
+                    <Setter Property="Background" Value="#FFFFFF"/>
+                    <Setter Property="Foreground" Value="#101010"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ModrinthSubTabShadersBtnStyle" TargetType="Button" BasedOn="{StaticResource SettingsSubTabPillStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsModrinthShadersSelected}" Value="True">
+                    <Setter Property="Background" Value="#FFFFFF"/>
+                    <Setter Property="Foreground" Value="#101010"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <!-- Pure Settings Gear Button (1.5x Larger, No Circle Container, No Blue) -->
@@ -643,7 +824,7 @@
 
                         <!-- ══════════════ TAB 2: MODS ══════════════ -->
                         <StackPanel Visibility="{Binding IsModsTabSelected, Converter={StaticResource BoolToVis}}">
-                            <!-- Mods Header: Title + Count + Open Folder Button -->
+                            <!-- Mods Header: Title + Count + Action Buttons -->
                             <Grid Margin="4,0,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -655,8 +836,12 @@
                                     <TextBlock Text="{Binding ModsCountText}" FontSize="11" FontWeight="SemiBold"
                                                FontFamily="{StaticResource NunitoFont}" Foreground="#66666E" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                        Click="OpenModsFolder_Click" Margin="0"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Content="Import Mod" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="ImportMod_Click" Margin="0,0,10,0"/>
+                                    <Button Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="OpenModsFolder_Click" Margin="0"/>
+                                </StackPanel>
                             </Grid>
 
                             <!-- Installed Mods Items List -->
@@ -672,28 +857,49 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <!-- 1. Mod Image / Icon -->
-                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center">
-                                                    <!-- Fallback vector cube icon (shown only when no icon is available) -->
-                                                    <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
-                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
-                                                        <Path Data="M 12 1.75 L 3.25 6.8 V 16.95 L 12 22 L 20.75 16.95 V 6.8 L 12 1.75 Z M 12 4.1 L 18.5 7.85 L 12 11.6 L 5.5 7.85 L 12 4.1 Z M 5.25 9.85 L 11 13.15 V 19.9 L 5.25 16.55 V 9.85 Z M 13 19.9 V 13.15 L 18.75 9.85 V 16.55 L 13 19.9 Z"
-                                                              Fill="#8E8E93" Width="20" Height="20" Stretch="Uniform"
-                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
+                                                <!-- 1. Mod Image / Icon with Hover Delete -->
+                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center" x:Name="IconRoot" Background="Transparent">
+                                                    <Grid x:Name="IconVisuals" Width="42" Height="42" RenderTransformOrigin="0.5,0.5">
+                                                        <Grid.RenderTransform>
+                                                            <ScaleTransform x:Name="IconScale" ScaleX="1.0" ScaleY="1.0"/>
+                                                        </Grid.RenderTransform>
 
-                                                    <!-- Actual Mod Icon: rounded border with ImageBrush and dark backplate (no 3D cube) -->
-                                                    <Border Width="42" Height="42" CornerRadius="10" Background="#26262B"
-                                                            SnapsToDevicePixels="True"
-                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
-                                                        <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
-                                                            <Border.Background>
-                                                                <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
-                                                                            Stretch="UniformToFill"
-                                                                            RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                            </Border.Background>
+                                                        <!-- Fallback vector cube icon -->
+                                                        <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
+                                                                Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                                            <Path Data="M 12 1.75 L 3.25 6.8 V 16.95 L 12 22 L 20.75 16.95 V 6.8 L 12 1.75 Z M 12 4.1 L 18.5 7.85 L 12 11.6 L 5.5 7.85 L 12 4.1 Z M 5.25 9.85 L 11 13.15 V 19.9 L 5.25 16.55 V 9.85 Z M 13 19.9 V 13.15 L 18.75 9.85 V 16.55 L 13 19.9 Z"
+                                                                  Fill="#8E8E93" Width="20" Height="20" Stretch="Uniform"
+                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </Border>
-                                                    </Border>
+
+                                                        <!-- Actual Mod Icon: rounded border with ImageBrush and dark backplate -->
+                                                        <Border Width="42" Height="42" CornerRadius="10" Background="#26262B" SnapsToDevicePixels="True"
+                                                                Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
+                                                            <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
+                                                                <Border.Background>
+                                                                    <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
+                                                                                Stretch="UniformToFill"
+                                                                                RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                                </Border.Background>
+                                                            </Border>
+                                                        </Border>
+                                                    </Grid>
+
+                                                    <!-- Dark greyish overlay on hover -->
+                                                    <Border x:Name="DeleteOverlay" Width="42" Height="42" CornerRadius="10"
+                                                            Background="#B0141418" Opacity="0" IsHitTestVisible="False" SnapsToDevicePixels="True"/>
+
+                                                    <!-- Trash Can Delete Button -->
+                                                    <Button x:Name="TrashBtn" Width="42" Height="42"
+                                                            Style="{StaticResource IconDeleteButtonStyle}"
+                                                            Opacity="0" IsHitTestVisible="False"
+                                                            Click="DeleteMod_Click"
+                                                            Visibility="{Binding CanDelete, Converter={StaticResource BoolToVis}}"
+                                                            ToolTip="Delete mod">
+                                                        <Path Data="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z M 19 4 L 15.5 4 L 14.5 3 L 9.5 3 L 8.5 4 L 5 4 L 5 6 L 19 6 L 19 4 Z"
+                                                              Fill="#FFFFFF" Width="16" Height="16" Stretch="Uniform"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Button>
                                                 </Grid>
 
                                                 <!-- 2. Mod Title & Subtitle / Filename -->
@@ -716,6 +922,36 @@
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
+                                        <DataTemplate.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path=IsMouseOver, ElementName=IconRoot}" Value="True"/>
+                                                    <Condition Binding="{Binding CanDelete}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="DeleteOverlay" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="TrashBtn" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </MultiDataTrigger.EnterActions>
+                                                <MultiDataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="DeleteOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="TrashBtn" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </MultiDataTrigger.ExitActions>
+                                                <Setter TargetName="TrashBtn" Property="IsHitTestVisible" Value="True"/>
+                                                <Setter TargetName="IconRoot" Property="Cursor" Value="Hand"/>
+                                            </MultiDataTrigger>
+                                        </DataTemplate.Triggers>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -726,18 +962,22 @@
                                 <StackPanel HorizontalAlignment="Center">
                                     <TextBlock Text="No mods installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
                                                FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Click 'Open Mods Folder' above or drop your .jar mod files into the instance folder."
+                                    <TextBlock Text="Click 'Import Mod' or drop your .jar mod files into the instance folder."
                                                Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
                                                HorizontalAlignment="Center" Margin="0,6,0,16"/>
-                                    <Button Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                            Click="OpenModsFolder_Click" HorizontalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Import Mod" Style="{StaticResource ActionPillButtonStyle}"
+                                                Click="ImportMod_Click" Margin="0,0,10,0"/>
+                                        <Button Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                                Click="OpenModsFolder_Click"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
                         <!-- ══════════════ TAB 3: TEXTURES ══════════════ -->
                         <StackPanel Visibility="{Binding IsTexturesTabSelected, Converter={StaticResource BoolToVis}}">
-                            <!-- Section Title Bar with Counter & Action Button -->
+                            <!-- Section Title Bar with Counter & Action Buttons -->
                             <Grid Margin="4,0,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -749,8 +989,12 @@
                                     <TextBlock Text="{Binding TexturesCountText}" FontSize="11" FontWeight="SemiBold"
                                                FontFamily="{StaticResource NunitoFont}" Foreground="#66666E" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="Open Textures Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                        Click="OpenTexturesFolder_Click" Margin="0"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Content="Import Texture" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="ImportTexture_Click" Margin="0,0,10,0"/>
+                                    <Button Content="Open Textures Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="OpenTexturesFolder_Click" Margin="0"/>
+                                </StackPanel>
                             </Grid>
 
                             <!-- Installed Textures Items List -->
@@ -766,28 +1010,49 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <!-- 1. Texture Image / Icon -->
-                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center">
-                                                    <!-- Fallback vector texture icon (shown only when no icon is available) -->
-                                                    <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
-                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
-                                                        <Path Data="M 4 4 L 20 4 C 21.1 4 22 4.9 22 6 L 22 18 C 22 19.1 21.1 20 20 20 L 4 20 C 2.9 20 2 19.1 2 18 L 2 6 C 2 4.9 2.9 4 4 4 Z M 6.5 10 C 7.33 10 8 9.33 8 8.5 C 8 7.67 7.33 7 6.5 7 C 5.67 7 5 7.67 5 8.5 C 5 9.33 5.67 10 6.5 10 Z M 5 17 L 19 17 L 14.5 11 L 11 15.5 L 8.5 12.5 Z"
-                                                              Fill="#8E8E93" Width="20" Height="20" Stretch="Uniform"
-                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
+                                                <!-- 1. Texture Image / Icon with Hover Delete -->
+                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center" x:Name="IconRoot" Background="Transparent">
+                                                    <Grid x:Name="IconVisuals" Width="42" Height="42" RenderTransformOrigin="0.5,0.5">
+                                                        <Grid.RenderTransform>
+                                                            <ScaleTransform x:Name="IconScale" ScaleX="1.0" ScaleY="1.0"/>
+                                                        </Grid.RenderTransform>
 
-                                                    <!-- Actual Pack Icon: rounded border with ImageBrush and dark backplate -->
-                                                    <Border Width="42" Height="42" CornerRadius="10" Background="#26262B"
-                                                            SnapsToDevicePixels="True"
-                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
-                                                        <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
-                                                            <Border.Background>
-                                                                <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
-                                                                            Stretch="UniformToFill"
-                                                                            RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                            </Border.Background>
+                                                        <!-- Fallback vector texture icon -->
+                                                        <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
+                                                                Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                                            <Path Data="M 4 4 L 20 4 C 21.1 4 22 4.9 22 6 L 22 18 C 22 19.1 21.1 20 20 20 L 4 20 C 2.9 20 2 19.1 2 18 L 2 6 C 2 4.9 2.9 4 4 4 Z M 6.5 10 C 7.33 10 8 9.33 8 8.5 C 8 7.67 7.33 7 6.5 7 C 5.67 7 5 7.67 5 8.5 C 5 9.33 5.67 10 6.5 10 Z M 5 17 L 19 17 L 14.5 11 L 11 15.5 L 8.5 12.5 Z"
+                                                                  Fill="#8E8E93" Width="20" Height="20" Stretch="Uniform"
+                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </Border>
-                                                    </Border>
+
+                                                        <!-- Actual Pack Icon -->
+                                                        <Border Width="42" Height="42" CornerRadius="10" Background="#26262B" SnapsToDevicePixels="True"
+                                                                Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
+                                                            <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
+                                                                <Border.Background>
+                                                                    <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
+                                                                                Stretch="UniformToFill"
+                                                                                RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                                </Border.Background>
+                                                            </Border>
+                                                        </Border>
+                                                    </Grid>
+
+                                                    <!-- Dark greyish overlay on hover -->
+                                                    <Border x:Name="DeleteOverlay" Width="42" Height="42" CornerRadius="10"
+                                                            Background="#B0141418" Opacity="0" IsHitTestVisible="False" SnapsToDevicePixels="True"/>
+
+                                                    <!-- Trash Can Delete Button -->
+                                                    <Button x:Name="TrashBtn" Width="42" Height="42"
+                                                            Style="{StaticResource IconDeleteButtonStyle}"
+                                                            Opacity="0" IsHitTestVisible="False"
+                                                            Click="DeleteTexture_Click"
+                                                            Visibility="{Binding CanDelete, Converter={StaticResource BoolToVis}}"
+                                                            ToolTip="Delete texture pack">
+                                                        <Path Data="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z M 19 4 L 15.5 4 L 14.5 3 L 9.5 3 L 8.5 4 L 5 4 L 5 6 L 19 6 L 19 4 Z"
+                                                              Fill="#FFFFFF" Width="16" Height="16" Stretch="Uniform"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Button>
                                                 </Grid>
 
                                                 <!-- 2. Texture Title & Subtitle / Filename -->
@@ -810,6 +1075,36 @@
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
+                                        <DataTemplate.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path=IsMouseOver, ElementName=IconRoot}" Value="True"/>
+                                                    <Condition Binding="{Binding CanDelete}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="DeleteOverlay" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="TrashBtn" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </MultiDataTrigger.EnterActions>
+                                                <MultiDataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="DeleteOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="TrashBtn" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </MultiDataTrigger.ExitActions>
+                                                <Setter TargetName="TrashBtn" Property="IsHitTestVisible" Value="True"/>
+                                                <Setter TargetName="IconRoot" Property="Cursor" Value="Hand"/>
+                                            </MultiDataTrigger>
+                                        </DataTemplate.Triggers>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -820,18 +1115,22 @@
                                 <StackPanel HorizontalAlignment="Center">
                                     <TextBlock Text="No texture packs installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
                                                FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Click 'Open Textures Folder' above or drop your .zip resource pack files into the global folder."
+                                    <TextBlock Text="Click 'Import Texture' or drop your .zip resource pack files into the global folder."
                                                Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
                                                HorizontalAlignment="Center" Margin="0,6,0,16"/>
-                                    <Button Content="Open Textures Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                            Click="OpenTexturesFolder_Click" HorizontalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Import Texture" Style="{StaticResource ActionPillButtonStyle}"
+                                                Click="ImportTexture_Click" Margin="0,0,10,0"/>
+                                        <Button Content="Open Textures Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                                Click="OpenTexturesFolder_Click"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
                         <!-- ══════════════ TAB 4: SHADERS ══════════════ -->
                         <StackPanel Visibility="{Binding IsShadersTabSelected, Converter={StaticResource BoolToVis}}">
-                            <!-- Section Title Bar with Counter & Action Button -->
+                            <!-- Section Title Bar with Counter & Action Buttons -->
                             <Grid Margin="4,0,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -843,8 +1142,12 @@
                                     <TextBlock Text="{Binding ShadersCountText}" FontSize="11" FontWeight="SemiBold"
                                                FontFamily="{StaticResource NunitoFont}" Foreground="#66666E" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="Open Shaders Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                        Click="OpenShadersFolder_Click" Margin="0"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Content="Import Shader" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="ImportShader_Click" Margin="0,0,10,0"/>
+                                    <Button Content="Open Shaders Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="OpenShadersFolder_Click" Margin="0"/>
+                                </StackPanel>
                             </Grid>
 
                             <!-- Installed Shaders Items List -->
@@ -860,29 +1163,50 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <!-- 1. Shader Image / Icon -->
-                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center">
-                                                    <!-- Fallback vector shader sparkle/sun icon (shown only when no icon is available) -->
-                                                    <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
-                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
-                                                        <Path Data="M 12 7 A 5 5 0 1 0 12 17 A 5 5 0 1 0 12 7 Z M 12 2 L 12 5 M 12 19 L 12 22 M 4.93 4.93 L 7.05 7.05 M 16.95 16.95 L 19.07 19.07 M 2 12 L 5 12 M 19 12 L 22 12 M 4.93 19.07 L 7.05 16.95 M 16.95 7.05 L 19.07 4.93"
-                                                              Stroke="#8E8E93" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                              Width="20" Height="20" Stretch="Uniform"
-                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
+                                                <!-- 1. Shader Image / Icon with Hover Delete -->
+                                                <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center" x:Name="IconRoot" Background="Transparent">
+                                                    <Grid x:Name="IconVisuals" Width="42" Height="42" RenderTransformOrigin="0.5,0.5">
+                                                        <Grid.RenderTransform>
+                                                            <ScaleTransform x:Name="IconScale" ScaleX="1.0" ScaleY="1.0"/>
+                                                        </Grid.RenderTransform>
 
-                                                    <!-- Actual Shader Icon: rounded border with ImageBrush and dark backplate -->
-                                                    <Border Width="42" Height="42" CornerRadius="10" Background="#26262B"
-                                                            SnapsToDevicePixels="True"
-                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
-                                                        <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
-                                                            <Border.Background>
-                                                                <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
-                                                                            Stretch="UniformToFill"
-                                                                            RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                            </Border.Background>
+                                                        <!-- Fallback vector shader sparkle/sun icon -->
+                                                        <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
+                                                                Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                                            <Path Data="M 12 7 A 5 5 0 1 0 12 17 A 5 5 0 1 0 12 7 Z M 12 2 L 12 5 M 12 19 L 12 22 M 4.93 4.93 L 7.05 7.05 M 16.95 16.95 L 19.07 19.07 M 2 12 L 5 12 M 19 12 L 22 12 M 4.93 19.07 L 7.05 16.95 M 16.95 7.05 L 19.07 4.93"
+                                                                  Stroke="#8E8E93" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                  Width="20" Height="20" Stretch="Uniform"
+                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </Border>
-                                                    </Border>
+
+                                                        <!-- Actual Shader Icon -->
+                                                        <Border Width="42" Height="42" CornerRadius="10" Background="#26262B" SnapsToDevicePixels="True"
+                                                                Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
+                                                            <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
+                                                                <Border.Background>
+                                                                    <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
+                                                                                Stretch="UniformToFill"
+                                                                                RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                                </Border.Background>
+                                                            </Border>
+                                                        </Border>
+                                                    </Grid>
+
+                                                    <!-- Dark greyish overlay on hover -->
+                                                    <Border x:Name="DeleteOverlay" Width="42" Height="42" CornerRadius="10"
+                                                            Background="#B0141418" Opacity="0" IsHitTestVisible="False" SnapsToDevicePixels="True"/>
+
+                                                    <!-- Trash Can Delete Button -->
+                                                    <Button x:Name="TrashBtn" Width="42" Height="42"
+                                                            Style="{StaticResource IconDeleteButtonStyle}"
+                                                            Opacity="0" IsHitTestVisible="False"
+                                                            Click="DeleteShader_Click"
+                                                            Visibility="{Binding CanDelete, Converter={StaticResource BoolToVis}}"
+                                                            ToolTip="Delete shader pack">
+                                                        <Path Data="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z M 19 4 L 15.5 4 L 14.5 3 L 9.5 3 L 8.5 4 L 5 4 L 5 6 L 19 6 L 19 4 Z"
+                                                              Fill="#FFFFFF" Width="16" Height="16" Stretch="Uniform"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Button>
                                                 </Grid>
 
                                                 <!-- 2. Shader Title & Subtitle / Filename -->
@@ -905,6 +1229,36 @@
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
+                                        <DataTemplate.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path=IsMouseOver, ElementName=IconRoot}" Value="True"/>
+                                                    <Condition Binding="{Binding CanDelete}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="DeleteOverlay" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="TrashBtn" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </MultiDataTrigger.EnterActions>
+                                                <MultiDataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="IconScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="DeleteOverlay" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                            <DoubleAnimation Storyboard.TargetName="TrashBtn" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </MultiDataTrigger.ExitActions>
+                                                <Setter TargetName="TrashBtn" Property="IsHitTestVisible" Value="True"/>
+                                                <Setter TargetName="IconRoot" Property="Cursor" Value="Hand"/>
+                                            </MultiDataTrigger>
+                                        </DataTemplate.Triggers>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -915,18 +1269,211 @@
                                 <StackPanel HorizontalAlignment="Center">
                                     <TextBlock Text="No shader packs installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
                                                FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Click 'Open Shaders Folder' above or drop your shader pack .zip files into the global folder."
+                                    <TextBlock Text="Click 'Import Shader' or drop your shader pack .zip files into the global folder."
                                                Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
                                                HorizontalAlignment="Center" Margin="0,6,0,16"/>
-                                    <Button Content="Open Shaders Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                            Click="OpenShadersFolder_Click" HorizontalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Import Shader" Style="{StaticResource ActionPillButtonStyle}"
+                                                Click="ImportShader_Click" Margin="0,0,10,0"/>
+                                        <Button Content="Open Shaders Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                                Click="OpenShadersFolder_Click"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
-                        <!-- ══════════════ TAB 5: MODRINTH (EMPTY) ══════════════ -->
-                        <Grid Visibility="{Binding IsModrinthTabSelected, Converter={StaticResource BoolToVis}}">
-                        </Grid>
+                        <!-- ══════════════ TAB 5: MODRINTH ══════════════ -->
+                        <StackPanel Visibility="{Binding IsModrinthTabSelected, Converter={StaticResource BoolToVis}}">
+                            <!-- Category Filter Pills & Version Compatibility Pill -->
+                            <Grid Margin="4,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Subtype Selector Pills (Mods | Textures | Shaders) -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Content="Mods" Tag="mod" Style="{StaticResource ModrinthSubTabModsBtnStyle}"
+                                            Click="ModrinthSubtype_Click"/>
+                                    <Button Content="Textures" Tag="resourcepack" Style="{StaticResource ModrinthSubTabTexturesBtnStyle}"
+                                            Click="ModrinthSubtype_Click"/>
+                                    <Button Content="Shaders" Tag="shader" Style="{StaticResource ModrinthSubTabShadersBtnStyle}"
+                                            Click="ModrinthSubtype_Click"/>
+                                </StackPanel>
+
+                                <!-- Version / Loader Badge -->
+                                <Border Grid.Column="2" Background="#1E1E22" BorderThickness="0" CornerRadius="14"
+                                        Padding="12,6" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding ModrinthStatusText}" Foreground="#8E8E93" FontSize="11.5"
+                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                </Border>
+                            </Grid>
+
+                            <!-- Modern Capsule Search Bar -->
+                            <Border Height="38" Background="#1E1E22" CornerRadius="19" Padding="14,0,6,0"
+                                    SnapsToDevicePixels="True" Margin="0,0,0,16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Search Icon -->
+                                    <Path Grid.Column="0"
+                                          Data="M 10.5 2 C 5.8 2 2 5.8 2 10.5 C 2 15.2 5.8 19 10.5 19 C 12.6 19 14.5 18.2 16 16.9 L 20.6 21.5 C 21 21.9 21.6 21.9 22 21.5 C 22.4 21.1 22.4 20.5 22 20.1 L 17.4 15.5 C 18.4 14.1 19 12.4 19 10.5 C 19 5.8 15.2 2 10.5 2 Z M 10.5 4 C 14.1 4 17 6.9 17 10.5 C 17 14.1 14.1 17 10.5 17 C 6.9 17 4 14.1 4 10.5 C 4 6.9 6.9 4 10.5 4 Z"
+                                          Fill="#8E8E93" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                                    <!-- Search Input -->
+                                    <TextBox Grid.Column="1" x:Name="ModrinthSearchBox"
+                                             Text="{Binding ModrinthSearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                             KeyDown="ModrinthSearch_KeyDown"
+                                             Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
+                                             CaretBrush="#FFFFFF" VerticalAlignment="Center" FontSize="13"
+                                             FontFamily="{StaticResource NunitoFont}"/>
+
+                                    <!-- Watermark Text -->
+                                    <TextBlock Grid.Column="1" Text="Search Modrinth for mods, textures, shaders…"
+                                               Foreground="#6E6E76" FontSize="13" FontFamily="{StaticResource NunitoFont}"
+                                               VerticalAlignment="Center" IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=ModrinthSearchBox}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <!-- Search Button -->
+                                    <Button Grid.Column="2" Content="Search" Style="{StaticResource ActionPillButtonStyle}"
+                                            Height="28" Padding="14,0" Margin="0" FontSize="11.5"
+                                            Click="ModrinthSearch_Click"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Loading State -->
+                            <Border Background="#161619" BorderThickness="0" CornerRadius="16" Padding="32" Margin="0,10,0,0"
+                                    Visibility="{Binding IsModrinthLoading, Converter={StaticResource BoolToVis}}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Loading Modrinth content…" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Fetching compatible projects from Modrinth API…"
+                                               Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Modrinth Items List -->
+                            <ItemsControl ItemsSource="{Binding ModrinthItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1E1E22" BorderThickness="0" CornerRadius="14"
+                                                Padding="16,14" Margin="0,0,0,10" SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- 1. Icon -->
+                                                <Grid Grid.Column="0" Width="48" Height="48" VerticalAlignment="Center">
+                                                    <!-- Fallback Vector Icon -->
+                                                    <Border Background="#26262B" CornerRadius="12" Width="48" Height="48"
+                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                                        <Path Data="M 12 1.75 L 3.25 6.8 V 16.95 L 12 22 L 20.75 16.95 V 6.8 L 12 1.75 Z M 12 4.1 L 18.5 7.85 L 12 11.6 L 5.5 7.85 L 12 4.1 Z M 5.25 9.85 L 11 13.15 V 19.9 L 5.25 16.55 V 9.85 Z M 13 19.9 V 13.15 L 18.75 9.85 V 16.55 L 13 19.9 Z"
+                                                              Fill="#8E8E93" Width="22" Height="22" Stretch="Uniform"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+
+                                                    <!-- High-Quality Pack / Mod Icon with Rounded Corners -->
+                                                    <Border Width="48" Height="48" CornerRadius="12" Background="#26262B" SnapsToDevicePixels="True"
+                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
+                                                        <Border Width="48" Height="48" CornerRadius="12" SnapsToDevicePixels="True">
+                                                            <Border.Background>
+                                                                <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
+                                                                            Stretch="UniformToFill"
+                                                                            RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                            </Border.Background>
+                                                        </Border>
+                                                    </Border>
+                                                </Grid>
+
+                                                <!-- 2. Info: Title, Author, Downloads, Description -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,16,0">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="14.5" FontWeight="Bold"
+                                                                   FontFamily="{StaticResource NunitoBoldFont}" TextTrimming="CharacterEllipsis" MaxWidth="300"/>
+                                                        <Border Background="#28282E" CornerRadius="9" Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding SubtitleText}" Foreground="#8E8E93" FontSize="10.5"
+                                                                       FontFamily="{StaticResource NunitoBoldFont}"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding Description}" Foreground="#9C9C9D" FontSize="11.5"
+                                                               FontFamily="{StaticResource NunitoFont}" Margin="0,4,0,0"
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="Wrap" MaxHeight="32"/>
+                                                </StackPanel>
+
+                                                <!-- 3. Actions: Version Picker Dropdown + Install / Uninstall Button -->
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <!-- Version Picker Dropdown (Only shown when not installed and multiple versions available) -->
+                                                    <ComboBox ItemsSource="{Binding AvailableVersions}"
+                                                              SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
+                                                              DisplayMemberPath="DisplayName"
+                                                              Style="{StaticResource ModrinthVersionComboBoxStyle}"
+                                                              MinWidth="86" MaxWidth="120" Margin="0,0,10,0"
+                                                              ToolTip="Choose compatible version"
+                                                              Visibility="{Binding ShowInstallButton, Converter={StaticResource BoolToVis}}"/>
+
+                                                    <!-- Install Button -->
+                                                    <Button Content="{Binding InstallButtonText}" Style="{StaticResource ActionPillButtonStyle}"
+                                                            Height="34" Padding="18,0" Margin="0"
+                                                            Click="InstallModrinthItem_Click"
+                                                            Visibility="{Binding ShowInstallButton, Converter={StaticResource BoolToVis}}"
+                                                            IsEnabled="{Binding IsInstalling, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"/>
+
+                                                    <!-- Installed (Included / Built-in) Badge -->
+                                                    <Border Background="#25252B" CornerRadius="17" Padding="14,8" Margin="0"
+                                                            Visibility="{Binding ShowIncludedBadge, Converter={StaticResource BoolToVis}}">
+                                                        <TextBlock Text="Installed (Flow)" Foreground="#8E8E93" FontSize="11.5"
+                                                                   FontFamily="{StaticResource NunitoBoldFont}"/>
+                                                    </Border>
+
+                                                    <!-- Installed Badge + Uninstall Button -->
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                                                Visibility="{Binding ShowUninstallButton, Converter={StaticResource BoolToVis}}">
+                                                        <Border Background="#222C24" CornerRadius="17" Padding="12,8" Margin="0,0,8,0">
+                                                            <TextBlock Text="Installed" Foreground="#4CD964" FontSize="11.5"
+                                                                       FontFamily="{StaticResource NunitoBoldFont}"/>
+                                                        </Border>
+                                                        <Button Content="Uninstall" Style="{StaticResource ActionPillButtonStyle}"
+                                                                Height="34" Padding="14,0" Margin="0"
+                                                                Click="UninstallModrinthItem_Click"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Empty State -->
+                            <Border Background="#161619" BorderThickness="0" CornerRadius="16" Padding="32" Margin="0,10,0,0"
+                                    Visibility="{Binding HasModrinthItems, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                <StackPanel HorizontalAlignment="Center" Visibility="{Binding IsModrinthLoading, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                    <TextBlock Text="No projects found" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Try searching for another term or change the category above."
+                                               Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </ScrollViewer>

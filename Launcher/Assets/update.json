@@ -1,9 +1,9 @@
 {
-  "version": "1.4.3",
+  "version": "1.4.4",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.4.3: Added global Textures and Shaders management matching Mods design with toggles, icons, and folder access.",
+  "releaseNotes": "Flow Client v1.4.4: Added direct Modrinth browser & installer for Mods, Textures, and Shaders with compatible version picker; Import buttons for Mods, Textures, and Shaders; icon hover scale & delete trash can with Flow Client branding protection; and smooth animated toggle switches.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.3/FlowClient-v1.4.3.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.4/FlowClient-v1.4.4.zip"
 }
