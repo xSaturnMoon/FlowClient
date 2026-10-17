@@ -1,9 +1,9 @@
 {
-  "version": "1.4.6",
+  "version": "1.4.8",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.4.6: Complete Settings overhaul! Removed redundant mods/branding toggles; added modern custom RAM slider with quick presets and system RAM warning; full Minecraft display & resolution management (Fullscreen toggle, FHD/HD+/HD/2K presets and custom width/height); Discord RPC; streamlined 5-category sidebar matching Flow aesthetic; quick-access Game Folders hub; and 1-click Storage & Disk Cleanup.",
+  "releaseNotes": "Flow Client v1.4.8: Redesigned Settings with authentic Flow Client borderless capsule aesthetic! Clean top subtabs (General, Performance, Folders, Storage, About); modern custom RAM slider with quick presets and high-RAM warning; display resolution & fullscreen controls; direct game folders hub; and 1-click disk cleanup.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.6/FlowClient-v1.4.6.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.8/FlowClient-v1.4.8.zip"
 }
