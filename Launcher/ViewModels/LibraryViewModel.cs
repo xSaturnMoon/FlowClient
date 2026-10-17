@@ -194,9 +194,208 @@ namespace Launcher.ViewModels
 
         public static event Action<bool, LibraryCardItemViewModel?>? VersionSettingsModeChanged;
 
+        private string _settingsTab = "Info";
+        public string SettingsTab
+        {
+            get => _settingsTab;
+            set
+            {
+                if (_settingsTab != value)
+                {
+                    _settingsTab = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsInfoTabSelected));
+                    OnPropertyChanged(nameof(IsModTabSelected));
+                }
+            }
+        }
+
+        public bool IsInfoTabSelected => _settingsTab == "Info";
+        public bool IsModTabSelected => _settingsTab == "Mod";
+
+        private string _settingsInstanceName = "";
+        public string SettingsInstanceName
+        {
+            get => _settingsInstanceName;
+            set
+            {
+                if (_settingsInstanceName != value)
+                {
+                    _settingsInstanceName = value;
+                    OnPropertyChanged();
+                    SaveCurrentSettings();
+                }
+            }
+        }
+
+        private int _settingsRamMb = 4096;
+        public int SettingsRamMb
+        {
+            get => _settingsRamMb;
+            set
+            {
+                if (_settingsRamMb != value)
+                {
+                    _settingsRamMb = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(SettingsRamText));
+                    OnPropertyChanged(nameof(IsRam2Selected));
+                    OnPropertyChanged(nameof(IsRam4Selected));
+                    OnPropertyChanged(nameof(IsRam6Selected));
+                    OnPropertyChanged(nameof(IsRam8Selected));
+                    OnPropertyChanged(nameof(IsRam10Selected));
+                    OnPropertyChanged(nameof(IsRam12Selected));
+                    OnPropertyChanged(nameof(IsRam16Selected));
+                    SaveCurrentSettings();
+                }
+            }
+        }
+
+        public string SettingsRamText => $"{_settingsRamMb} MB ({(double)_settingsRamMb / 1024.0:0.#} GB)";
+
+        public bool IsRam2Selected => _settingsRamMb == 2048;
+        public bool IsRam4Selected => _settingsRamMb == 4096;
+        public bool IsRam6Selected => _settingsRamMb == 6144;
+        public bool IsRam8Selected => _settingsRamMb == 8192;
+        public bool IsRam10Selected => _settingsRamMb == 10240;
+        public bool IsRam12Selected => _settingsRamMb == 12288;
+        public bool IsRam16Selected => _settingsRamMb == 16384;
+
+        private string _settingsJvmArgs = "";
+        public string SettingsJvmArgs
+        {
+            get => _settingsJvmArgs;
+            set
+            {
+                if (_settingsJvmArgs != value)
+                {
+                    _settingsJvmArgs = value;
+                    OnPropertyChanged();
+                    SaveCurrentSettings();
+                }
+            }
+        }
+
+        public ObservableCollection<InstalledContent> SettingsMods { get; } = new();
+        public bool HasSettingsMods => SettingsMods.Count > 0;
+
+        public void SetRam(int mb) => SettingsRamMb = mb;
+
+        public void OpenFolder()
+        {
+            if (SelectedSettingsInstance == null) return;
+            var dir = _instanceService.GetInstanceDirectory(SelectedSettingsInstance.Id);
+            if (System.IO.Directory.Exists(dir))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = dir,
+                    UseShellExecute = true
+                });
+            }
+        }
+
+        public void OpenModsFolder()
+        {
+            if (SelectedSettingsInstance == null) return;
+            var dir = _instanceService.GetModsPath(SelectedSettingsInstance.Id);
+            System.IO.Directory.CreateDirectory(dir);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = dir,
+                UseShellExecute = true
+            });
+        }
+
+        public void DuplicateCurrentInstance()
+        {
+            if (SelectedSettingsInstance == null) return;
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst != null)
+            {
+                _instanceService.Duplicate(inst);
+                LoadInstances();
+            }
+        }
+
+        public void DeleteCurrentInstance()
+        {
+            if (SelectedSettingsInstance == null) return;
+            var id = SelectedSettingsInstance.Id;
+            var name = SelectedSettingsInstance.Name;
+            var confirm = System.Windows.MessageBox.Show(
+                $"Are you sure you want to delete '{name}'? This cannot be undone.",
+                "Delete Instance",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
+
+            if (confirm == System.Windows.MessageBoxResult.Yes)
+            {
+                _instanceService.Delete(id);
+                CloseSettings();
+                LoadInstances();
+            }
+        }
+
+        private void SaveCurrentSettings()
+        {
+            if (SelectedSettingsInstance == null) return;
+            var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+            if (inst != null)
+            {
+                inst.Name = string.IsNullOrWhiteSpace(_settingsInstanceName) ? inst.Name : _settingsInstanceName.Trim();
+                inst.RamMb = _settingsRamMb;
+                inst.JvmArgs = _settingsJvmArgs ?? "";
+                _instanceService.Save(inst);
+
+                SelectedSettingsInstance.Name = inst.Name;
+                SelectedSettingsInstance.RamMb = inst.RamMb;
+                SelectedSettingsInstance.JvmArgs = inst.JvmArgs;
+            }
+        }
+
         public void OpenSettings(LibraryCardItemViewModel item)
         {
             SelectedSettingsInstance = item;
+            _settingsTab = "Info";
+            var inst = _instanceService.GetById(item.Id);
+            if (inst != null)
+            {
+                _settingsInstanceName = inst.Name;
+                _settingsRamMb = inst.RamMb > 0 ? inst.RamMb : 4096;
+                _settingsJvmArgs = inst.JvmArgs ?? "";
+
+                _instanceService.SyncModsFromDisk(inst);
+                SettingsMods.Clear();
+                foreach (var mod in inst.Mods)
+                {
+                    SettingsMods.Add(mod);
+                }
+            }
+            else
+            {
+                _settingsInstanceName = item.Name;
+                _settingsRamMb = item.RamMb > 0 ? item.RamMb : 4096;
+                _settingsJvmArgs = item.JvmArgs ?? "";
+                SettingsMods.Clear();
+            }
+
+            OnPropertyChanged(nameof(SettingsTab));
+            OnPropertyChanged(nameof(IsInfoTabSelected));
+            OnPropertyChanged(nameof(IsModTabSelected));
+            OnPropertyChanged(nameof(SettingsInstanceName));
+            OnPropertyChanged(nameof(SettingsRamMb));
+            OnPropertyChanged(nameof(SettingsRamText));
+            OnPropertyChanged(nameof(IsRam2Selected));
+            OnPropertyChanged(nameof(IsRam4Selected));
+            OnPropertyChanged(nameof(IsRam6Selected));
+            OnPropertyChanged(nameof(IsRam8Selected));
+            OnPropertyChanged(nameof(IsRam10Selected));
+            OnPropertyChanged(nameof(IsRam12Selected));
+            OnPropertyChanged(nameof(IsRam16Selected));
+            OnPropertyChanged(nameof(SettingsJvmArgs));
+            OnPropertyChanged(nameof(HasSettingsMods));
+
             IsViewingSettings = true;
             VersionSettingsModeChanged?.Invoke(true, item);
         }

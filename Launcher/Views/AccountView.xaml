@@ -6,121 +6,279 @@
              xmlns:components="clr-namespace:Launcher.Components"
              AllowDrop="True"
              Drop="AccountView_Drop"
-             DragOver="AccountView_DragOver">
+             DragOver="AccountView_DragOver"
+             Background="Transparent">
     <UserControl.DataContext>
         <vm:AccountViewModel/>
     </UserControl.DataContext>
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/ExploreResources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <conv:StringNotEmptyToVisibilityConverter x:Key="StrVis"/>
+
+            <!-- Modern Borderless Capsule Button Style (Unselected) -->
+            <Style x:Key="ExploreNavPill" TargetType="Button">
+                <Setter Property="Height" Value="36"/>
+                <Setter Property="Background" Value="#1E1E22"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="#9C9C9D"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="0,0,8,8"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                    BorderThickness="0" CornerRadius="18" Padding="{TemplateBinding Padding}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#27272D"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1B1B1E"/>
+                            </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Modern Borderless Capsule Button Style (Selected/Active) -->
+            <Style x:Key="ExploreNavPillActive" TargetType="Button" BasedOn="{StaticResource ExploreNavPill}">
+                <Setter Property="Background" Value="#32323A"/>
+                <Setter Property="Foreground" Value="#FFFFFF"/>
+            </Style>
+
+            <!-- Modern Action Chip Button Style -->
+            <Style x:Key="ExploreNavChip" TargetType="Button">
+                <Setter Property="Height" Value="38"/>
+                <Setter Property="Background" Value="#1E1E22"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="#D0D0D6"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Padding" Value="18,0"/>
+                <Setter Property="Margin" Value="0,0,0,8"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                    BorderThickness="0" CornerRadius="19" Padding="{TemplateBinding Padding}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#27272D"/>
+                                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#1B1B1E"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ExploreNavChipActive" TargetType="Button" BasedOn="{StaticResource ExploreNavChip}">
+                <Setter Property="Background" Value="#32323A"/>
+                <Setter Property="Foreground" Value="#FFFFFF"/>
+            </Style>
+
+            <!-- Modern White Primary CTA Button -->
+            <Style x:Key="ExploreLaunchBtn" TargetType="Button">
+                <Setter Property="Height" Value="42"/>
+                <Setter Property="Background" Value="#FFFFFF"/>
+                <Setter Property="Foreground" Value="#101010"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                    CornerRadius="21" SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#E5E5E5"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#CCCCCC"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Modern Details Card Style -->
+            <Style x:Key="ExploreInstanceNav" TargetType="Border">
+                <Setter Property="Background" Value="#1E1E22"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="CornerRadius" Value="14"/>
+                <Setter Property="Padding" Value="16,10"/>
+                <Setter Property="Margin" Value="0,0,0,8"/>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid Background="Transparent">
+        <Grid Margin="44,28,44,32" MaxWidth="920">
 
-        <Grid Margin="48,48,48,32">
-
-            <!-- Sign in -->
-            <StackPanel VerticalAlignment="Center" MaxWidth="440"
+            <!-- ══════════════ 1. SIGN IN (WHEN LOGGED OUT) ══════════════ -->
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="460"
                         Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
                 <StackPanel Visibility="{Binding ShowDeviceCode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
-                    <TextBlock Text="Account" Foreground="#FFFFFF" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                    <TextBlock Text="Sign in with Microsoft to play online and sync your profile."
-                               Foreground="#6E6E72" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,36"/>
-                    <Button Style="{StaticResource ExploreLaunchBtn}" Click="Login_Click" Margin="0">
-                        <TextBlock Text="Sign in with Microsoft" FontSize="15" FontWeight="SemiBold"/>
-                    </Button>
-                    <TextBlock Text="{Binding StatusMessage}" Foreground="#505054" FontSize="11" Margin="0,20,0,0"
-                               Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                    <Border Background="#1E1E22" BorderThickness="0" CornerRadius="24" Padding="36,32" SnapsToDevicePixels="True">
+                        <StackPanel HorizontalAlignment="Center">
+                            <Image Source="/Assets/flow_title_logo.png" Height="26" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,18"/>
+                            <TextBlock Text="Microsoft Account" Foreground="#FFFFFF" FontSize="22" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                            <TextBlock Text="Sign in with your Microsoft account to play Minecraft online and sync your skin and cosmetics."
+                                       Foreground="#7E7E84" FontSize="13" TextWrapping="Wrap" TextAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,28"/>
+                            <Button Style="{StaticResource ExploreLaunchBtn}" Click="Login_Click" Width="260" Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Sign in with Microsoft" FontSize="14" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="{Binding StatusMessage}" Foreground="#8E8E93" FontSize="12"
+                                       FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"
+                                       Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding ShowDeviceCode, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <TextBlock Text="Authorize access" Foreground="#FFFFFF" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                    <TextBlock Text="Enter this code on Microsoft's website." Foreground="#6E6E72" FontSize="14" Margin="0,0,0,28"/>
-                    <TextBlock Text="{Binding UserCode}" Foreground="#FFFFFF" FontSize="36" FontWeight="Bold"
-                               FontFamily="Consolas" Margin="0,0,0,24"/>
-                    <Button Content="Open browser" Style="{StaticResource ExploreNavChipActive}"
-                            Click="OpenBrowser_Click" Margin="0,0,0,4"/>
-                    <Button Content="Cancel" Style="{StaticResource ExploreNavChip}" Click="CancelLogin_Click"/>
-                    <TextBlock Text="{Binding StatusMessage}" Foreground="#505054" FontSize="11" Margin="0,20,0,0"
-                               Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                    <Border Background="#1E1E22" BorderThickness="0" CornerRadius="24" Padding="36,32" SnapsToDevicePixels="True">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Authorize Access" Foreground="#FFFFFF" FontSize="22" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                            <TextBlock Text="Enter this code on the Microsoft verification website:" Foreground="#7E7E84" FontSize="13"
+                                       FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                            <Border Background="#141416" BorderThickness="0" CornerRadius="16" Padding="20,12" Margin="0,0,0,24" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding UserCode}" Foreground="#FFFFFF" FontSize="32" FontWeight="Bold"
+                                           FontFamily="Consolas" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Button Content="Open Browser" Style="{StaticResource ExploreLaunchBtn}"
+                                    Click="OpenBrowser_Click" Width="240" Margin="0,0,0,8"/>
+                            <Button Content="Cancel" Style="{StaticResource ExploreNavChip}" Click="CancelLogin_Click" Width="240"/>
+                            <TextBlock Text="{Binding StatusMessage}" Foreground="#8E8E93" FontSize="11" Margin="0,14,0,0"
+                                       FontFamily="{StaticResource NunitoFont}" HorizontalAlignment="Center"
+                                       Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </StackPanel>
 
-            <!-- Signed in -->
+            <!-- ══════════════ 2. SIGNED IN (MODERN PROFILE DASHBOARD) ══════════════ -->
             <Grid Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="48"/>
-                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="1.1*"/>
+                    <ColumnDefinition Width="36"/>
+                    <ColumnDefinition Width="0.9*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Hero + skin / 3D viewer -->
+                <!-- LEFT COLUMN: Profile info, Avatar, Skin Customization & Actions -->
                 <Grid x:Name="AccountStage"
                       Grid.Column="0"
-                      VerticalAlignment="Center"
-                      MaxWidth="440"
-                      Height="520"
+                      VerticalAlignment="Top"
                       ClipToBounds="True">
 
-                    <StackPanel x:Name="AccountSkinPanel" VerticalAlignment="Center">
+                    <StackPanel x:Name="AccountSkinPanel" VerticalAlignment="Top">
                         <StackPanel.RenderTransform>
                             <TranslateTransform x:Name="AccountPanelTransform"/>
                         </StackPanel.RenderTransform>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                            <Border Width="56" Height="56" CornerRadius="8" Background="#161618" ClipToBounds="True" Margin="0,0,16,0">
-                                <Image Source="{Binding ProfilePicture}"
-                                       Width="56" Height="56"
-                                       Stretch="None"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       SnapsToDevicePixels="True"
-                                       UseLayoutRounding="True"
-                                       RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-                            </Border>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="{Binding MinecraftUsername}" Foreground="#FFFFFF" FontSize="22" FontWeight="SemiBold"/>
-                                <TextBlock Foreground="#6E6E72" FontSize="13" Margin="0,4,0,0">
-                                    <Run Text="{Binding AccountTypeText}"/><Run Text=" · "/><Run Text="{Binding ShortUuid}" FontFamily="Consolas"/>
-                                </TextBlock>
-                                <TextBlock Text="{Binding ConnectionStatusText}" Foreground="#505054" FontSize="12" Margin="0,6,0,0"/>
-                            </StackPanel>
-                        </StackPanel>
+                        <!-- Header: User Identity Capsule -->
+                        <Border Background="#1E1E22" BorderThickness="0" CornerRadius="20" Padding="18,16" Margin="0,0,0,20" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Skin" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,28,0,12"/>
-                        <WrapPanel Margin="0,0,0,12">
-                            <Button x:Name="ChipClassic" Content="Classic" Tag="classic" Style="{StaticResource ExploreNavPillActive}"
+                                <!-- Circular Head Avatar -->
+                                <Border Grid.Column="0" Width="60" Height="60" CornerRadius="30" Background="#26262B" BorderThickness="0"
+                                        ClipToBounds="True" Margin="0,0,16,0" VerticalAlignment="Center">
+                                    <Image Source="{Binding ProfilePicture}"
+                                           Width="60" Height="60"
+                                           Stretch="None"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           SnapsToDevicePixels="True"
+                                           UseLayoutRounding="True"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding MinecraftUsername}" Foreground="#FFFFFF" FontSize="20" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <Border Background="#2B2B32" BorderThickness="0" CornerRadius="11" Padding="8,2" Margin="0,0,8,0">
+                                            <TextBlock Text="{Binding AccountTypeText}" Foreground="#A0A0AA" FontSize="11" FontWeight="Bold"
+                                                       FontFamily="{StaticResource NunitoBoldFont}"/>
+                                        </Border>
+                                        <TextBlock Text="●" Foreground="#10B981" FontSize="9" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Ready" Foreground="#8E8E93" FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Skin & Model Customization -->
+                        <TextBlock Text="SKIN CUSTOMIZATION" Foreground="#8E8E93" FontSize="11" FontWeight="Bold"
+                                   FontFamily="{StaticResource NunitoBoldFont}" Margin="4,0,0,8"/>
+
+                        <!-- Model Selection: Classic / Slim -->
+                        <WrapPanel Margin="0,0,0,10">
+                            <Button x:Name="ChipClassic" Content="Classic (4px)" Tag="classic" Style="{StaticResource ExploreNavPillActive}"
                                     Click="SkinModel_Click"/>
-                            <Button x:Name="ChipSlim" Content="Slim" Tag="slim" Style="{StaticResource ExploreNavPill}"
+                            <Button x:Name="ChipSlim" Content="Slim (3px)" Tag="slim" Style="{StaticResource ExploreNavPill}"
                                     Click="SkinModel_Click"/>
                         </WrapPanel>
 
+                        <!-- Skin File Actions -->
                         <Button Content="Choose skin file…" Style="{StaticResource ExploreNavChip}" Click="PickSkin_Click"/>
-                        <Button Content="View current skin" Style="{StaticResource ExploreNavChip}" Click="ViewSkin_Click" Margin="0,8,0,0"/>
-                        <TextBlock Text="{Binding SelectedSkinFileName}" Foreground="#505054" FontSize="11" Margin="0,8,0,0"
-                                   Visibility="{Binding SelectedSkinFileName, Converter={StaticResource StrVis}}"/>
+                        <Button Content="View 3D skin" Style="{StaticResource ExploreNavChip}" Click="ViewSkin_Click"/>
 
-                        <Button Style="{StaticResource ExploreLaunchBtn}" Click="UploadSkin_Click" IsEnabled="{Binding CanApplySkin}">
-                            <TextBlock Text="Apply" FontSize="15" FontWeight="SemiBold"/>
+                        <!-- Selected File Indicator (if picked) -->
+                        <Border Background="#1E1E22" BorderThickness="0" CornerRadius="14" Padding="14,8" Margin="0,0,0,8"
+                                Visibility="{Binding SelectedSkinFileName, Converter={StaticResource StrVis}}">
+                            <TextBlock Text="{Binding SelectedSkinFileName}" Foreground="#E0E0E6" FontSize="11.5"
+                                       FontFamily="{StaticResource NunitoFont}" TextTrimming="CharacterEllipsis"/>
+                        </Border>
+
+                        <!-- Apply Skin Button -->
+                        <Button Style="{StaticResource ExploreLaunchBtn}" Click="UploadSkin_Click" IsEnabled="{Binding CanApplySkin}"
+                                Margin="0,4,0,0">
+                            <TextBlock Text="Apply Skin" FontSize="13.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}"/>
                         </Button>
 
-                        <TextBlock Text="Drop a .png file anywhere on this page" Foreground="#404044" FontSize="11" Margin="0,12,0,0"/>
-                        <TextBlock Text="{Binding ProfileLockMessage}" Foreground="#FF9F0A" FontSize="11" Margin="0,8,0,0"
-                                   Visibility="{Binding ProfileLockMessage, Converter={StaticResource StrVis}}"/>
-                        <TextBlock Text="{Binding SkinUploadStatus}" Foreground="#2563EB" FontSize="11" Margin="0,8,0,0"
-                                   Visibility="{Binding SkinUploadStatus, Converter={StaticResource StrVis}}"/>
+                        <TextBlock Text="💡 Drop any .png skin file anywhere on this page to apply" Foreground="#55555C" FontSize="11"
+                                   FontFamily="{StaticResource NunitoFont}" Margin="4,10,0,0"/>
+                        <TextBlock Text="{Binding ProfileLockMessage}" Foreground="#F59E0B" FontSize="11" Margin="4,6,0,0"
+                                   FontFamily="{StaticResource NunitoFont}" Visibility="{Binding ProfileLockMessage, Converter={StaticResource StrVis}}"/>
+                        <TextBlock Text="{Binding SkinUploadStatus}" Foreground="#10B981" FontSize="11" Margin="4,6,0,0"
+                                   FontFamily="{StaticResource NunitoFont}" Visibility="{Binding SkinUploadStatus, Converter={StaticResource StrVis}}"/>
 
-                        <WrapPanel Margin="0,28,0,0">
-                            <Button Content="Refresh session" Style="{StaticResource ExploreNavPill}" Click="RefreshSession_Click" Margin="0,0,6,0"/>
+                        <!-- Session Management Buttons -->
+                        <TextBlock Text="SESSION" Foreground="#8E8E93" FontSize="11" FontWeight="Bold"
+                                   FontFamily="{StaticResource NunitoBoldFont}" Margin="4,20,0,8"/>
+                        <WrapPanel>
+                            <Button Content="Refresh session" Style="{StaticResource ExploreNavPill}" Click="RefreshSession_Click"/>
                             <Button Content="Sign out" Style="{StaticResource ExploreNavPill}" Click="Logout_Click"/>
                         </WrapPanel>
                     </StackPanel>
 
+                    <!-- 3D Skin Viewer Overlay -->
                     <Grid x:Name="SkinViewerPanel"
                           VerticalAlignment="Center"
                           Visibility="Collapsed"
@@ -130,123 +288,125 @@
                         </Grid.RenderTransform>
 
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding MinecraftUsername}" Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
-                                       HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                            <Border Background="#111113" BorderBrush="#1C1C20" BorderThickness="1" CornerRadius="12"
-                                    Height="380" Margin="0,0,0,20">
+                            <TextBlock Text="{Binding MinecraftUsername}" Foreground="#FFFFFF" FontSize="18" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <Border Background="#18181B" BorderThickness="0" CornerRadius="16"
+                                    Height="380" Margin="0,0,0,16">
                                 <components:SkinViewer3D x:Name="SkinViewer" Margin="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                             </Border>
                             <Button Content="Back" Style="{StaticResource ExploreNavChip}" Click="CloseSkinPreview_Click"
-                                    HorizontalAlignment="Left"/>
+                                    HorizontalAlignment="Left" Width="120"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
 
-                <!-- Details list -->
+                <!-- RIGHT COLUMN: Account Details & Diagnostics -->
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
-                    <TextBlock Text="Details" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                    <TextBlock Text="ACCOUNT DETAILS" Foreground="#8E8E93" FontSize="11" FontWeight="Bold"
+                               FontFamily="{StaticResource NunitoBoldFont}" Margin="4,0,0,8"/>
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="520">
-                        <ScrollViewer.Resources>
-                            <Style TargetType="ScrollBar" BasedOn="{StaticResource ExploreScrollBar}"/>
-                        </ScrollViewer.Resources>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="540">
                         <StackPanel>
+                            <!-- Linked Date -->
                             <Border Style="{StaticResource ExploreInstanceNav}">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="Linked" Foreground="#8E8E93" FontSize="11"/>
-                                    <TextBlock Text="{Binding LinkedAtText}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="LINKED SINCE" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
+                                    <TextBlock Text="{Binding LinkedAtText}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"
+                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Last Sync -->
                             <Border Style="{StaticResource ExploreInstanceNav}">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="Last sync" Foreground="#8E8E93" FontSize="11"/>
-                                    <TextBlock Text="{Binding LastSyncText}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="LAST SYNC" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
+                                    <TextBlock Text="{Binding LastSyncText}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"
+                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Token -->
                             <Border Style="{StaticResource ExploreInstanceNav}">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="Token" Foreground="#8E8E93" FontSize="11"/>
+                                <StackPanel>
+                                    <TextBlock Text="AUTH TOKEN" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
                                     <TextBlock Text="{Binding TokenExpiryText}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"
-                                               Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Email -->
                             <Border Style="{StaticResource ExploreInstanceNav}">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="Email" Foreground="#8E8E93" FontSize="11"/>
+                                <StackPanel>
+                                    <TextBlock Text="MICROSOFT EMAIL" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
                                     <TextBlock Text="{Binding Email}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"
-                                               Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Launcher Version -->
                             <Border Style="{StaticResource ExploreInstanceNav}">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="Launcher" Foreground="#8E8E93" FontSize="11"/>
-                                    <TextBlock Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="FLOW CLIENT" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
+                                    <TextBlock Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold" FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0">
                                         <Run Text="{Binding LauncherVersion}"/><Run Text=" · "/><Run Text="{Binding LauncherChannel}"/>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Java Runtime -->
                             <Border Style="{StaticResource ExploreInstanceNav}">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="Java" Foreground="#8E8E93" FontSize="11"/>
+                                <StackPanel>
+                                    <TextBlock Text="JAVA RUNTIME" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
                                     <TextBlock Text="{Binding JavaVersion}" Foreground="#FFFFFF" FontSize="13" FontWeight="SemiBold"
-                                               Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
-                                </StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource ExploreInstanceNav}" Cursor="Hand" MouseLeftButtonDown="CopyUuid_Click">
-                                <StackPanel Margin="6,0">
-                                    <TextBlock Text="UUID · click to copy" Foreground="#8E8E93" FontSize="11"/>
-                                    <TextBlock Text="{Binding FormattedUuid}" Foreground="#CCE4FF" FontSize="11" FontWeight="SemiBold"
-                                               Margin="0,2,0,0" FontFamily="Consolas" TextTrimming="CharacterEllipsis"/>
+                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
                             </Border>
 
-                            <TextBlock Text="Cape" Foreground="#8E8E93" FontSize="12" FontWeight="SemiBold" Margin="0,20,0,12"/>
+                            <!-- UUID (Click to Copy) -->
+                            <Border Style="{StaticResource ExploreInstanceNav}" Cursor="Hand" MouseLeftButtonDown="CopyUuid_Click"
+                                    ToolTip="Click to copy UUID">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="MINECRAFT UUID" Foreground="#7E7E84" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}"/>
+                                        <TextBlock Text=" · click to copy" Foreground="#55555C" FontSize="10" FontFamily="{StaticResource NunitoFont}"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding FormattedUuid}" Foreground="#E0E0E6" FontSize="11" FontWeight="SemiBold"
+                                               Margin="0,3,0,0" FontFamily="Consolas" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Capes Section -->
+                            <TextBlock Text="CAPES" Foreground="#8E8E93" FontSize="11" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" Margin="4,16,0,8"/>
                             <ItemsControl ItemsSource="{Binding CapeOptions}"
                                           Visibility="{Binding HasCapeChoices, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Cursor="Hand" MouseLeftButtonDown="CapeItem_Click" Margin="0,0,0,4" CornerRadius="8">
-                                            <Border.Style>
-                                                <Style TargetType="Border" BasedOn="{StaticResource ExploreInstanceNav}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                            <Setter Property="Background" Value="#141820"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                            <Grid Margin="6,0">
+                                        <Border Cursor="Hand" MouseLeftButtonDown="CapeItem_Click" Margin="0,0,0,6"
+                                                Background="#1E1E22" BorderThickness="0" CornerRadius="14" Padding="14,10">
+                                            <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="#FFFFFF"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsActive}" Value="False">
-                                                                    <Setter Property="Foreground" Value="#8E8E93"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock Grid.Column="1" Text="Active" Foreground="#2563EB" FontSize="10" FontWeight="SemiBold"
-                                                           VerticalAlignment="Center" Margin="8,0,0,0"
-                                                           Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
+                                                           Foreground="#FFFFFF" FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
+                                                <Border Grid.Column="1" Background="#2B2B32" BorderThickness="0" CornerRadius="10" Padding="8,2"
+                                                        Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <TextBlock Text="Active" Foreground="#FFFFFF" FontSize="10" FontWeight="Bold"
+                                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                                </Border>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <TextBlock Text="No capes on this account"
-                                       Foreground="#505054" FontSize="11" Margin="6,0,0,0"
+
+                            <TextBlock Text="No capes on this account" Foreground="#505054" FontSize="11" Margin="4,0,0,0"
+                                       FontFamily="{StaticResource NunitoFont}"
                                        Visibility="{Binding HasCapeChoices, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
-                            <TextBlock Text="{Binding CapeStatus}" Foreground="#2563EB" FontSize="11" Margin="6,8,0,0"
-                                       Visibility="{Binding CapeStatus, Converter={StaticResource StrVis}}"/>
-                            <TextBlock Text="Skin and cape share the same Mojang cooldown."
-                                       Foreground="#404044" FontSize="10" Margin="6,6,0,0" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding CapeStatus}" Foreground="#10B981" FontSize="11" Margin="4,6,0,0"
+                                       FontFamily="{StaticResource NunitoFont}" Visibility="{Binding CapeStatus, Converter={StaticResource StrVis}}"/>
                         </StackPanel>
                     </ScrollViewer>
                 </StackPanel>

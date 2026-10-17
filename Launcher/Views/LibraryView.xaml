@@ -11,13 +11,13 @@
 
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
 
-        <!-- Capsule "Search Bar Style" Back Button (Clean, No Blue) -->
+        <!-- Capsule "Search Bar Style" Back Button (Borderless, Clean, No Blue) -->
         <Style x:Key="LibraryCapsuleBackBtnStyle" TargetType="Button">
-            <Setter Property="Height" Value="34"/>
+            <Setter Property="Height" Value="36"/>
             <Setter Property="Background" Value="#1E1E22"/>
-            <Setter Property="BorderBrush" Value="#2B2B32"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="#D0D0D6"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="16,0"/>
@@ -27,22 +27,130 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd"
                                 Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="17"
+                                BorderThickness="0"
+                                CornerRadius="18"
                                 Padding="{TemplateBinding Padding}"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#2A2A32"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#4C4C5A"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#27272D"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="#18181C"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#383844"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Settings Sub-Tab Pill Style -->
+        <Style x:Key="SettingsSubTabPillStyle" TargetType="Button">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Background" Value="#1E1E22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#9C9C9D"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderThickness="0" CornerRadius="17" Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#27272D"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- RAM Preset Capsule Pill Style -->
+        <Style x:Key="RamPillButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#1E1E22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#9C9C9D"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderThickness="0" CornerRadius="16" Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#27272D"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Action Capsule Pill Button Style -->
+        <Style x:Key="ActionPillButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Background" Value="#1E1E22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderThickness="0" CornerRadius="19" Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#27272D"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Danger Action Capsule Button Style -->
+        <Style x:Key="DangerActionPillButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Background" Value="#2E1818"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#EF4444"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderThickness="0" CornerRadius="19" Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#3D1F1F"/>
+                                <Setter Property="Foreground" Value="#FF6B6B"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -350,23 +458,197 @@
             </ScrollViewer>
         </Grid>
 
-        <!-- ══════════════ 2. INSTANCE SETTINGS PAGE (CLEAN / ONLY CAPSULE BACK BUTTON) ══════════════ -->
+        <!-- ══════════════ 2. INSTANCE SETTINGS PAGE (INFO & MODS TABS) ══════════════ -->
         <Grid Visibility="{Binding IsViewingSettings, Converter={StaticResource BoolToVis}}"
-              Margin="36,28,36,32">
-            <!-- Capsule "Search Bar Style" Back to Library Button -->
-            <Button Style="{StaticResource LibraryCapsuleBackBtnStyle}"
-                    Click="BackToLibrary_Click"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Path Data="M 8.5,2 L 2.5,7 L 8.5,12"
-                          Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                          StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                          Width="8" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,9,0"/>
-                    <TextBlock Text="Back to Library" FontSize="13" FontWeight="Bold"
-                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center"/>
+              Margin="36,24,36,32">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top Header Bar with Back Button + Info/Mods Subtabs -->
+            <Grid Grid.Row="0" Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Back to Library Capsule Button -->
+                <Button Grid.Column="0" Style="{StaticResource LibraryCapsuleBackBtnStyle}"
+                        Click="BackToLibrary_Click"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="M 8.5,2 L 2.5,7 L 8.5,12"
+                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                              StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                              Width="8" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                        <TextBlock Text="Back to Library" FontSize="13" FontWeight="Bold"
+                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- In-Page Sub-tab Switcher: Info / Mods -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Info" Style="{StaticResource SettingsSubTabPillStyle}" Click="InfoTab_Click"/>
+                    <Button Content="Mods" Style="{StaticResource SettingsSubTabPillStyle}" Click="ModTab_Click"/>
                 </StackPanel>
-            </Button>
+            </Grid>
+
+            <!-- Content Area ScrollViewer -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <Border MaxWidth="640" HorizontalAlignment="Left" Width="640">
+                    <StackPanel>
+                        <!-- ══════════════ TAB 1: INFO ══════════════ -->
+                        <StackPanel Visibility="{Binding IsInfoTabSelected, Converter={StaticResource BoolToVis}}">
+                            <!-- Instance Showcase Capsule Banner -->
+                            <Border Background="#1E1E22" BorderThickness="0" CornerRadius="22"
+                                    Height="44" Padding="14,0,18,0" Margin="0,0,0,24" HorizontalAlignment="Left" SnapsToDevicePixels="True">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Background="#26262B" BorderThickness="0"
+                                            CornerRadius="13" Width="26" Height="26" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <Image Source="{Binding SelectedSettingsInstance.LoaderIconUri, Converter={StaticResource ImgSrc}}"
+                                               Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SelectedSettingsInstance.Name}" Foreground="#FFFFFF" FontSize="12.5" FontWeight="Bold"
+                                                   FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,1"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding SelectedSettingsInstance.Loader}" Foreground="#A0A0AA" FontSize="10" FontWeight="Bold"
+                                                       FontFamily="{StaticResource NunitoFont}"/>
+                                            <TextBlock Text=" · " Foreground="#55555C" FontSize="10" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding SelectedSettingsInstance.MinecraftVersion}" Foreground="#7E7E84" FontSize="10" FontWeight="SemiBold"
+                                                       FontFamily="{StaticResource NunitoFont}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 1. RENAME INSTANCE -->
+                            <TextBlock Text="INSTANCE NAME" FontSize="11" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
+                            <Border Height="40" Background="#1E1E22" BorderThickness="0"
+                                    CornerRadius="20" Padding="16,0" Margin="0,0,0,22" SnapsToDevicePixels="True">
+                                <Grid VerticalAlignment="Center">
+                                    <TextBox Text="{Binding SettingsInstanceName, UpdateSourceTrigger=PropertyChanged}"
+                                             Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
+                                             FontSize="13.5" FontFamily="{StaticResource NunitoFont}"
+                                             CaretBrush="#FFFFFF" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. ALLOCATED RAM -->
+                            <Grid Margin="4,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="ALLOCATED RAM (MEMORY)" FontSize="11" FontWeight="Bold"
+                                           FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" VerticalAlignment="Center"/>
+                                <Border Grid.Column="1" Background="#1E1E22" BorderThickness="0" CornerRadius="12" Padding="10,3">
+                                    <TextBlock Text="{Binding SettingsRamText}" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                </Border>
+                            </Grid>
+
+                            <!-- RAM Presets Capsule Pills -->
+                            <WrapPanel Margin="0,0,0,12">
+                                <Button Content="2 GB" Tag="2048" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                                <Button Content="4 GB" Tag="4096" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                                <Button Content="6 GB" Tag="6144" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                                <Button Content="8 GB" Tag="8192" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                                <Button Content="10 GB" Tag="10240" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                                <Button Content="12 GB" Tag="12288" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                                <Button Content="16 GB" Tag="16384" Style="{StaticResource RamPillButtonStyle}" Click="RamPill_Click"/>
+                            </WrapPanel>
+
+                            <!-- RAM Slider -->
+                            <Slider Minimum="1024" Maximum="16384" SmallChange="512" LargeChange="1024"
+                                    Value="{Binding SettingsRamMb, UpdateSourceTrigger=PropertyChanged}"
+                                    IsSnapToTickEnabled="True" TickFrequency="512"
+                                    Margin="4,0,4,22"/>
+
+                            <!-- 3. JVM ARGUMENTS -->
+                            <TextBlock Text="JVM ARGUMENTS (OPTIONAL)" FontSize="11" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
+                            <Border Height="40" Background="#1E1E22" BorderThickness="0"
+                                    CornerRadius="20" Padding="16,0" Margin="0,0,0,24" SnapsToDevicePixels="True">
+                                <Grid VerticalAlignment="Center">
+                                    <TextBox Text="{Binding SettingsJvmArgs, UpdateSourceTrigger=PropertyChanged}"
+                                             Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
+                                             FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                             CaretBrush="#FFFFFF" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- 4. ACTIONS & MANAGEMENT -->
+                            <TextBlock Text="ACTIONS" FontSize="11" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
+                            <WrapPanel Margin="0,0,0,16">
+                                <Button Content="Open Folder" Style="{StaticResource ActionPillButtonStyle}" Click="OpenFolder_Click"/>
+                                <Button Content="Duplicate" Style="{StaticResource ActionPillButtonStyle}" Click="Duplicate_Click"/>
+                                <Button Content="Delete Instance" Style="{StaticResource DangerActionPillButtonStyle}" Click="Delete_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+
+                        <!-- ══════════════ TAB 2: MODS ══════════════ -->
+                        <StackPanel Visibility="{Binding IsModTabSelected, Converter={StaticResource BoolToVis}}">
+                            <Grid Margin="4,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="INSTALLED MODS" FontSize="11" FontWeight="Bold"
+                                           FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                        Click="OpenModsFolder_Click" Margin="0"/>
+                            </Grid>
+
+                            <!-- Mod list items -->
+                            <ItemsControl ItemsSource="{Binding SettingsMods}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1E1E22" BorderThickness="0" CornerRadius="14"
+                                                Padding="16,12" Margin="0,0,0,8" SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
+                                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                                    <TextBlock Text="{Binding FileName}" Foreground="#7E7E84" FontSize="11"
+                                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                                <Border Grid.Column="1" Background="#26262B" BorderThickness="0" CornerRadius="10" Padding="8,3" VerticalAlignment="Center">
+                                                    <TextBlock Text="Active" Foreground="#10B981" FontSize="10" FontWeight="Bold"
+                                                               FontFamily="{StaticResource NunitoBoldFont}"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Empty state if no mods -->
+                            <Border Background="#161619" BorderThickness="0" CornerRadius="16" Padding="32" Margin="0,10,0,0"
+                                    Visibility="{Binding HasSettingsMods, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="No mods installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
+                                               FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Click 'Open Mods Folder' above or drop your .jar mod files into the instance folder."
+                                               Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,16"/>
+                                    <Button Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
+                                            Click="OpenModsFolder_Click" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
         </Grid>
 
     </Grid>

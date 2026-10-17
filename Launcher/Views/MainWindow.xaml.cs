@@ -648,6 +648,11 @@ namespace Launcher.Views
                 NavDiscoverBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
                 NavLibraryBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
                 NavLibraryBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
+
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.SettingsTab = "Info";
+                }
                 return;
             }
             NavigateTo("Home");
@@ -662,6 +667,11 @@ namespace Launcher.Views
                 NavLibraryBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
                 NavDiscoverBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
                 NavDiscoverBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
+
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.SettingsTab = "Mod";
+                }
                 return;
             }
             NavigateTo("Library");

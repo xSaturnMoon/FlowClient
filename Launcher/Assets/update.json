@@ -1,9 +1,9 @@
 {
-  "version": "1.3.8",
+  "version": "1.3.9",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.3.8: Search-bar capsule styling for Launch showcase card, hardware-accelerated window corner clipping preventing background leaks, perfectly optical centered sidebar text, and a brand new Create view for custom instances with loader and version selection.",
+  "releaseNotes": "Flow Client v1.3.9: Borderless capsule UI for Create view matching search bar style, modernized dark theme Profile/Account view, and interactive Version Settings Info tab with instance rename, RAM allocation slider/presets, JVM arguments, and instance folder/duplicate/delete actions.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.8/FlowClient-v1.3.8.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.9/FlowClient-v1.3.9.zip"
 }

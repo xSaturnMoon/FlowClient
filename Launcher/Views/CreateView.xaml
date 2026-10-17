@@ -11,12 +11,11 @@
     <UserControl.Resources>
         <conv:StringToImageSourceConverter x:Key="ImgSrc"/>
 
-        <!-- Loader Selection Capsule Button Style -->
+        <!-- Loader Selection Capsule Button Style (Borderless matching Top Search Bar) -->
         <Style x:Key="LoaderPillButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="42"/>
             <Setter Property="Background" Value="#1E1E22"/>
-            <Setter Property="BorderBrush" Value="#2B2B32"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="#A0A0AA"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="0,0,10,10"/>
@@ -25,21 +24,18 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderThickness="0"
                                 CornerRadius="21" Padding="{TemplateBinding Padding}"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#25252A"/>
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#3F3F48"/>
+                                <Setter TargetName="bd" Property="Background" Value="#27272D"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </Trigger>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#2A2A30"/>
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#666672"/>
+                                <Setter TargetName="bd" Property="Background" Value="#32323A"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </DataTrigger>
                         </ControlTemplate.Triggers>
@@ -48,12 +44,11 @@
             </Setter>
         </Style>
 
-        <!-- Version Selection Capsule Button Style -->
+        <!-- Version Selection Capsule Button Style (Borderless matching Top Search Bar) -->
         <Style x:Key="VersionPillButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="34"/>
             <Setter Property="Background" Value="#1E1E22"/>
-            <Setter Property="BorderBrush" Value="#2B2B32"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="#9C9C9D"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="0,0,8,8"/>
@@ -62,21 +57,18 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderThickness="0"
                                 CornerRadius="17" Padding="{TemplateBinding Padding}"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#25252A"/>
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#3F3F48"/>
+                                <Setter TargetName="bd" Property="Background" Value="#27272D"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </Trigger>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#2A2A30"/>
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#666672"/>
+                                <Setter TargetName="bd" Property="Background" Value="#32323A"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
                             </DataTrigger>
                         </ControlTemplate.Triggers>
@@ -120,10 +112,10 @@
                 <TextBlock Text="Set up a new Minecraft instance with custom loader and version." FontSize="13"
                            FontFamily="{StaticResource NunitoFont}" Foreground="#7E7E84" Margin="0,0,0,24"/>
 
-                <!-- 1. NAME FIELD -->
+                <!-- 1. NAME FIELD (Borderless Capsule) -->
                 <TextBlock Text="INSTALLATION NAME" FontSize="11" FontWeight="Bold"
                            FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
-                <Border Height="40" Background="#1E1E22" BorderBrush="#2B2B32" BorderThickness="1"
+                <Border Height="40" Background="#1E1E22" BorderThickness="0"
                         CornerRadius="20" Padding="16,0" Margin="0,0,0,22" SnapsToDevicePixels="True">
                     <Grid VerticalAlignment="Center">
                         <TextBox x:Name="TxtInstanceName"
@@ -134,7 +126,7 @@
                     </Grid>
                 </Border>
 
-                <!-- 2. MOD LOADER SELECTION -->
+                <!-- 2. MOD LOADER SELECTION (Borderless Pills) -->
                 <TextBlock Text="MOD LOADER" FontSize="11" FontWeight="Bold"
                            FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
                 <ItemsControl ItemsSource="{Binding Loaders}" Margin="0,0,0,16">
@@ -147,7 +139,7 @@
                         <DataTemplate>
                             <Button Style="{StaticResource LoaderPillButtonStyle}" Click="LoaderButton_Click">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Border Width="22" Height="22" CornerRadius="11" Background="#18181A" Margin="0,0,8,0"
+                                    <Border Width="22" Height="22" CornerRadius="11" Background="#18181A" BorderThickness="0" Margin="0,0,8,0"
                                             VerticalAlignment="Center">
                                         <Image Source="{Binding IconUri, Converter={StaticResource ImgSrc}}"
                                                Width="14" Height="14" RenderOptions.BitmapScalingMode="HighQuality"
@@ -162,7 +154,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- 3. MINECRAFT VERSION SELECTION -->
+                <!-- 3. MINECRAFT VERSION SELECTION (Borderless Pills) -->
                 <TextBlock Text="MINECRAFT VERSION" FontSize="11" FontWeight="Bold"
                            FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
                 <ItemsControl ItemsSource="{Binding Versions}" Margin="0,0,0,12">
@@ -182,8 +174,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Custom Version Field -->
-                <Border Height="36" Background="#1E1E22" BorderBrush="#2B2B32" BorderThickness="1"
+                <!-- Custom Version Field (Borderless Capsule) -->
+                <Border Height="36" Background="#1E1E22" BorderThickness="0"
                         CornerRadius="18" Padding="14,0" Margin="0,0,0,24" SnapsToDevicePixels="True">
                     <Grid VerticalAlignment="Center">
                         <TextBlock x:Name="TxtCustomPlaceholder" Text="Or type any custom version (e.g. 26.1, 1.20.2)..."
@@ -198,14 +190,14 @@
                     </Grid>
                 </Border>
 
-                <!-- 4. LIVE PREVIEW CAPSULE (Matching the LaunchView pill) -->
+                <!-- 4. LIVE PREVIEW CAPSULE (Borderless matching search bar) -->
                 <TextBlock Text="INSTANCE PREVIEW" FontSize="11" FontWeight="Bold"
                            FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
-                <Border Background="#1E1E22" BorderBrush="#2B2B32" BorderThickness="1" CornerRadius="20"
+                <Border Background="#1E1E22" BorderThickness="0" CornerRadius="20"
                         Height="44" Padding="14,0,16,0" Margin="0,0,0,28" HorizontalAlignment="Left" SnapsToDevicePixels="True">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <!-- Loader Icon Container -->
-                        <Border Background="#26262B" BorderBrush="#323238" BorderThickness="1"
+                        <Border Background="#26262B" BorderThickness="0"
                                 CornerRadius="13" Width="26" Height="26" Margin="0,0,10,0" VerticalAlignment="Center">
                             <Image Source="{Binding SelectedLoaderIconUri, Converter={StaticResource ImgSrc}}"
                                    Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality"
