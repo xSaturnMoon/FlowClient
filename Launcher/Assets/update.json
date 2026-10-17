@@ -1,9 +1,9 @@
 {
-  "version": "1.4.4",
+  "version": "1.4.5",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.4.4: Added direct Modrinth browser & installer for Mods, Textures, and Shaders with compatible version picker; Import buttons for Mods, Textures, and Shaders; icon hover scale & delete trash can with Flow Client branding protection; and smooth animated toggle switches.",
+  "releaseNotes": "Flow Client v1.4.5: Resolved critical XAML KeyboardNavigationMode parsing crash on Modrinth version picker dropdown.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.4/FlowClient-v1.4.4.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.5/FlowClient-v1.4.5.zip"
 }

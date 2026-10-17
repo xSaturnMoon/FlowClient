@@ -373,7 +373,7 @@
                                    Placement="Bottom" Focusable="False" MaxHeight="200">
                                 <Border x:Name="DropDownBorder" Background="#1C1C20" BorderBrush="#2B2B32" BorderThickness="1" CornerRadius="10" Margin="0,4,0,0" SnapsToDevicePixels="True">
                                     <ScrollViewer SnapsToDevicePixels="True" VerticalScrollBarVisibility="Auto">
-                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Circular"/>
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
                                     </ScrollViewer>
                                 </Border>
                             </Popup>
