@@ -1,9 +1,9 @@
 {
-  "version": "1.3.9",
+  "version": "1.4.0",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.3.9: Borderless capsule UI for Create view matching search bar style, modernized dark theme Profile/Account view, and interactive Version Settings Info tab with instance rename, RAM allocation slider/presets, JVM arguments, and instance folder/duplicate/delete actions.",
+  "releaseNotes": "Flow Client v1.4.0: Moved Folder and Delete capsule buttons to header bar (with non-red sleek dark styling), removed JVM arguments section, introduced modern custom dark RAM slider with drop-shadow circle thumb, renamed sidebar Mod to Mods, and added new empty sidebar categories: Textures, Shaders, and Modrinth.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.9/FlowClient-v1.3.9.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.0/FlowClient-v1.4.0.zip"
 }

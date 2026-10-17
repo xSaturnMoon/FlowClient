@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -548,6 +549,24 @@ namespace Launcher.Views
             });
         }
 
+        private void UpdateVersionSettingsSidebarActiveButton(string tab)
+        {
+            var activeBg = new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29));
+            var inactiveFg = new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D));
+
+            void Apply(Button btn, bool active)
+            {
+                btn.SetCurrentValue(BackgroundProperty, active ? activeBg : Brushes.Transparent);
+                btn.SetCurrentValue(ForegroundProperty, active ? Brushes.White : inactiveFg);
+            }
+
+            Apply(NavDiscoverBtn, tab == "Info");
+            Apply(NavLibraryBtn, tab == "Mods" || tab == "Mod");
+            Apply(NavTexturesBtn, tab == "Textures");
+            Apply(NavShadersBtn, tab == "Shaders");
+            Apply(NavModrinthBtn, tab == "Modrinth");
+        }
+
         private void AnimateSidebarVersionSettingsMode(bool isInSettings)
         {
             var duration = TimeSpan.FromMilliseconds(200);
@@ -556,10 +575,7 @@ namespace Launcher.Views
             if (isInSettings)
             {
                 // Active button styling for Info tab
-                NavDiscoverBtn.SetCurrentValue(BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29)));
-                NavDiscoverBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
-                NavLibraryBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
-                NavLibraryBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
+                UpdateVersionSettingsSidebarActiveButton("Info");
 
                 // 1. Discover -> Info
                 var fadeOutDiscover = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
@@ -571,7 +587,7 @@ namespace Launcher.Views
                 };
                 NavDiscoverDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutDiscover);
 
-                // 2. Library -> Mod
+                // 2. Library -> Mods
                 var fadeOutLibrary = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
                 fadeOutLibrary.Completed += (_, _) =>
                 {
@@ -581,14 +597,35 @@ namespace Launcher.Views
                 };
                 NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutLibrary);
 
-                // 3. Create -> Collapse
+                // 3. Textures -> Expand
+                NavTexturesContainer.Visibility = Visibility.Visible;
+                var expandTextures = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                var fadeInTextures = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                NavTexturesContainer.BeginAnimation(FrameworkElement.HeightProperty, expandTextures);
+                NavTexturesContainer.BeginAnimation(UIElement.OpacityProperty, fadeInTextures);
+
+                // 4. Shaders -> Expand
+                NavShadersContainer.Visibility = Visibility.Visible;
+                var expandShaders = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                var fadeInShaders = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                NavShadersContainer.BeginAnimation(FrameworkElement.HeightProperty, expandShaders);
+                NavShadersContainer.BeginAnimation(UIElement.OpacityProperty, fadeInShaders);
+
+                // 5. Modrinth -> Expand
+                NavModrinthContainer.Visibility = Visibility.Visible;
+                var expandModrinth = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                var fadeInModrinth = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                NavModrinthContainer.BeginAnimation(FrameworkElement.HeightProperty, expandModrinth);
+                NavModrinthContainer.BeginAnimation(UIElement.OpacityProperty, fadeInModrinth);
+
+                // 6. Create -> Collapse
                 var collapseCreate = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
                 var fadeCreate = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
                 collapseCreate.Completed += (_, _) => NavCreateContainer.Visibility = Visibility.Collapsed;
                 NavCreateContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseCreate);
                 NavCreateContainer.BeginAnimation(UIElement.OpacityProperty, fadeCreate);
 
-                // 4. Settings -> Collapse
+                // 7. Settings -> Collapse
                 var collapseSettings = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
                 var fadeSettings = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
                 collapseSettings.Completed += (_, _) => NavSettingsContainer.Visibility = Visibility.Collapsed;
@@ -602,6 +639,12 @@ namespace Launcher.Views
                 NavDiscoverBtn.ClearValue(ForegroundProperty);
                 NavLibraryBtn.ClearValue(BackgroundProperty);
                 NavLibraryBtn.ClearValue(ForegroundProperty);
+                NavTexturesBtn.ClearValue(BackgroundProperty);
+                NavTexturesBtn.ClearValue(ForegroundProperty);
+                NavShadersBtn.ClearValue(BackgroundProperty);
+                NavShadersBtn.ClearValue(ForegroundProperty);
+                NavModrinthBtn.ClearValue(BackgroundProperty);
+                NavModrinthBtn.ClearValue(ForegroundProperty);
 
                 // 1. Info -> Discover
                 var fadeOutInfo = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
@@ -613,7 +656,7 @@ namespace Launcher.Views
                 };
                 NavDiscoverInfoPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutInfo);
 
-                // 2. Mod -> Library
+                // 2. Mods -> Library
                 var fadeOutMod = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
                 fadeOutMod.Completed += (_, _) =>
                 {
@@ -623,14 +666,35 @@ namespace Launcher.Views
                 };
                 NavLibraryModPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutMod);
 
-                // 3. Create -> Expand
+                // 3. Textures -> Collapse
+                var collapseTextures = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
+                var fadeTextures = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                collapseTextures.Completed += (_, _) => NavTexturesContainer.Visibility = Visibility.Collapsed;
+                NavTexturesContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseTextures);
+                NavTexturesContainer.BeginAnimation(UIElement.OpacityProperty, fadeTextures);
+
+                // 4. Shaders -> Collapse
+                var collapseShaders = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
+                var fadeShaders = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                collapseShaders.Completed += (_, _) => NavShadersContainer.Visibility = Visibility.Collapsed;
+                NavShadersContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseShaders);
+                NavShadersContainer.BeginAnimation(UIElement.OpacityProperty, fadeShaders);
+
+                // 5. Modrinth -> Collapse
+                var collapseModrinth = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
+                var fadeModrinth = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                collapseModrinth.Completed += (_, _) => NavModrinthContainer.Visibility = Visibility.Collapsed;
+                NavModrinthContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseModrinth);
+                NavModrinthContainer.BeginAnimation(UIElement.OpacityProperty, fadeModrinth);
+
+                // 6. Create -> Expand
                 NavCreateContainer.Visibility = Visibility.Visible;
                 var expandCreate = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
                 var fadeInCreate = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
                 NavCreateContainer.BeginAnimation(FrameworkElement.HeightProperty, expandCreate);
                 NavCreateContainer.BeginAnimation(UIElement.OpacityProperty, fadeInCreate);
 
-                // 4. Settings -> Expand
+                // 7. Settings -> Expand
                 NavSettingsContainer.Visibility = Visibility.Visible;
                 var expandSettings = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
                 var fadeInSettings = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
@@ -643,12 +707,7 @@ namespace Launcher.Views
         {
             if (_isInVersionSettingsMode)
             {
-                // Select Info tab in version settings mode
-                NavDiscoverBtn.SetCurrentValue(BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29)));
-                NavDiscoverBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
-                NavLibraryBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
-                NavLibraryBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
-
+                UpdateVersionSettingsSidebarActiveButton("Info");
                 if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
                 {
                     lv.Vm.SettingsTab = "Info";
@@ -662,19 +721,50 @@ namespace Launcher.Views
         {
             if (_isInVersionSettingsMode)
             {
-                // Select Mod tab in version settings mode
-                NavLibraryBtn.SetCurrentValue(BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x26, 0x26, 0x29)));
-                NavLibraryBtn.SetCurrentValue(ForegroundProperty, Brushes.White);
-                NavDiscoverBtn.SetCurrentValue(BackgroundProperty, Brushes.Transparent);
-                NavDiscoverBtn.SetCurrentValue(ForegroundProperty, new SolidColorBrush(Color.FromRgb(0x9C, 0x9C, 0x9D)));
-
+                UpdateVersionSettingsSidebarActiveButton("Mods");
                 if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
                 {
-                    lv.Vm.SettingsTab = "Mod";
+                    lv.Vm.SettingsTab = "Mods";
                 }
                 return;
             }
             NavigateTo("Library");
+        }
+
+        private void NavTextures_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode)
+            {
+                UpdateVersionSettingsSidebarActiveButton("Textures");
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.SettingsTab = "Textures";
+                }
+            }
+        }
+
+        private void NavShaders_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode)
+            {
+                UpdateVersionSettingsSidebarActiveButton("Shaders");
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.SettingsTab = "Shaders";
+                }
+            }
+        }
+
+        private void NavModrinth_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode)
+            {
+                UpdateVersionSettingsSidebarActiveButton("Modrinth");
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.SettingsTab = "Modrinth";
+                }
+            }
         }
 
         private void NavCreate_Click(object sender, RoutedEventArgs e)

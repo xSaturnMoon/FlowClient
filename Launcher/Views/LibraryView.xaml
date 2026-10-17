@@ -130,29 +130,66 @@
             </Setter>
         </Style>
 
-        <!-- Danger Action Capsule Button Style -->
-        <Style x:Key="DangerActionPillButtonStyle" TargetType="Button">
-            <Setter Property="Height" Value="38"/>
-            <Setter Property="Background" Value="#2E1818"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="#EF4444"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="16,0"/>
-            <Setter Property="Margin" Value="0,0,10,0"/>
+        <!-- Modern Custom Ram Slider Style -->
+        <Style x:Key="ModernRamSliderStyle" TargetType="Slider">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                BorderThickness="0" CornerRadius="19" Padding="{TemplateBinding Padding}"
-                                SnapsToDevicePixels="True">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#3D1F1F"/>
-                                <Setter Property="Foreground" Value="#FF6B6B"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid VerticalAlignment="Center">
+                            <!-- Track Base (Inactive Background) -->
+                            <Border Height="6" Background="#28282E" CornerRadius="3" VerticalAlignment="Center"/>
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="6" Background="#FFFFFF" CornerRadius="3,0,0,3" VerticalAlignment="Center"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Cursor="Hand">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Grid Width="22" Height="22" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <Ellipse x:Name="thumbCircle" Width="18" Height="18" Fill="#FFFFFF"
+                                                             HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Ellipse.Effect>
+                                                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.45" Color="#000000"/>
+                                                        </Ellipse.Effect>
+                                                    </Ellipse>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="thumbCircle" Property="Width" Value="20"/>
+                                                        <Setter TargetName="thumbCircle" Property="Height" Value="20"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="thumbCircle" Property="Width" Value="20"/>
+                                                        <Setter TargetName="thumbCircle" Property="Height" Value="20"/>
+                                                        <Setter TargetName="thumbCircle" Property="Fill" Value="#E0E0E0"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="6" Background="Transparent" VerticalAlignment="Center"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -488,10 +525,10 @@
                     </StackPanel>
                 </Button>
 
-                <!-- In-Page Sub-tab Switcher: Info / Mods -->
+                <!-- Top Action Buttons: Folder & Delete (Non-red capsule style) -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="Info" Style="{StaticResource SettingsSubTabPillStyle}" Click="InfoTab_Click"/>
-                    <Button Content="Mods" Style="{StaticResource SettingsSubTabPillStyle}" Click="ModTab_Click"/>
+                    <Button Content="Folder" Style="{StaticResource ActionPillButtonStyle}" Click="OpenFolder_Click" Margin="0,0,10,0"/>
+                    <Button Content="Delete" Style="{StaticResource ActionPillButtonStyle}" Click="Delete_Click" Margin="0"/>
                 </StackPanel>
             </Grid>
 
@@ -564,88 +601,28 @@
                             </WrapPanel>
 
                             <!-- RAM Slider -->
-                            <Slider Minimum="1024" Maximum="16384" SmallChange="512" LargeChange="1024"
+                            <Slider Style="{StaticResource ModernRamSliderStyle}"
+                                    Minimum="1024" Maximum="16384" SmallChange="512" LargeChange="1024"
                                     Value="{Binding SettingsRamMb, UpdateSourceTrigger=PropertyChanged}"
                                     IsSnapToTickEnabled="True" TickFrequency="512"
-                                    Margin="4,0,4,22"/>
-
-                            <!-- 3. JVM ARGUMENTS -->
-                            <TextBlock Text="JVM ARGUMENTS (OPTIONAL)" FontSize="11" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
-                            <Border Height="40" Background="#1E1E22" BorderThickness="0"
-                                    CornerRadius="20" Padding="16,0" Margin="0,0,0,24" SnapsToDevicePixels="True">
-                                <Grid VerticalAlignment="Center">
-                                    <TextBox Text="{Binding SettingsJvmArgs, UpdateSourceTrigger=PropertyChanged}"
-                                             Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
-                                             FontSize="12" FontFamily="{StaticResource NunitoFont}"
-                                             CaretBrush="#FFFFFF" VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- 4. ACTIONS & MANAGEMENT -->
-                            <TextBlock Text="ACTIONS" FontSize="11" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="4,0,0,8"/>
-                            <WrapPanel Margin="0,0,0,16">
-                                <Button Content="Open Folder" Style="{StaticResource ActionPillButtonStyle}" Click="OpenFolder_Click"/>
-                                <Button Content="Duplicate" Style="{StaticResource ActionPillButtonStyle}" Click="Duplicate_Click"/>
-                                <Button Content="Delete Instance" Style="{StaticResource DangerActionPillButtonStyle}" Click="Delete_Click"/>
-                            </WrapPanel>
+                                    Margin="4,0,4,16"/>
                         </StackPanel>
 
-                        <!-- ══════════════ TAB 2: MODS ══════════════ -->
-                        <StackPanel Visibility="{Binding IsModTabSelected, Converter={StaticResource BoolToVis}}">
-                            <Grid Margin="4,0,0,16">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="INSTALLED MODS" FontSize="11" FontWeight="Bold"
-                                           FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" VerticalAlignment="Center"/>
-                                <Button Grid.Column="1" Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                        Click="OpenModsFolder_Click" Margin="0"/>
-                            </Grid>
+                        <!-- ══════════════ TAB 2: MODS (EMPTY) ══════════════ -->
+                        <Grid Visibility="{Binding IsModsTabSelected, Converter={StaticResource BoolToVis}}">
+                        </Grid>
 
-                            <!-- Mod list items -->
-                            <ItemsControl ItemsSource="{Binding SettingsMods}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="#1E1E22" BorderThickness="0" CornerRadius="14"
-                                                Padding="16,12" Margin="0,0,0,8" SnapsToDevicePixels="True">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"
-                                                               FontFamily="{StaticResource NunitoBoldFont}"/>
-                                                    <TextBlock Text="{Binding FileName}" Foreground="#7E7E84" FontSize="11"
-                                                               FontFamily="{StaticResource NunitoFont}" Margin="0,2,0,0"/>
-                                                </StackPanel>
-                                                <Border Grid.Column="1" Background="#26262B" BorderThickness="0" CornerRadius="10" Padding="8,3" VerticalAlignment="Center">
-                                                    <TextBlock Text="Active" Foreground="#10B981" FontSize="10" FontWeight="Bold"
-                                                               FontFamily="{StaticResource NunitoBoldFont}"/>
-                                                </Border>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                        <!-- ══════════════ TAB 3: TEXTURES (EMPTY) ══════════════ -->
+                        <Grid Visibility="{Binding IsTexturesTabSelected, Converter={StaticResource BoolToVis}}">
+                        </Grid>
 
-                            <!-- Empty state if no mods -->
-                            <Border Background="#161619" BorderThickness="0" CornerRadius="16" Padding="32" Margin="0,10,0,0"
-                                    Visibility="{Binding HasSettingsMods, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="No mods installed" Foreground="#FFFFFF" FontSize="15" FontWeight="Bold"
-                                               FontFamily="{StaticResource NunitoBoldFont}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Click 'Open Mods Folder' above or drop your .jar mod files into the instance folder."
-                                               Foreground="#7E7E84" FontSize="12" FontFamily="{StaticResource NunitoFont}"
-                                               HorizontalAlignment="Center" Margin="0,6,0,16"/>
-                                    <Button Content="Open Mods Folder" Style="{StaticResource ActionPillButtonStyle}"
-                                            Click="OpenModsFolder_Click" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
+                        <!-- ══════════════ TAB 4: SHADERS (EMPTY) ══════════════ -->
+                        <Grid Visibility="{Binding IsShadersTabSelected, Converter={StaticResource BoolToVis}}">
+                        </Grid>
+
+                        <!-- ══════════════ TAB 5: MODRINTH (EMPTY) ══════════════ -->
+                        <Grid Visibility="{Binding IsModrinthTabSelected, Converter={StaticResource BoolToVis}}">
+                        </Grid>
                     </StackPanel>
                 </Border>
             </ScrollViewer>

@@ -206,12 +206,20 @@ namespace Launcher.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsInfoTabSelected));
                     OnPropertyChanged(nameof(IsModTabSelected));
+                    OnPropertyChanged(nameof(IsModsTabSelected));
+                    OnPropertyChanged(nameof(IsTexturesTabSelected));
+                    OnPropertyChanged(nameof(IsShadersTabSelected));
+                    OnPropertyChanged(nameof(IsModrinthTabSelected));
                 }
             }
         }
 
         public bool IsInfoTabSelected => _settingsTab == "Info";
-        public bool IsModTabSelected => _settingsTab == "Mod";
+        public bool IsModsTabSelected => _settingsTab.Equals("Mods", StringComparison.OrdinalIgnoreCase) || _settingsTab.Equals("Mod", StringComparison.OrdinalIgnoreCase);
+        public bool IsModTabSelected => IsModsTabSelected;
+        public bool IsTexturesTabSelected => _settingsTab.Equals("Textures", StringComparison.OrdinalIgnoreCase);
+        public bool IsShadersTabSelected => _settingsTab.Equals("Shaders", StringComparison.OrdinalIgnoreCase);
+        public bool IsModrinthTabSelected => _settingsTab.Equals("Modrinth", StringComparison.OrdinalIgnoreCase);
 
         private string _settingsInstanceName = "";
         public string SettingsInstanceName
@@ -383,6 +391,10 @@ namespace Launcher.ViewModels
             OnPropertyChanged(nameof(SettingsTab));
             OnPropertyChanged(nameof(IsInfoTabSelected));
             OnPropertyChanged(nameof(IsModTabSelected));
+            OnPropertyChanged(nameof(IsModsTabSelected));
+            OnPropertyChanged(nameof(IsTexturesTabSelected));
+            OnPropertyChanged(nameof(IsShadersTabSelected));
+            OnPropertyChanged(nameof(IsModrinthTabSelected));
             OnPropertyChanged(nameof(SettingsInstanceName));
             OnPropertyChanged(nameof(SettingsRamMb));
             OnPropertyChanged(nameof(SettingsRamText));
