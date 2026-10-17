@@ -674,17 +674,25 @@
 
                                                 <!-- 1. Mod Image / Icon -->
                                                 <Grid Grid.Column="0" Width="42" Height="42" VerticalAlignment="Center">
-                                                    <!-- Fallback vector cube icon -->
-                                                    <Border Background="#26262B" CornerRadius="10">
+                                                    <!-- Fallback vector cube icon (shown only when no icon is available) -->
+                                                    <Border Background="#26262B" CornerRadius="10" Width="42" Height="42"
+                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
                                                         <Path Data="M 12 1.75 L 3.25 6.8 V 16.95 L 12 22 L 20.75 16.95 V 6.8 L 12 1.75 Z M 12 4.1 L 18.5 7.85 L 12 11.6 L 5.5 7.85 L 12 4.1 Z M 5.25 9.85 L 11 13.15 V 19.9 L 5.25 16.55 V 9.85 Z M 13 19.9 V 13.15 L 18.75 9.85 V 16.55 L 13 19.9 Z"
                                                               Fill="#8E8E93" Width="20" Height="20" Stretch="Uniform"
                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                     </Border>
-                                                    <!-- Actual Mod Icon image -->
-                                                    <Border CornerRadius="10" ClipToBounds="True">
-                                                        <Image Source="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
-                                                               Width="42" Height="42" Stretch="UniformToFill"
-                                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                                                    <!-- Actual Mod Icon: rounded border with ImageBrush and dark backplate (no 3D cube) -->
+                                                    <Border Width="42" Height="42" CornerRadius="10" Background="#26262B"
+                                                            SnapsToDevicePixels="True"
+                                                            Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}">
+                                                        <Border Width="42" Height="42" CornerRadius="10" SnapsToDevicePixels="True">
+                                                            <Border.Background>
+                                                                <ImageBrush ImageSource="{Binding IconUrl, Converter={StaticResource ImgSrc}}"
+                                                                            Stretch="UniformToFill"
+                                                                            RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                            </Border.Background>
+                                                        </Border>
                                                     </Border>
                                                 </Grid>
 

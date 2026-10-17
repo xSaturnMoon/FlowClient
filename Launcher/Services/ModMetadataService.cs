@@ -92,6 +92,29 @@ namespace Launcher.Services
             // Handle FlowClient branding mod
             if (cleanFileName.Contains("flowclient", StringComparison.OrdinalIgnoreCase))
             {
+                try
+                {
+                    using var zip = ZipFile.OpenRead(jarPath);
+                    var entry = zip.GetEntry("assets/flowclient/textures/gui/flow_badge_icon.png") ??
+                                zip.GetEntry("assets/flowclient/textures/gui/flow_emblem.png");
+                    if (entry != null)
+                    {
+                        var cachedFile = Path.Combine(CacheDir, "flowclient_badge_256.png");
+                        if (!File.Exists(cachedFile) || new FileInfo(cachedFile).Length == 0)
+                        {
+                            entry.ExtractToFile(cachedFile, true);
+                        }
+                        return new ModInfo
+                        {
+                            Title = "FlowClient Branding",
+                            Subtitle = cleanFileName,
+                            IconPath = cachedFile,
+                            CleanFileName = cleanFileName
+                        };
+                    }
+                }
+                catch { }
+
                 return new ModInfo
                 {
                     Title = "FlowClient Branding",
@@ -126,10 +149,23 @@ namespace Launcher.Services
                         }
                         else if (iconProp.ValueKind == JsonValueKind.Object)
                         {
+                            int bestSize = -1;
                             foreach (var p in iconProp.EnumerateObject())
                             {
-                                iconEntryName = p.Value.GetString();
-                                break;
+                                int size = int.TryParse(p.Name, out var sz) ? sz : 0;
+                                if (size > bestSize && !string.IsNullOrWhiteSpace(p.Value.GetString()))
+                                {
+                                    bestSize = size;
+                                    iconEntryName = p.Value.GetString();
+                                }
+                            }
+                            if (string.IsNullOrWhiteSpace(iconEntryName))
+                            {
+                                foreach (var p in iconProp.EnumerateObject())
+                                {
+                                    iconEntryName = p.Value.GetString();
+                                    if (!string.IsNullOrWhiteSpace(iconEntryName)) break;
+                                }
                             }
                         }
                     }
@@ -147,7 +183,26 @@ namespace Launcher.Services
                             ql.TryGetProperty("metadata", out var meta))
                         {
                             if (meta.TryGetProperty("name", out var np)) title = np.GetString();
-                            if (meta.TryGetProperty("icon", out var ip)) iconEntryName = ip.GetString();
+                            if (meta.TryGetProperty("icon", out var ip))
+                            {
+                                if (ip.ValueKind == JsonValueKind.String)
+                                {
+                                    iconEntryName = ip.GetString();
+                                }
+                                else if (ip.ValueKind == JsonValueKind.Object)
+                                {
+                                    int bestSize = -1;
+                                    foreach (var p in ip.EnumerateObject())
+                                    {
+                                        int size = int.TryParse(p.Name, out var sz) ? sz : 0;
+                                        if (size > bestSize && !string.IsNullOrWhiteSpace(p.Value.GetString()))
+                                        {
+                                            bestSize = size;
+                                            iconEntryName = p.Value.GetString();
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -175,26 +230,47 @@ namespace Launcher.Services
                     }
                 }
 
-                // Fallback icon scan inside zip
+                // Check for high-resolution variants of the detected icon (e.g. icon_large.png, icon@2x.png)
+                if (!string.IsNullOrEmpty(iconEntryName))
+                {
+                    var cleanEntry = iconEntryName.TrimStart('/', '\\').Replace('\\', '/');
+                    var dir = Path.GetDirectoryName(cleanEntry)?.Replace('\\', '/');
+                    var baseName = Path.GetFileNameWithoutExtension(cleanEntry);
+                    var ext = Path.GetExtension(cleanEntry);
+                    string[] suffixes = ["_large", "@2x", "_512", "_256", "_128", "_64", "-large", "-512", "-256", "-128"];
+                    foreach (var sfx in suffixes)
+                    {
+                        var candidate = string.IsNullOrEmpty(dir) ? $"{baseName}{sfx}{ext}" : $"{dir}/{baseName}{sfx}{ext}";
+                        if (zip.GetEntry(candidate) != null)
+                        {
+                            iconEntryName = candidate;
+                            break;
+                        }
+                    }
+                }
+
+                // Fallback icon scan inside zip for large/standard icons
                 if (string.IsNullOrEmpty(iconEntryName))
                 {
-                    if (zip.GetEntry("icon.png") != null) iconEntryName = "icon.png";
+                    if (zip.GetEntry("icon_large.png") != null) iconEntryName = "icon_large.png";
+                    else if (zip.GetEntry("assets/icon.png") != null) iconEntryName = "assets/icon.png";
+                    else if (zip.GetEntry("icon.png") != null) iconEntryName = "icon.png";
                     else if (zip.GetEntry("logo.png") != null) iconEntryName = "logo.png";
                     else if (zip.GetEntry("pack.png") != null) iconEntryName = "pack.png";
-                    else if (zip.GetEntry("assets/icon.png") != null) iconEntryName = "assets/icon.png";
                 }
 
                 // Extract icon to disk cache if found
                 if (!string.IsNullOrEmpty(iconEntryName))
                 {
-                    iconEntryName = iconEntryName.TrimStart('/', '\\');
-                    var entry = zip.GetEntry(iconEntryName);
+                    var cleanEntry = iconEntryName.TrimStart('/', '\\');
+                    var entry = zip.GetEntry(cleanEntry) ??
+                                zip.GetEntry(cleanEntry.Replace('\\', '/'));
                     if (entry != null)
                     {
                         using var md5 = MD5.Create();
-                        var hash = Convert.ToHexString(md5.ComputeHash(Encoding.UTF8.GetBytes(jarPath + "_" + iconEntryName)));
+                        var hash = Convert.ToHexString(md5.ComputeHash(Encoding.UTF8.GetBytes(jarPath + "_" + cleanEntry + "_v2")));
                         var cachedFile = Path.Combine(CacheDir, $"{hash}.png");
-                        if (!File.Exists(cachedFile))
+                        if (!File.Exists(cachedFile) || new FileInfo(cachedFile).Length == 0)
                         {
                             entry.ExtractToFile(cachedFile, true);
                         }

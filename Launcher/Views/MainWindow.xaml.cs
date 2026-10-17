@@ -110,11 +110,15 @@ namespace Launcher.Views
 
         private void UpdateRootClip()
         {
-            if (RootBorder != null && RootBorder.ActualWidth > 0 && RootBorder.ActualHeight > 0)
+            if (RootBorder != null)
             {
-                RootBorder.Clip = new RectangleGeometry(
-                    new Rect(0, 0, RootBorder.ActualWidth, RootBorder.ActualHeight),
-                    12, 12);
+                RootBorder.Clip = null;
+            }
+            if (RootContentGrid != null && RootContentGrid.ActualWidth > 0 && RootContentGrid.ActualHeight > 0)
+            {
+                RootContentGrid.Clip = new RectangleGeometry(
+                    new Rect(0, 0, RootContentGrid.ActualWidth, RootContentGrid.ActualHeight),
+                    11, 11);
             }
         }
 
@@ -282,7 +286,22 @@ namespace Launcher.Views
             UpdateMainContent(_viewModel.ActiveButton);
         }
 
-        public void NavigateTo(string section) => _viewModel.ActiveButton = section;
+        public void NavigateTo(string section)
+        {
+            if (_isInVersionSettingsMode && !section.Equals("Library", StringComparison.OrdinalIgnoreCase))
+            {
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.CloseSettings();
+                }
+                else
+                {
+                    _isInVersionSettingsMode = false;
+                    AnimateSidebarVersionSettingsMode(false);
+                }
+            }
+            _viewModel.ActiveButton = section;
+        }
 
         // Keep track of ongoing navigation to avoid stacking
         private string? _pendingNav;

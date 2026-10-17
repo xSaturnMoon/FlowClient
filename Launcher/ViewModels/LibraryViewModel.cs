@@ -316,15 +316,22 @@ namespace Launcher.ViewModels
             _instanceService.SyncModsFromDisk(inst);
             var modsDir = _instanceService.GetModsPath(inst.Id);
 
+            var list = new List<ModItemViewModel>();
             foreach (var mod in inst.Mods)
             {
                 var info = ModMetadataService.GetModInfo(modsDir, mod.FileName, mod.IconUrl);
+                var title = string.IsNullOrWhiteSpace(info.Title) ? mod.Title : info.Title;
                 var vm = new ModItemViewModel(
-                    string.IsNullOrWhiteSpace(info.Title) ? mod.Title : info.Title,
+                    title,
                     info.Subtitle,
                     info.IconPath,
                     info.CleanFileName,
                     info.IsEnabled);
+                list.Add(vm);
+            }
+
+            foreach (var vm in list.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase))
+            {
                 InstalledMods.Add(vm);
             }
 
@@ -635,6 +642,11 @@ namespace Launcher.ViewModels
         public string Subtitle { get; set; }
         public string IconUrl { get; set; }
         public string FileName { get; set; }
+
+        public bool HasIcon => !string.IsNullOrWhiteSpace(IconUrl) && (
+            IconUrl.StartsWith("pack:", StringComparison.OrdinalIgnoreCase) ||
+            IconUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
+            File.Exists(IconUrl));
 
         public bool IsEnabled
         {

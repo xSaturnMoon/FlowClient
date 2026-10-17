@@ -131,10 +131,10 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="bd" Property="Background" Value="#E81123"/>
+                                    <Setter TargetName="bd" Property="Background" Value="#222228"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="bd" Property="Background" Value="#C40E1E"/>
+                                    <Setter TargetName="bd" Property="Background" Value="#2C2C34"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -223,8 +223,8 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border x:Name="RootBorder" BorderBrush="#1C1C1E" BorderThickness="1" CornerRadius="12" Background="#101010" Margin="1" SnapsToDevicePixels="True" SizeChanged="RootBorder_SizeChanged">
-        <Grid>
+    <Border x:Name="RootBorder" BorderBrush="#2B2B32" BorderThickness="1" CornerRadius="12" Background="#101010" Margin="1" SnapsToDevicePixels="True" SizeChanged="RootBorder_SizeChanged">
+        <Grid x:Name="RootContentGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="46"/>
                 <RowDefinition Height="*"/>
