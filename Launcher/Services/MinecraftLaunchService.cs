@@ -174,8 +174,29 @@ namespace Launcher.Services
 
                 if (server != null && !string.IsNullOrWhiteSpace(server.Host))
                 {
-                    launchOptions.ServerIp = server.Host.Trim();
-                    launchOptions.ServerPort = server.Port is > 0 and <= 65535 ? server.Port : 25565;
+                    var host = server.Host.Trim();
+                    var port = server.Port is > 0 and <= 65535 ? server.Port : 25565;
+
+                    launchOptions.ServerIp = host;
+                    launchOptions.ServerPort = port;
+
+                    // Fast-connect JVM optimizations: force IPv4 stack to prevent 1-2 second IPv6 probe timeouts on Windows,
+                    // optimize DNS lookup caching and Netty channel reflection.
+                    var fastConnectJvm = "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Dsun.net.inetaddr.ttl=60 -Dio.netty.tryReflectionSetAccessible=true";
+                    launchOptions.ExtraJvmArguments = launchOptions.ExtraJvmArguments == null
+                        ? new[] { MArgument.FromCommandLine(fastConnectJvm) }
+                        : launchOptions.ExtraJvmArguments.Concat(new[] { MArgument.FromCommandLine(fastConnectJvm) }).ToArray();
+
+                    // In Minecraft 1.20+, Mojang's official Quick Play argument initializes multiplayer connection
+                    // early during client boot, skipping the intermediate ConnectScreen loading dialogue!
+                    var hostPort = port == 25565 ? host : $"{host}:{port}";
+                    var qpArg = MArgument.FromCommandLine($"--quickPlayMultiplayer {hostPort}");
+                    launchOptions.ExtraGameArguments = launchOptions.ExtraGameArguments == null
+                        ? new[] { qpArg }
+                        : launchOptions.ExtraGameArguments.Concat(new[] { qpArg }).ToArray();
+
+                    // Pre-warm DNS and TCP route in background immediately
+                    MinecraftServerPingService.PrewarmDnsAndRouteAsync(host, port);
                 }
 
                 progress?.Report(server != null

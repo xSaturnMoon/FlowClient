@@ -532,6 +532,11 @@ namespace Launcher.Views
             await LaunchSelectedAsync(null);
         }
 
+        public async Task LaunchWithServerAsync(LaunchServerTarget? server)
+        {
+            await LaunchSelectedAsync(server);
+        }
+
         private async Task LaunchSelectedAsync(LaunchServerTarget? server)
         {
             if (_tracker.IsRunning)

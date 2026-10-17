@@ -1,9 +1,9 @@
 {
-  "version": "1.4.8",
+  "version": "1.4.9",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.4.8: Redesigned Settings with authentic Flow Client borderless capsule aesthetic! Clean top subtabs (General, Performance, Folders, Storage, About); modern custom RAM slider with quick presets and high-RAM warning; display resolution & fullscreen controls; direct game folders hub; and 1-click disk cleanup.",
+  "releaseNotes": "Flow Client v1.4.9: Quick Connect server shortcut in topbar! Add and verify servers with direct-join Play button, clean typography (server name in white, IP in grey, no icons), and immediate zero-lag server connection using IPv4 fast-connect and Mojang QuickPlay 1.20+ optimization.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.8/FlowClient-v1.4.8.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.9/FlowClient-v1.4.9.zip"
 }

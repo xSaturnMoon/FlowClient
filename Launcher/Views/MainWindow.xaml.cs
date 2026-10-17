@@ -978,6 +978,158 @@ namespace Launcher.Views
                 : Visibility.Visible;
         }
 
+        #region Quick Connect Server Shortcut
+
+        private void QuickConnect_Click(object sender, RoutedEventArgs e)
+        {
+            if (QuickConnectOverlay.Visibility == Visibility.Visible)
+            {
+                QuickConnectOverlay.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            AccountMenuOverlay.Visibility = Visibility.Collapsed;
+
+            var selectedId = InstanceSelectionService.SelectedInstanceId;
+            var inst = !string.IsNullOrEmpty(selectedId)
+                ? _instances.GetById(selectedId)
+                : _instances.GetAll().FirstOrDefault();
+
+            if (inst != null)
+            {
+                QuickConnectActiveInstanceText.Text = $"Selected: {inst.Name} ({inst.Loader} {inst.MinecraftVersion})";
+            }
+            else
+            {
+                QuickConnectActiveInstanceText.Text = "No instance selected";
+            }
+
+            QuickConnectStatusText.Visibility = Visibility.Collapsed;
+            RefreshQuickConnectList();
+            QuickConnectOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void QuickConnectBackdrop_Click(object sender, MouseButtonEventArgs e)
+        {
+            QuickConnectOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void RefreshQuickConnectList()
+        {
+            var list = QuickConnectServerService.Instance.GetAll();
+            QuickConnectItemsList.ItemsSource = list;
+            QuickConnectEmptyText.Visibility = list.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void QuickConnectInput_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender == QuickConnectNameInput)
+                QuickConnectNamePlaceholder.Visibility = Visibility.Collapsed;
+            else if (sender == QuickConnectAddressInput)
+                QuickConnectAddressPlaceholder.Visibility = Visibility.Collapsed;
+        }
+
+        private void QuickConnectInput_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender == QuickConnectNameInput)
+                QuickConnectNamePlaceholder.Visibility = string.IsNullOrEmpty(QuickConnectNameInput.Text) ? Visibility.Visible : Visibility.Collapsed;
+            else if (sender == QuickConnectAddressInput)
+                QuickConnectAddressPlaceholder.Visibility = string.IsNullOrEmpty(QuickConnectAddressInput.Text) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private async void QuickConnectAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var name = QuickConnectNameInput.Text.Trim();
+            var addr = QuickConnectAddressInput.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(addr))
+            {
+                QuickConnectStatusText.Text = "Please enter a server IP or address.";
+                QuickConnectStatusText.Foreground = new SolidColorBrush(Color.FromRgb(245, 158, 11));
+                QuickConnectStatusText.Visibility = Visibility.Visible;
+                return;
+            }
+
+            QuickConnectAddBtn.IsEnabled = false;
+            QuickConnectStatusText.Text = "Checking server…";
+            QuickConnectStatusText.Foreground = new SolidColorBrush(Color.FromRgb(147, 197, 253));
+            QuickConnectStatusText.Visibility = Visibility.Visible;
+
+            var ping = await MinecraftServerPingService.PingAsync(addr);
+            QuickConnectAddBtn.IsEnabled = true;
+
+            if (ping.Success)
+            {
+                QuickConnectServerService.Instance.Add(name, addr);
+                QuickConnectNameInput.Text = "";
+                QuickConnectAddressInput.Text = "";
+                QuickConnectNamePlaceholder.Visibility = Visibility.Visible;
+                QuickConnectAddressPlaceholder.Visibility = Visibility.Visible;
+
+                RefreshQuickConnectList();
+                QuickConnectStatusText.Text = ping.OnlinePlayers > 0
+                    ? $"Verified! ({ping.OnlinePlayers}/{ping.MaxPlayers} online)"
+                    : "Server verified and saved!";
+                QuickConnectStatusText.Foreground = new SolidColorBrush(Color.FromRgb(52, 211, 153));
+                QuickConnectStatusText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                QuickConnectStatusText.Text = $"Unreachable: {ping.Error ?? "offline"}";
+                QuickConnectStatusText.Foreground = new SolidColorBrush(Color.FromRgb(245, 158, 11));
+                QuickConnectStatusText.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void QuickConnectDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string id)
+            {
+                QuickConnectServerService.Instance.Remove(id);
+                RefreshQuickConnectList();
+            }
+        }
+
+        private async void QuickConnectPlay_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || btn.Tag is not QuickConnectServer srv)
+                return;
+
+            QuickConnectOverlay.Visibility = Visibility.Collapsed;
+
+            var instanceId = InstanceSelectionService.SelectedInstanceId;
+            if (string.IsNullOrEmpty(instanceId))
+            {
+                var first = _instances.GetAll().FirstOrDefault();
+                if (first != null)
+                {
+                    instanceId = first.Id;
+                    InstanceSelectionService.Select(first.Id);
+                }
+            }
+
+            if (string.IsNullOrEmpty(instanceId))
+            {
+                MessageBox.Show("No Minecraft installation found. Please create an installation first.", "Quick Connect", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var target = new LaunchServerTarget
+            {
+                Host = srv.Host,
+                Port = srv.Port,
+                Name = srv.Name
+            };
+
+            NavigateTo("Home");
+            if (GetOrCreateView("Home") is LaunchView lv)
+            {
+                await lv.LaunchWithServerAsync(target);
+            }
+        }
+
+        #endregion
+
         private void Logo_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
