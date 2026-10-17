@@ -1,9 +1,9 @@
 {
-  "version": "1.3.4",
+  "version": "1.3.5",
   "releaseDate": "October 17, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.3.4: Complete Library redesign with sleek dark #101010 background, bold 'Installed Version' header styled after browse-by-game posters, rounded vertical installation cards with smooth hover zoom & gray dimming, interactive center settings gear button, clean dedicated instance settings view, and fully isolated legacy explore scripts.",
+  "releaseNotes": "Flow Client v1.3.5: Lunar-style horizontal version banner cards with official update key art backgrounds, 1.5x larger clean settings gear with zero blue accents, and clean instance settings integration.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.4/FlowClient-v1.3.4.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.3.5/FlowClient-v1.3.5.zip"
 }
