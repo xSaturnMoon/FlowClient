@@ -192,6 +192,15 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="SidebarCreateBtnStyle" TargetType="Button" BasedOn="{StaticResource SidebarPillButton}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsCreateActive}" Value="True">
+                        <Setter Property="Background" Value="#262629"/>
+                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <Style x:Key="SidebarSettingsBtnStyle" TargetType="Button" BasedOn="{StaticResource SidebarPillButton}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsSettingsActive}" Value="True">
@@ -214,7 +223,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border BorderBrush="#1C1C1E" BorderThickness="1" CornerRadius="12" Background="#101010" Margin="1" SnapsToDevicePixels="True">
+    <Border x:Name="RootBorder" BorderBrush="#1C1C1E" BorderThickness="1" CornerRadius="12" Background="#101010" Margin="1" SnapsToDevicePixels="True" SizeChanged="RootBorder_SizeChanged">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="46"/>
@@ -342,7 +351,7 @@
                                               Data="F0 M 10,1.5 A 8.5,8.5 0 1,0 10,18.5 A 8.5,8.5 0 1,0 10,1.5 Z M 13.89,6.11 L 11.41,11.41 L 6.11,13.89 L 8.59,8.59 Z"
                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="Discover" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                     </Grid>
                                     <!-- Instance Mode: Info -->
                                     <Grid x:Name="NavDiscoverInfoPanel" Opacity="0" Visibility="Collapsed">
@@ -355,7 +364,7 @@
                                               Data="M 12 2 C 6.48 2 2 6.48 2 12 C 2 17.52 6.48 22 12 22 C 17.52 22 22 17.52 22 12 C 22 6.48 17.52 2 12 2 Z M 13 17 L 11 17 L 11 11 L 13 11 L 13 17 Z M 13 9 L 11 9 L 11 7 L 13 7 L 13 9 Z"
                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="Info" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                     </Grid>
                                 </Grid>
                             </Button>
@@ -374,7 +383,7 @@
                                               StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                               Width="15" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="Library" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                     </Grid>
                                     <!-- Instance Mode: Mod -->
                                     <Grid x:Name="NavLibraryModPanel" Opacity="0" Visibility="Collapsed">
@@ -387,14 +396,14 @@
                                               Data="M 20.5 11 H 19 V 7 C 19 5.9 18.1 5 17 5 H 13 V 3.5 C 13 2.12 11.88 1 10.5 1 S 8 2.12 8 3.5 V 5 H 4 C 2.9 5 2.01 5.9 2.01 7 L 2 10.5 H 3.5 C 4.88 10.5 6 11.62 6 13 S 4.88 15.5 3.5 15.5 H 2 V 19 C 2 20.1 2.9 21 4 21 H 7.5 C 7.5 19.62 8.62 18.5 10 18.5 S 12.5 19.62 12.5 21 H 17 C 18.1 21 19 20.1 19 19 V 15.5 H 20.5 C 21.88 15.5 23 14.38 23 13 S 21.88 11 20.5 11 Z"
                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="Mod" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                     </Grid>
                                 </Grid>
                             </Button>
 
                             <!-- 3. + Create (Collapsible in Version Settings Mode) -->
                             <Grid x:Name="NavCreateContainer" Height="40" ClipToBounds="True">
-                                <Button x:Name="NavCreateBtn" Style="{StaticResource SidebarPillButton}" Click="NavCreate_Click">
+                                <Button x:Name="NavCreateBtn" Style="{StaticResource SidebarCreateBtnStyle}" Click="NavCreate_Click">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="22"/>
@@ -405,7 +414,7 @@
                                               StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                               Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="Create" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -422,7 +431,7 @@
                                               Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
                                               Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="Settings" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -513,7 +522,7 @@
                                         </Path>
                                     </Grid>
                                     <TextBlock Grid.Column="1" Text="Check Updates" FontSize="13.5" FontWeight="Bold"
-                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
                                 </Grid>
                             </Button>
 
@@ -536,7 +545,7 @@
                                     </Border>
                                     <TextBlock Grid.Column="1" Text="{Binding PlayerName}" FontSize="13.5" FontWeight="Bold"
                                                Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="9,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                               FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="9,2,0,0" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Button>
                         </StackPanel>

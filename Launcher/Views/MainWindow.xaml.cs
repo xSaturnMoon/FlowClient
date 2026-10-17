@@ -86,6 +86,9 @@ namespace Launcher.Views
 
                 // Version Settings sidebar morphing
                 LibraryViewModel.VersionSettingsModeChanged += OnVersionSettingsModeChanged;
+
+                // Ensure hardware-accelerated root corner clipping
+                UpdateRootClip();
             };
             Closed += (_, _) =>
             {
@@ -97,6 +100,21 @@ namespace Launcher.Views
                 InstanceService.InstancesChanged -= OnInstancesChanged;
                 InstanceSelectionService.SelectedInstanceChanged -= OnInstanceSelectionChanged;
             };
+        }
+
+        private void RootBorder_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateRootClip();
+        }
+
+        private void UpdateRootClip()
+        {
+            if (RootBorder != null && RootBorder.ActualWidth > 0 && RootBorder.ActualHeight > 0)
+            {
+                RootBorder.Clip = new RectangleGeometry(
+                    new Rect(0, 0, RootBorder.ActualWidth, RootBorder.ActualHeight),
+                    12, 12);
+            }
         }
 
         #region View Caching & Instant Navigation
@@ -112,6 +130,7 @@ namespace Launcher.Views
             {
                 "Home" or "Launch"      => new LaunchView(),
                 "Library" or "Versions" or "Explore" => new LibraryView(),
+                "Create"                => new CreateView(),
                 "LegacyExplore"         => new LegacyExploreView(),
                 "Cosmetics" or "Account"=> new AccountView(),
                 "News"                  => new NewsView(),
@@ -136,6 +155,7 @@ namespace Launcher.Views
                     _ = GetOrCreateView("News");
                     _ = GetOrCreateView("Account");
                     _ = GetOrCreateView("Library");
+                    _ = GetOrCreateView("Create");
                     _ = GetOrCreateView("Settings");
                 }
                 catch { }
@@ -287,7 +307,8 @@ namespace Launcher.Views
             "account" or "cosmetics"=> 1,
             "home" or "launch"      => 2,
             "library" or "versions" or "explore" => 3,
-            "settings"              => 4,
+            "create"                => 4,
+            "settings"              => 5,
             _                       => 2
         };
 
@@ -646,8 +667,11 @@ namespace Launcher.Views
             NavigateTo("Library");
         }
 
-        private void NavCreate_Click(object sender, RoutedEventArgs e) =>
-            NavigateTo("Library");
+        private void NavCreate_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode) return;
+            NavigateTo("Create");
+        }
 
         private void NavSettings_Click(object sender, RoutedEventArgs e) =>
             NavigateTo("Settings");
@@ -900,6 +924,12 @@ namespace Launcher.Views
                          query.Equals("skin", StringComparison.OrdinalIgnoreCase))
                 {
                     NavigateTo("Account");
+                }
+                else if (query.Equals("create", StringComparison.OrdinalIgnoreCase) ||
+                         query.Equals("new", StringComparison.OrdinalIgnoreCase) ||
+                         query.Equals("install", StringComparison.OrdinalIgnoreCase))
+                {
+                    NavigateTo("Create");
                 }
                 else
                 {

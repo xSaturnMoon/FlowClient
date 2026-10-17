@@ -163,27 +163,27 @@
         <Grid Grid.Row="1" Margin="0,0,0,26">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <!-- Selected Version Showcase Card (Clean crisp modern styling) -->
-                <Border Background="#18181B" BorderBrush="#27272A" BorderThickness="1" CornerRadius="6"
-                        Padding="12,6" Margin="0,0,0,12" HorizontalAlignment="Center" SnapsToDevicePixels="True">
+                <!-- Selected Version Showcase Card (Search-bar capsule styling matching top search) -->
+                <Border Background="#1E1E22" BorderBrush="#2B2B32" BorderThickness="1" CornerRadius="20"
+                        Height="40" Padding="12,0,16,0" Margin="0,0,0,14" HorizontalAlignment="Center" SnapsToDevicePixels="True">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <!-- Loader Icon Container -->
-                        <Border x:Name="LoaderBadgeBorder" Background="#222226" BorderBrush="#2E2E34" BorderThickness="1"
-                                CornerRadius="4" Width="32" Height="32" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <Border x:Name="LoaderBadgeBorder" Background="#26262B" BorderBrush="#323238" BorderThickness="1"
+                                CornerRadius="13" Width="26" Height="26" Margin="0,0,10,0" VerticalAlignment="Center">
                             <Image Source="{Binding SelectedLoaderIconUri, Converter={StaticResource ImgSrc}}"
-                                   Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality"
+                                   Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality"
                                    VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
 
                         <!-- Instance / Version Details -->
-                        <StackPanel VerticalAlignment="Center" Margin="0,0,4,0">
-                            <TextBlock Text="{Binding SelectedName}" Foreground="#FFFFFF" FontSize="13.5" FontWeight="Bold"
-                                       FontFamily="{StaticResource NunitoFont}"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                <TextBlock x:Name="TxtLoaderBadge" Text="FABRIC" Foreground="#60A5FA" FontSize="11" FontWeight="Bold"
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedName}" Foreground="#FFFFFF" FontSize="12.5" FontWeight="Bold"
+                                       FontFamily="{StaticResource NunitoFont}" Margin="0,0,0,1"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="TxtLoaderBadge" Text="FABRIC" Foreground="#A0A0AA" FontSize="10" FontWeight="Bold"
                                            FontFamily="{StaticResource NunitoFont}"/>
-                                <TextBlock Text=" · " Foreground="#525464" FontSize="11" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding SelectedVersion}" Foreground="#8E92A4" FontSize="11" FontWeight="SemiBold"
+                                <TextBlock Text=" · " Foreground="#55555C" FontSize="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedVersion}" Foreground="#7E7E84" FontSize="10" FontWeight="SemiBold"
                                            FontFamily="{StaticResource NunitoFont}"/>
                             </StackPanel>
                         </StackPanel>
@@ -191,12 +191,12 @@
                 </Border>
 
                 <!-- Status message capsule (visible when downloading or launching) -->
-                <Border Background="#18181B" BorderBrush="#27272A" BorderThickness="1" CornerRadius="6"
-                        Padding="12,5" Margin="0,0,0,10" HorizontalAlignment="Center"
+                <Border Background="#1E1E22" BorderBrush="#2B2B32" BorderThickness="1" CornerRadius="16"
+                        Padding="14,5" Margin="0,0,0,10" HorizontalAlignment="Center"
                         Visibility="{Binding StatusMessage, Converter={StaticResource StrVis}}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="●" Foreground="#3B82F6" FontSize="9" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold"
+                        <TextBlock Text="●" Foreground="#E0E0E0" FontSize="8" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="#E5E7EB" FontSize="11" FontWeight="SemiBold"
                                    FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
