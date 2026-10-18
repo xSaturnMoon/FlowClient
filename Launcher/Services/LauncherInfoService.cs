@@ -135,11 +135,49 @@ namespace Launcher.Services
             try
             {
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return "—";
-                using var searcher = new ManagementObjectSearcher("SELECT Name FROM Win32_VideoController");
+                using var searcher = new ManagementObjectSearcher("SELECT Name, AdapterRAM FROM Win32_VideoController");
+                var gpus = new System.Collections.Generic.List<(string Name, ulong Vram, bool IsDiscrete)>();
                 foreach (var obj in searcher.Get())
                 {
-                    var name = obj["Name"]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(name)) return name;
+                    var name = obj["Name"]?.ToString()?.Trim();
+                    if (string.IsNullOrWhiteSpace(name)) continue;
+
+                    // Filter out virtual / basic display adapters
+                    if (name.Contains("Microsoft", StringComparison.OrdinalIgnoreCase) ||
+                        name.Contains("Virtual", StringComparison.OrdinalIgnoreCase) ||
+                        name.Contains("Citrix", StringComparison.OrdinalIgnoreCase) ||
+                        name.Contains("Basic Display", StringComparison.OrdinalIgnoreCase) ||
+                        name.Contains("RDP", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    ulong vram = 0;
+                    try
+                    {
+                        if (obj["AdapterRAM"] != null)
+                        {
+                            vram = Convert.ToUInt64(obj["AdapterRAM"]);
+                        }
+                    }
+                    catch { }
+
+                    bool isDiscrete = name.Contains("GeForce", StringComparison.OrdinalIgnoreCase) ||
+                                      name.Contains("RTX", StringComparison.OrdinalIgnoreCase) ||
+                                      name.Contains("GTX", StringComparison.OrdinalIgnoreCase) ||
+                                      name.Contains("Radeon RX", StringComparison.OrdinalIgnoreCase) ||
+                                      name.Contains("Arc", StringComparison.OrdinalIgnoreCase) ||
+                                      name.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase);
+
+                    gpus.Add((name, vram, isDiscrete));
+                }
+
+                if (gpus.Count > 0)
+                {
+                    var best = gpus.OrderByDescending(g => g.IsDiscrete ? 1 : 0)
+                                   .ThenByDescending(g => g.Vram)
+                                   .First();
+                    return best.Name;
                 }
             }
             catch { }

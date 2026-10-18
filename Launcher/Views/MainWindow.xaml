@@ -69,6 +69,7 @@
                 <Setter Property="Width" Value="32"/>
                 <Setter Property="Height" Value="28"/>
                 <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#8E8E98"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Template">
@@ -80,6 +81,7 @@
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="bd" Property="Background" Value="#222228"/>
+                                    <Setter Property="Foreground" Value="#FFFFFF"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter TargetName="bd" Property="Background" Value="#2C2C34"/>
@@ -302,8 +304,10 @@
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
                     <!-- Quick Connect Servers Icon (Toggles Quick Connect Dropdown) -->
                     <Button x:Name="TopBarQuickConnectBtn" Style="{StaticResource TopBarIconButton}" Click="QuickConnect_Click" ToolTip="Quick Connect Servers" Margin="0,0,6,0">
-                        <Path Data="M3 4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4zm3 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm3 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-6 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3zm3 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm3 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-6 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1zm3 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm3 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"
-                              Fill="#8E8E98" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Path Data="M3,4 A2,2 0 0,1 5,2 H19 A2,2 0 0,1 21,4 V8 A2,2 0 0,1 19,10 H5 A2,2 0 0,1 3,8 Z M3,16 A2,2 0 0,1 5,14 H19 A2,2 0 0,1 21,16 V20 A2,2 0 0,1 19,22 H5 A2,2 0 0,1 3,20 Z M6,6 H6.01 M6,18 H6.01"
+                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                              StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                              Width="15" Height="15" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
 
                     <!-- Minimize Button -->
@@ -695,91 +699,112 @@
                         <DropShadowEffect BlurRadius="32" ShadowDepth="8" Direction="270" Color="#000000" Opacity="0.75"/>
                     </Border.Effect>
                     <StackPanel>
-                        <!-- Header & Active Instance Indicator -->
+                        <!-- Header & Active Instance Indicator + Gear Toggle Button -->
                         <Grid Margin="0,0,0,12">
-                            <StackPanel>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                 <TextBlock Text="QUICK CONNECT" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93"/>
                                 <TextBlock x:Name="QuickConnectActiveInstanceText" Text="Selected Version: …" FontSize="11.5" FontFamily="{StaticResource NunitoFont}" Foreground="#6E6E76" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
+
+                            <!-- Gear Button to toggle Add Server form with smooth animation -->
+                            <Button x:Name="QuickConnectGearBtn" Grid.Column="1" Width="30" Height="30" Background="#161619"
+                                    BorderThickness="0" Cursor="Hand" Click="QuickConnectToggleAdd_Click" ToolTip="Add Server"
+                                    VerticalAlignment="Center" FocusVisualStyle="{x:Null}">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="gb" Background="{TemplateBinding Background}" CornerRadius="15">
+                                            <Path x:Name="gp" Data="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                                                  Fill="#8E8E98" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="gb" Property="Background" Value="#25252B"/>
+                                                <Setter TargetName="gp" Property="Fill" Value="#FFFFFF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
                         </Grid>
 
-                        <!-- Add Server Section -->
-                        <Border Background="#161619" CornerRadius="14" Padding="12,12" Margin="0,0,0,10">
-                            <StackPanel>
-                                <TextBlock Text="ADD SERVER" FontSize="9.5" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}" Foreground="#7E7E84" Margin="2,0,0,6"/>
-                                <!-- Server Name Input -->
-                                <Border Height="34" Background="#1E1E22" CornerRadius="17" Padding="12,0" Margin="0,0,0,6">
+                        <!-- Collapsible Add Server Section (Smooth animation on gear click) -->
+                        <Grid x:Name="QuickConnectAddPanel" Height="0" Opacity="0" Visibility="Collapsed" ClipToBounds="True">
+                            <Border Background="#161619" CornerRadius="14" Padding="12,12" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <TextBlock Text="ADD SERVER" FontSize="9.5" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}" Foreground="#7E7E84" Margin="2,0,0,6"/>
+                                    <!-- Server Name Input -->
+                                    <Border Height="34" Background="#1E1E22" CornerRadius="17" Padding="12,0" Margin="0,0,0,6">
+                                        <Grid>
+                                            <TextBox x:Name="QuickConnectNameInput"
+                                                     Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
+                                                     FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                                     CaretBrush="#FFFFFF" VerticalAlignment="Center"
+                                                     GotFocus="QuickConnectInput_GotFocus" LostFocus="QuickConnectInput_LostFocus"/>
+                                            <TextBlock x:Name="QuickConnectNamePlaceholder"
+                                                       Text="Server Name (e.g. Hypixel)" Foreground="#65656E" FontSize="12"
+                                                       FontFamily="{StaticResource NunitoFont}" IsHitTestVisible="False"
+                                                       VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Server IP Input -->
+                                    <Border Height="34" Background="#1E1E22" CornerRadius="17" Padding="12,0" Margin="0,0,0,8">
+                                        <Grid>
+                                            <TextBox x:Name="QuickConnectAddressInput"
+                                                     Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
+                                                     FontSize="12" FontFamily="{StaticResource NunitoFont}"
+                                                     CaretBrush="#FFFFFF" VerticalAlignment="Center"
+                                                     GotFocus="QuickConnectInput_GotFocus" LostFocus="QuickConnectInput_LostFocus"/>
+                                            <TextBlock x:Name="QuickConnectAddressPlaceholder"
+                                                       Text="Server IP (e.g. mc.hypixel.net)" Foreground="#65656E" FontSize="12"
+                                                       FontFamily="{StaticResource NunitoFont}" IsHitTestVisible="False"
+                                                       VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Add Server Action Button & Status -->
                                     <Grid>
-                                        <TextBox x:Name="QuickConnectNameInput"
-                                                 Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
-                                                 FontSize="12" FontFamily="{StaticResource NunitoFont}"
-                                                 CaretBrush="#FFFFFF" VerticalAlignment="Center"
-                                                 GotFocus="QuickConnectInput_GotFocus" LostFocus="QuickConnectInput_LostFocus"/>
-                                        <TextBlock x:Name="QuickConnectNamePlaceholder"
-                                                   Text="Server Name (e.g. Hypixel)" Foreground="#65656E" FontSize="12"
-                                                   FontFamily="{StaticResource NunitoFont}" IsHitTestVisible="False"
-                                                   VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock x:Name="QuickConnectStatusText" Foreground="#F59E0B" FontSize="11"
+                                                   FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" TextWrapping="Wrap"
+                                                   Margin="2,0,8,0" Visibility="Collapsed"/>
+                                        <Button x:Name="QuickConnectAddBtn" Grid.Column="1" Content="+ Add Server"
+                                                Height="28" Padding="14,0" Background="#FFFFFF" Foreground="#101010"
+                                                FontWeight="Bold" FontSize="11.5" FontFamily="{StaticResource NunitoBoldFont}"
+                                                Cursor="Hand" Click="QuickConnectAdd_Click" FocusVisualStyle="{x:Null}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="14" Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="b" Property="Background" Value="#E5E5E5"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
                                     </Grid>
-                                </Border>
-
-                                <!-- Server IP Input -->
-                                <Border Height="34" Background="#1E1E22" CornerRadius="17" Padding="12,0" Margin="0,0,0,8">
-                                    <Grid>
-                                        <TextBox x:Name="QuickConnectAddressInput"
-                                                 Background="Transparent" BorderThickness="0" Foreground="#FFFFFF"
-                                                 FontSize="12" FontFamily="{StaticResource NunitoFont}"
-                                                 CaretBrush="#FFFFFF" VerticalAlignment="Center"
-                                                 GotFocus="QuickConnectInput_GotFocus" LostFocus="QuickConnectInput_LostFocus"/>
-                                        <TextBlock x:Name="QuickConnectAddressPlaceholder"
-                                                   Text="Server IP (e.g. mc.hypixel.net)" Foreground="#65656E" FontSize="12"
-                                                   FontFamily="{StaticResource NunitoFont}" IsHitTestVisible="False"
-                                                   VerticalAlignment="Center" Margin="2,0,0,0"/>
-                                    </Grid>
-                                </Border>
-
-                                <!-- Add Server Action Button & Status -->
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="QuickConnectStatusText" Foreground="#F59E0B" FontSize="11"
-                                               FontFamily="{StaticResource NunitoFont}" VerticalAlignment="Center" TextWrapping="Wrap"
-                                               Margin="2,0,8,0" Visibility="Collapsed"/>
-                                    <Button x:Name="QuickConnectAddBtn" Grid.Column="1" Content="+ Add Server"
-                                            Height="28" Padding="14,0" Background="#FFFFFF" Foreground="#101010"
-                                            FontWeight="Bold" FontSize="11.5" FontFamily="{StaticResource NunitoBoldFont}"
-                                            Cursor="Hand" Click="QuickConnectAdd_Click" FocusVisualStyle="{x:Null}">
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="14" Padding="{TemplateBinding Padding}">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="b" Property="Background" Value="#E5E5E5"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                </Grid>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Separator -->
-                        <Rectangle Height="1" Fill="#28282E" Margin="0,2,0,10"/>
-
-                        <!-- Servers List Header -->
-                        <TextBlock Text="SAVED SERVERS" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource NunitoBoldFont}" Foreground="#8E8E93" Margin="2,0,0,8"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
 
                         <!-- Empty State -->
-                        <TextBlock x:Name="QuickConnectEmptyText" Text="No servers added yet. Enter a server name and IP above."
+                        <TextBlock x:Name="QuickConnectEmptyText" Text="No saved servers yet. Click ⚙ above to add one."
                                    Foreground="#65656E" FontSize="11.5" FontFamily="{StaticResource NunitoFont}" TextWrapping="Wrap"
-                                   TextAlignment="Center" Margin="0,10,0,10" Visibility="Collapsed"/>
+                                   TextAlignment="Center" Margin="0,8,0,8" Visibility="Collapsed"/>
 
-                        <!-- Servers Scrollable ItemsControl -->
-                        <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <!-- Servers Scrollable ItemsControl (Immediately below header, NO 'SAVED SERVERS' text) -->
+                        <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <ItemsControl x:Name="QuickConnectItemsList">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>

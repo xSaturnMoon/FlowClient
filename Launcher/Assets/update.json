@@ -1,9 +1,9 @@
 {
-  "version": "1.4.9",
-  "releaseDate": "October 17, 2026",
+  "version": "1.5.0",
+  "releaseDate": "October 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.4.9: Quick Connect server shortcut in topbar! Add and verify servers with direct-join Play button, clean typography (server name in white, IP in grey, no icons), and immediate zero-lag server connection using IPv4 fast-connect and Mojang QuickPlay 1.20+ optimization.",
+  "releaseNotes": "Flow Client v1.5.0: Redesigned Quick Connect with sleek stroke-based server icon and collapsible gear-animated Add Server panel; improved discrete GPU detection for NVIDIA/Radeon GPUs; overhauled Discord Rich Presence with resilient keepalive and game presence; curved profile avatar without grey disc; and polished Library version cards with hover clipping fixes and clean edge fitting.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.4.9/FlowClient-v1.4.9.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.0/FlowClient-v1.5.0.zip"
 }

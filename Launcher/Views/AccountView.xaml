@@ -203,17 +203,15 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Circular Head Avatar -->
-                                <Border Grid.Column="0" Width="60" Height="60" CornerRadius="30" Background="#26262B" BorderThickness="0"
-                                        ClipToBounds="True" Margin="0,0,16,0" VerticalAlignment="Center">
-                                    <Image Source="{Binding ProfilePicture}"
-                                           Width="60" Height="60"
-                                           Stretch="None"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           SnapsToDevicePixels="True"
-                                           UseLayoutRounding="True"
-                                           RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                <!-- Modern Rounded Head Avatar (Curved edges, no circular grey disc) -->
+                                <Border Grid.Column="0" Width="60" Height="60" CornerRadius="16" Background="#1E1E22" BorderThickness="0"
+                                        Margin="0,0,16,0" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                    <Border CornerRadius="16" BorderThickness="0">
+                                        <Border.Background>
+                                            <ImageBrush ImageSource="{Binding ProfilePicture}" Stretch="UniformToFill"
+                                                        RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                        </Border.Background>
+                                    </Border>
                                 </Border>
 
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">

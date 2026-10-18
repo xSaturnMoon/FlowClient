@@ -20,8 +20,10 @@ namespace Launcher.Services
         private readonly object _lock = new();
         private NamedPipeClientStream? _pipe;
         private CancellationTokenSource? _cts;
+        private CancellationTokenSource? _readCts;
         private bool _isConnected;
         private bool _disposed;
+        private bool _skipAssets;
         private long _launcherStartTime;
 
         private string? _currentDetails;
@@ -67,13 +69,14 @@ namespace Launcher.Services
 
         public void SetPresenceInLauncher(string? versionSelected = null)
         {
-            var details = string.IsNullOrWhiteSpace(versionSelected)
+            var details = "Flow Client";
+            var state = string.IsNullOrWhiteSpace(versionSelected)
                 ? "Nel Launcher"
-                : $"Versione: {versionSelected}";
+                : $"Nel Launcher • {versionSelected}";
 
             UpdateActivity(
                 details: details,
-                state: "Menu Principale",
+                state: state,
                 startTimestamp: _launcherStartTime,
                 largeImage: "flow_logo",
                 largeText: "Flow Client",
@@ -86,10 +89,12 @@ namespace Launcher.Services
         {
             var ldr = string.IsNullOrWhiteSpace(loader) ? "Minecraft" : loader.Trim();
             var ver = string.IsNullOrWhiteSpace(version) ? "" : version.Trim();
-            var details = $"In gioco su {instanceName}";
-            var state = !string.IsNullOrWhiteSpace(server)
-                ? $"Server: {server}"
-                : (!string.IsNullOrWhiteSpace(ver) ? $"{ldr} {ver}" : ldr);
+            var details = !string.IsNullOrWhiteSpace(server)
+                ? $"Giocando su {server}"
+                : $"In gioco: {instanceName}";
+            var state = !string.IsNullOrWhiteSpace(ver)
+                ? $"Flow Client • {ldr} {ver}"
+                : $"Flow Client • {ldr}";
 
             var loaderIcon = ldr.ToLowerInvariant() switch
             {
@@ -157,7 +162,7 @@ namespace Launcher.Services
                             ? new { start = _currentTimestamp.Value }
                             : null;
 
-                        object? assets = (_largeImageKey != null || _smallImageKey != null)
+                        object? assets = (!_skipAssets && (_largeImageKey != null || _smallImageKey != null))
                             ? new
                             {
                                 large_image = _largeImageKey,
@@ -228,7 +233,7 @@ namespace Launcher.Services
 
                 try
                 {
-                    await Task.Delay(5000, ct);
+                    await Task.Delay(4000, ct);
                 }
                 catch (OperationCanceledException)
                 {
@@ -239,30 +244,43 @@ namespace Launcher.Services
 
         private void TryConnect()
         {
+            var clientId = DefaultClientId;
+
             for (var i = 0; i < 10; i++)
             {
                 var pipeName = $"discord-ipc-{i}";
                 try
                 {
-                    var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.None);
-                    pipe.Connect(1000);
+                    var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+                    pipe.Connect(80);
 
-                    _pipe = pipe;
+                    lock (_lock)
+                    {
+                        _pipe = pipe;
+                    }
 
                     // Handshake
                     var handshake = JsonSerializer.Serialize(new
                     {
                         v = 1,
-                        client_id = DefaultClientId
+                        client_id = clientId
                     });
 
                     WriteFrame(0, handshake);
 
                     // Read handshake response
-                    var (op, resp) = ReadFrame();
+                    var (op, resp) = ReadFrameSync(pipe);
                     if (op == 1 && resp.Contains("READY"))
                     {
-                        _isConnected = true;
+                        lock (_lock)
+                        {
+                            _isConnected = true;
+                            _readCts = new CancellationTokenSource();
+                        }
+
+                        // Start continuous read pump to handle PING (opcode 3) and PONG (opcode 4)
+                        _ = Task.Run(() => ReadPumpAsync(pipe, _readCts.Token));
+
                         ConnectionChanged?.Invoke(true);
                         return;
                     }
@@ -275,40 +293,125 @@ namespace Launcher.Services
                 }
             }
 
-            _isConnected = false;
+            lock (_lock)
+            {
+                _isConnected = false;
+            }
+        }
+
+        private async Task ReadPumpAsync(NamedPipeClientStream pipe, CancellationToken ct)
+        {
+            var header = new byte[8];
+            while (!ct.IsCancellationRequested && pipe.IsConnected)
+            {
+                try
+                {
+                    var headerRead = 0;
+                    while (headerRead < 8)
+                    {
+                        var read = await pipe.ReadAsync(header.AsMemory(headerRead, 8 - headerRead), ct);
+                        if (read <= 0) return;
+                        headerRead += read;
+                    }
+
+                    var opcode = BitConverter.ToInt32(header, 0);
+                    var length = BitConverter.ToInt32(header, 4);
+                    if (length < 0 || length > 65536) return;
+
+                    var data = new byte[length];
+                    var totalRead = 0;
+                    while (totalRead < length)
+                    {
+                        var read = await pipe.ReadAsync(data.AsMemory(totalRead, length - totalRead), ct);
+                        if (read <= 0) return;
+                        totalRead += read;
+                    }
+
+                    var json = Encoding.UTF8.GetString(data);
+
+                    // Opcode 3 = PING from Discord: MUST reply with Opcode 4 (PONG) to keep alive!
+                    if (opcode == 3)
+                    {
+                        WriteFrame(4, json);
+                    }
+                    // Opcode 2 = CLOSE
+                    else if (opcode == 2)
+                    {
+                        break;
+                    }
+                    // Opcode 1 = FRAME
+                    else if (opcode == 1)
+                    {
+                        // Check if Discord rejected activity due to invalid custom assets (code 4000)
+                        if (json.Contains("\"evt\":\"ERROR\"") || json.Contains("\"code\":4000"))
+                        {
+                            lock (_lock)
+                            {
+                                if (!_skipAssets)
+                                {
+                                    _skipAssets = true;
+                                    Task.Run(SendCurrentPresence);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+            }
+
+            ClosePipe();
         }
 
         private void WriteFrame(int opcode, string json)
         {
-            if (_pipe == null || !_pipe.IsConnected) return;
+            lock (_lock)
+            {
+                if (_pipe == null || !_pipe.IsConnected) return;
 
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var buffer = new byte[8 + bytes.Length];
+                try
+                {
+                    var bytes = Encoding.UTF8.GetBytes(json);
+                    var buffer = new byte[8 + bytes.Length];
 
-            BitConverter.GetBytes(opcode).CopyTo(buffer, 0);
-            BitConverter.GetBytes(bytes.Length).CopyTo(buffer, 4);
-            bytes.CopyTo(buffer, 8);
+                    BitConverter.GetBytes(opcode).CopyTo(buffer, 0);
+                    BitConverter.GetBytes(bytes.Length).CopyTo(buffer, 4);
+                    bytes.CopyTo(buffer, 8);
 
-            _pipe.Write(buffer, 0, buffer.Length);
-            _pipe.Flush();
+                    _pipe.Write(buffer, 0, buffer.Length);
+                    _pipe.Flush();
+                }
+                catch
+                {
+                    ClosePipe();
+                }
+            }
         }
 
-        private (int Opcode, string Json) ReadFrame()
+        private static (int Opcode, string Json) ReadFrameSync(NamedPipeClientStream pipe)
         {
-            if (_pipe == null || !_pipe.IsConnected) return (-1, "");
+            if (!pipe.IsConnected) return (-1, "");
 
             var header = new byte[8];
-            var bytesRead = _pipe.Read(header, 0, 8);
-            if (bytesRead < 8) return (-1, "");
+            var headerRead = 0;
+            while (headerRead < 8)
+            {
+                var r = pipe.Read(header, headerRead, 8 - headerRead);
+                if (r <= 0) return (-1, "");
+                headerRead += r;
+            }
 
             var opcode = BitConverter.ToInt32(header, 0);
             var length = BitConverter.ToInt32(header, 4);
+            if (length < 0 || length > 65536) return (-1, "");
 
             var data = new byte[length];
             var totalRead = 0;
             while (totalRead < length)
             {
-                var read = _pipe.Read(data, totalRead, length - totalRead);
+                var read = pipe.Read(data, totalRead, length - totalRead);
                 if (read <= 0) break;
                 totalRead += read;
             }
@@ -324,6 +427,8 @@ namespace Launcher.Services
             {
                 wasConnected = _isConnected;
                 _isConnected = false;
+                try { _readCts?.Cancel(); } catch { }
+                _readCts = null;
                 try { _pipe?.Dispose(); } catch { }
                 _pipe = null;
             }

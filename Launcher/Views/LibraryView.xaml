@@ -472,12 +472,14 @@
         <DataTemplate x:Key="InstalledVersionCardTemplate">
             <Border x:Name="CardRoot"
                     Width="320" Height="155"
-                    Margin="0,0,24,24"
+                    Margin="4,4,20,20"
                     CornerRadius="12"
                     BorderBrush="#25262D"
-                    BorderThickness="1.5"
+                    BorderThickness="1"
                     Cursor="Hand"
                     ClipToBounds="True"
+                    UseLayoutRounding="True"
+                    SnapsToDevicePixels="True"
                     MouseLeftButtonUp="Card_MouseLeftButtonUp"
                     RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
@@ -492,7 +494,7 @@
 
                 <Grid>
                     <!-- 1. Dark Vignette / Contrast Overlay for perfect text readability -->
-                    <Border CornerRadius="10.5">
+                    <Border CornerRadius="11">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <GradientStop Color="#45000000" Offset="0.0"/>
@@ -549,19 +551,10 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <!-- 4. Active Selection Border Highlight (Neutral Crisp White, No Blue) -->
-                    <Border BorderBrush="#FFFFFF" BorderThickness="2" CornerRadius="10.5"
-                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVis}}"
-                            IsHitTestVisible="False">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.45" Color="#FFFFFF"/>
-                        </Border.Effect>
-                    </Border>
-
-                    <!-- 5. Grayish Dimming Overlay (Fades in on hover) -->
+                    <!-- 4. Grayish Dimming Overlay (Fades in on hover) -->
                     <Border x:Name="HoverOverlay"
                             Background="#50000000"
-                            CornerRadius="10.5"
+                            CornerRadius="11"
                             Opacity="0"
                             IsHitTestVisible="False"/>
 
@@ -679,12 +672,21 @@
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
-                          Padding="36,6,14,32"
+                          Padding="36,16,14,32"
                           FocusVisualStyle="{x:Null}">
                 <Grid>
                     <!-- Horizontal Cards Grid -->
                     <ItemsControl ItemsSource="{Binding FilteredVersions}"
                                   ItemTemplate="{StaticResource InstalledVersionCardTemplate}">
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Panel.ZIndex" Value="100"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel Orientation="Horizontal"/>

@@ -1004,9 +1004,47 @@ namespace Launcher.Views
                 QuickConnectActiveInstanceText.Text = "No instance selected";
             }
 
+            QuickConnectAddPanel.Visibility = Visibility.Collapsed;
+            QuickConnectAddPanel.Height = 0;
+            QuickConnectAddPanel.Opacity = 0;
             QuickConnectStatusText.Visibility = Visibility.Collapsed;
             RefreshQuickConnectList();
             QuickConnectOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void QuickConnectToggleAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var isClosing = QuickConnectAddPanel.Visibility == Visibility.Visible && QuickConnectAddPanel.Height > 10;
+            if (isClosing)
+            {
+                var hAnim = new DoubleAnimation(QuickConnectAddPanel.ActualHeight > 0 ? QuickConnectAddPanel.ActualHeight : 148, 0, new Duration(TimeSpan.FromMilliseconds(180)))
+                {
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+                };
+                var oAnim = new DoubleAnimation(QuickConnectAddPanel.Opacity, 0, new Duration(TimeSpan.FromMilliseconds(150)));
+                hAnim.Completed += (_, _) =>
+                {
+                    QuickConnectAddPanel.Visibility = Visibility.Collapsed;
+                    QuickConnectAddPanel.Height = 0;
+                };
+                QuickConnectAddPanel.BeginAnimation(HeightProperty, hAnim);
+                QuickConnectAddPanel.BeginAnimation(OpacityProperty, oAnim);
+            }
+            else
+            {
+                QuickConnectAddPanel.Visibility = Visibility.Visible;
+                var targetHeight = 148.0;
+                var hAnim = new DoubleAnimation(0, targetHeight, new Duration(TimeSpan.FromMilliseconds(220)))
+                {
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                };
+                var oAnim = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(220)))
+                {
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                };
+                QuickConnectAddPanel.BeginAnimation(HeightProperty, hAnim);
+                QuickConnectAddPanel.BeginAnimation(OpacityProperty, oAnim);
+            }
         }
 
         private void QuickConnectBackdrop_Click(object sender, MouseButtonEventArgs e)
