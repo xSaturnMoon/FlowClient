@@ -93,6 +93,29 @@ namespace Launcher.ViewModels
         public bool SupportsShaders => !string.Equals(SelectedSettingsInstance?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
         public bool SupportsFlow => SupportsMods && IsVersionAtLeast120(SelectedSettingsInstance?.MinecraftVersion);
 
+        public static bool IsFlowCompanionMod(string? fileName, string? title = null, string? slug = null)
+        {
+            var fn = fileName ?? "";
+            var t = title ?? "";
+            var s = slug ?? "";
+
+            if (fn.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (fn.StartsWith("voicechat", StringComparison.OrdinalIgnoreCase) ||
+                fn.Contains("simple-voice-chat", StringComparison.OrdinalIgnoreCase) ||
+                t.Contains("Voice Chat", StringComparison.OrdinalIgnoreCase) ||
+                s.Equals("simple-voice-chat", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (fn.StartsWith("jei", StringComparison.OrdinalIgnoreCase) ||
+                t.Contains("Just Enough Items", StringComparison.OrdinalIgnoreCase) ||
+                s.Equals("jei", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return false;
+        }
+
         public string SearchQuery
         {
             get => _searchQuery;
@@ -519,6 +542,9 @@ namespace Launcher.ViewModels
             foreach (var mod in inst.Mods)
             {
                 if (mod.FileName.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (SupportsFlow && IsFlowCompanionMod(mod.FileName, mod.Title, mod.Slug))
                     continue;
 
                 var info = ModMetadataService.GetModInfo(modsDir, mod.FileName, mod.IconUrl);
@@ -1501,6 +1527,12 @@ namespace Launcher.ViewModels
                 SettingsMods.Clear();
                 foreach (var mod in inst.Mods)
                 {
+                    if (mod.FileName.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    if (SupportsFlow && IsFlowCompanionMod(mod.FileName, mod.Title, mod.Slug))
+                        continue;
+
                     SettingsMods.Add(mod);
                 }
             }

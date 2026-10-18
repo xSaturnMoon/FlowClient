@@ -22,6 +22,11 @@ namespace Launcher.Services
             IProgress<string>? progress = null,
             CancellationToken cancellationToken = default)
         {
+            if (NormalizeLoader(loader) == "fabric")
+            {
+                await new FabricApiService().EnsureFabricApiAsync(gameDirectory, minecraftVersion, progress, cancellationToken);
+            }
+
             var source = ResolveSourcePath(minecraftVersion, loader);
             if (source == null)
             {

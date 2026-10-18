@@ -205,8 +205,7 @@ namespace Launcher.Services
         }
 
         private static bool IsRequiredDependency(ModrinthDependency dependency) =>
-            dependency.DependencyType.Equals("required", StringComparison.OrdinalIgnoreCase)
-            && string.IsNullOrWhiteSpace(dependency.FileName);
+            string.Equals(dependency.DependencyType, "required", StringComparison.OrdinalIgnoreCase);
 
         private sealed record InstallPlanItem(ModrinthProject Project, ModrinthVersion Version, byte[]? CachedBytes);
     }

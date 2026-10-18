@@ -42,6 +42,7 @@ namespace Launcher.Services
         private readonly FlowClientBrandingService _branding = new();
         private readonly VoiceChatService _voiceChat = new();
         private readonly JeiService _jei = new();
+        private readonly FabricApiService _fabricApi = new();
         private readonly SharedGameSettingsService _sharedSettings = new();
         private readonly GlobalContentService _globalContent = new();
         private readonly ServerHistoryService _serverHistory = ServerHistoryService.Instance;
@@ -74,6 +75,11 @@ namespace Launcher.Services
                 Directory.CreateDirectory(Path.Combine(gameDir, "mods"));
                 _sharedSettings.ApplyToInstance(gameDir);
                 _globalContent.SyncToGameDirectory(gameDir);
+
+                if (IsFabricInstance(instance))
+                {
+                    await _fabricApi.EnsureFabricApiAsync(gameDir, instance.MinecraftVersion, progress, cancellationToken);
+                }
 
                 var isVanilla = string.Equals(instance.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
                 var supportsFlow = !isVanilla && LibraryViewModel.IsVersionAtLeast120(instance.MinecraftVersion);
