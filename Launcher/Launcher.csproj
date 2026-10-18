@@ -52,7 +52,7 @@
     <Content Include="Assets\update.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Mods\flowclient-branding-26.2-1.0.0.jar">
+    <Content Include="Assets\Mods\*.jar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Versions\**\*.*">
