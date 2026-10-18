@@ -201,9 +201,21 @@ namespace Launcher.Services
                 return;
 
             var changed = false;
+
+            // Remove internal flowclient-branding mods and files that no longer exist on disk
+            var removedCount = instance.Mods.RemoveAll(m =>
+                m.FileName.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase) ||
+                (!File.Exists(Path.Combine(modsDir, m.FileName)) && !File.Exists(Path.Combine(modsDir, m.FileName + ".disabled"))));
+
+            if (removedCount > 0)
+                changed = true;
+
             foreach (var path in Directory.GetFiles(modsDir, "*.jar"))
             {
                 var fileName = Path.GetFileName(path);
+                if (fileName.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 if (instance.Mods.Any(m => m.FileName.Equals(fileName, StringComparison.OrdinalIgnoreCase)))
                     continue;
 
@@ -220,6 +232,9 @@ namespace Launcher.Services
             {
                 var fileName = Path.GetFileName(path);
                 var enabledName = fileName[..^".disabled".Length];
+                if (enabledName.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 if (instance.Mods.Any(m => m.FileName.Equals(enabledName, StringComparison.OrdinalIgnoreCase)))
                     continue;
 

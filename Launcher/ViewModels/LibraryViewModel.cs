@@ -347,6 +347,9 @@ namespace Launcher.ViewModels
             var list = new List<ModItemViewModel>();
             foreach (var mod in inst.Mods)
             {
+                if (mod.FileName.StartsWith("flowclient-branding", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 var info = ModMetadataService.GetModInfo(modsDir, mod.FileName, mod.IconUrl);
                 var title = string.IsNullOrWhiteSpace(info.Title) ? mod.Title : info.Title;
                 var vm = new ModItemViewModel(
