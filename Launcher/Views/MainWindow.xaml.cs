@@ -586,6 +586,7 @@ namespace Launcher.Views
             Apply(NavTexturesBtn, tab == "Textures");
             Apply(NavShadersBtn, tab == "Shaders");
             Apply(NavModrinthBtn, tab == "Modrinth");
+            Apply(NavFlowBtn, tab == "Flow");
         }
 
         private void AnimateSidebarVersionSettingsMode(bool isInSettings, LibraryCardItemViewModel? item = null)
@@ -664,6 +665,22 @@ namespace Launcher.Views
                 NavModrinthContainer.BeginAnimation(FrameworkElement.HeightProperty, expandModrinth);
                 NavModrinthContainer.BeginAnimation(UIElement.OpacityProperty, fadeInModrinth);
 
+                // 6. Flow -> Expand (Only for modded loaders, hide on Vanilla)
+                if (!isVanilla)
+                {
+                    NavFlowContainer.Visibility = Visibility.Visible;
+                    var expandFlow = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                    var fadeInFlow = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                    NavFlowContainer.BeginAnimation(FrameworkElement.HeightProperty, expandFlow);
+                    NavFlowContainer.BeginAnimation(UIElement.OpacityProperty, fadeInFlow);
+                }
+                else
+                {
+                    NavFlowContainer.Visibility = Visibility.Collapsed;
+                    NavFlowContainer.Height = 0;
+                    NavFlowContainer.Opacity = 0;
+                }
+
                 // 6. Create -> Collapse
                 var collapseCreate = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
                 var fadeCreate = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
@@ -691,6 +708,8 @@ namespace Launcher.Views
                 NavShadersBtn.ClearValue(ForegroundProperty);
                 NavModrinthBtn.ClearValue(BackgroundProperty);
                 NavModrinthBtn.ClearValue(ForegroundProperty);
+                NavFlowBtn.ClearValue(BackgroundProperty);
+                NavFlowBtn.ClearValue(ForegroundProperty);
 
                 // 1. Info -> Discover
                 var fadeOutInfo = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
@@ -733,6 +752,13 @@ namespace Launcher.Views
                 collapseModrinth.Completed += (_, _) => NavModrinthContainer.Visibility = Visibility.Collapsed;
                 NavModrinthContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseModrinth);
                 NavModrinthContainer.BeginAnimation(UIElement.OpacityProperty, fadeModrinth);
+
+                // 6. Flow -> Collapse
+                var collapseFlow = new DoubleAnimation(NavFlowContainer.ActualHeight > 0 ? NavFlowContainer.ActualHeight : 40, 0, duration) { EasingFunction = cubic };
+                var fadeFlow = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                collapseFlow.Completed += (_, _) => NavFlowContainer.Visibility = Visibility.Collapsed;
+                NavFlowContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseFlow);
+                NavFlowContainer.BeginAnimation(UIElement.OpacityProperty, fadeFlow);
 
                 // 6. Create -> Expand
                 NavCreateContainer.Visibility = Visibility.Visible;
@@ -810,6 +836,18 @@ namespace Launcher.Views
                 if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
                 {
                     lv.Vm.SettingsTab = "Modrinth";
+                }
+            }
+        }
+
+        private void NavFlow_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isInVersionSettingsMode)
+            {
+                UpdateVersionSettingsSidebarActiveButton("Flow");
+                if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
+                {
+                    lv.Vm.SettingsTab = "Flow";
                 }
             }
         }

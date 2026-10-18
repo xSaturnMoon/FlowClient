@@ -461,6 +461,24 @@
                                 </Button>
                             </Grid>
 
+                            <!-- 6. Flow (Version Settings Mode) -->
+                            <Grid x:Name="NavFlowContainer" Height="0" Opacity="0" Visibility="Collapsed" ClipToBounds="True">
+                                <Button x:Name="NavFlowBtn" Style="{StaticResource SidebarLibraryBtnStyle}" Click="NavFlow_Click">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="22"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Path Grid.Column="0" Width="14" Height="14" Stretch="Uniform"
+                                              Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                              Data="M 3 4 C 3 2.9 3.9 2 5 2 L 18 2 C 19.1 2 20 2.9 20 4 L 20 7 C 20 7.6 19.6 8 19 8 L 9 8 L 9 11 L 16 11 C 16.6 11 17 11.4 17 12 L 17 15 C 17 15.6 16.6 16 16 16 L 9 16 L 9 21 C 9 21.6 8.6 22 8 22 L 4 22 C 3.4 22 3 21.6 3 21 Z"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="Flow" FontSize="13.5" FontWeight="Bold"
+                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+
                             <!-- 3. + Create (Collapsible in Version Settings Mode) -->
                             <Grid x:Name="NavCreateContainer" Height="40" ClipToBounds="True">
                                 <Button x:Name="NavCreateBtn" Style="{StaticResource SidebarCreateBtnStyle}" Click="NavCreate_Click">

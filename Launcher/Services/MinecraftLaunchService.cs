@@ -73,7 +73,8 @@ namespace Launcher.Services
                 _sharedSettings.ApplyToInstance(gameDir);
                 _globalContent.SyncToGameDirectory(gameDir);
 
-                if (LauncherSettingsService.Instance.Current.EnableFlowClientMod && ShouldInjectBrandingMod(instance))
+                var enableFlow = instance.EnableFlowMod && LauncherSettingsService.Instance.Current.EnableFlowClientMod;
+                if (enableFlow && ShouldInjectBrandingMod(instance))
                 {
                     _branding.EnsureBrandingMod(gameDir, instance.MinecraftVersion, instance.Loader);
                 }
@@ -82,13 +83,18 @@ namespace Launcher.Services
                     _branding.RemoveBrandingMod(gameDir);
                 }
 
-                if (IsFabricInstance(instance) && LauncherSettingsService.Instance.Current.EnableVoiceChatMod)
+                var enableVoice = instance.EnableVoiceChatMod && LauncherSettingsService.Instance.Current.EnableVoiceChatMod;
+                if (IsFabricInstance(instance) && enableVoice)
                 {
                     await _voiceChat.EnsureVoiceChatAsync(
                         gameDir,
                         instance.MinecraftVersion,
                         progress,
                         cancellationToken);
+                }
+                else
+                {
+                    _voiceChat.RemoveVoiceChatMod(gameDir);
                 }
 
                 var mcPath = new MinecraftPath(MinecraftRoot);

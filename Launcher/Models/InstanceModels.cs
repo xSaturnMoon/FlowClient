@@ -25,6 +25,9 @@ namespace Launcher.Models
         public List<InstalledContent> Mods { get; set; } = new();
         public List<InstalledContent> ResourcePacks { get; set; } = new();
         public List<InstalledContent> Shaders { get; set; } = new();
+        public bool EnableFlowMod { get; set; } = true;
+        public bool EnableVoiceChatMod { get; set; } = true;
+        public bool EnableJeiMod { get; set; } = true;
     }
 
     public class InstalledContent

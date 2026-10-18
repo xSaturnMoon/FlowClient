@@ -1,9 +1,9 @@
 {
-  "version": "1.5.1",
+  "version": "1.5.2",
   "releaseDate": "October 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.5.1: Fixed Quick Connect Add Server form clipping; adjusted dropdown position near window edge; added smooth open/close entrance/exit slide & fade animations; added interactive hover scale/color feedback to server Play and Delete buttons; fixed Modrinth version ComboBox display name formatting and instance version badge; enforced Vanilla instance rules (no mods/shaders tabs or folders created, Modrinth filtered to Textures only); and restored fluid sliding animation on ModernToggleSwitch ball.",
+  "releaseNotes": "Flow Client v1.5.2: Introduced dedicated Flow ecosystem tab in version settings to enable or disable the Flow Client in-game suite and bundled companion dependencies (Just Enough Items and Simple Voice Chat); resolved JEI duplicate installation issue on Modrinth by recognizing it as bundled with Flow and displaying Installed (Flow); automated instance-specific mod configuration and launch injection.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.1/FlowClient-v1.5.1.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.2/FlowClient-v1.5.2.zip"
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Nodes;
 using System.Windows.Media;
 using Launcher.Helpers;
 using Launcher.Models;
@@ -130,7 +131,10 @@ namespace Launcher.ViewModels
                     IsSelected = inst.Id == currentSelected,
                     RamMb = inst.RamMb,
                     JavaPath = inst.JavaPath,
-                    JvmArgs = inst.JvmArgs
+                    JvmArgs = inst.JvmArgs,
+                    EnableFlowMod = inst.EnableFlowMod,
+                    EnableVoiceChatMod = inst.EnableVoiceChatMod,
+                    EnableJeiMod = inst.EnableJeiMod
                 });
             }
 
@@ -220,6 +224,7 @@ namespace Launcher.ViewModels
                     OnPropertyChanged(nameof(IsTexturesTabSelected));
                     OnPropertyChanged(nameof(IsShadersTabSelected));
                     OnPropertyChanged(nameof(IsModrinthTabSelected));
+                    OnPropertyChanged(nameof(IsFlowTabSelected));
                     if (IsModsTabSelected)
                     {
                         LoadInstalledMods();
@@ -246,6 +251,124 @@ namespace Launcher.ViewModels
         public bool IsTexturesTabSelected => _settingsTab.Equals("Textures", StringComparison.OrdinalIgnoreCase);
         public bool IsShadersTabSelected => SupportsShaders && _settingsTab.Equals("Shaders", StringComparison.OrdinalIgnoreCase);
         public bool IsModrinthTabSelected => _settingsTab.Equals("Modrinth", StringComparison.OrdinalIgnoreCase);
+        public bool IsFlowTabSelected => SupportsMods && _settingsTab.Equals("Flow", StringComparison.OrdinalIgnoreCase);
+
+        public bool IsFlowModEnabled
+        {
+            get => SelectedSettingsInstance?.EnableFlowMod ?? true;
+            set
+            {
+                if (SelectedSettingsInstance != null && SelectedSettingsInstance.EnableFlowMod != value)
+                {
+                    SelectedSettingsInstance.EnableFlowMod = value;
+                    var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+                    if (inst != null)
+                    {
+                        inst.EnableFlowMod = value;
+                        _instanceService.Save(inst);
+
+                        var instanceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlowLauncher", "FlowVersions", inst.Id);
+                        var branding = new FlowClientBrandingService();
+                        if (!value)
+                        {
+                            branding.RemoveBrandingMod(instanceDir);
+                            var modsDir = _instanceService.GetModsPath(inst.Id);
+                            branding.RemoveBrandingMod(modsDir);
+                        }
+                        else
+                        {
+                            branding.EnsureBrandingMod(instanceDir, inst.MinecraftVersion, inst.Loader);
+                        }
+                    }
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(FlowStatusText));
+                }
+            }
+        }
+
+        public string FlowStatusText => IsFlowModEnabled ? "Active" : "Disabled";
+
+        public bool IsJeiModEnabled
+        {
+            get => SelectedSettingsInstance?.EnableJeiMod ?? true;
+            set
+            {
+                if (SelectedSettingsInstance != null && SelectedSettingsInstance.EnableJeiMod != value)
+                {
+                    SelectedSettingsInstance.EnableJeiMod = value;
+                    var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+                    if (inst != null)
+                    {
+                        inst.EnableJeiMod = value;
+                        _instanceService.Save(inst);
+                        var instanceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlowLauncher", "FlowVersions", inst.Id);
+                        SetFlowModConfig(instanceDir, "jei", value);
+                    }
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(JeiStatusText));
+                }
+            }
+        }
+
+        public string JeiStatusText => IsJeiModEnabled ? "Active" : "Disabled";
+
+        public bool IsVoiceChatModEnabled
+        {
+            get => SelectedSettingsInstance?.EnableVoiceChatMod ?? true;
+            set
+            {
+                if (SelectedSettingsInstance != null && SelectedSettingsInstance.EnableVoiceChatMod != value)
+                {
+                    SelectedSettingsInstance.EnableVoiceChatMod = value;
+                    var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
+                    if (inst != null)
+                    {
+                        inst.EnableVoiceChatMod = value;
+                        _instanceService.Save(inst);
+                        var instanceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlowLauncher", "FlowVersions", inst.Id);
+                        SetFlowModConfig(instanceDir, "voiceChat", value);
+                        if (!value)
+                        {
+                            new VoiceChatService().RemoveVoiceChatMod(instanceDir);
+                        }
+                    }
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(VoiceChatStatusText));
+                }
+            }
+        }
+
+        public string VoiceChatStatusText => IsVoiceChatModEnabled ? "Active" : "Disabled";
+
+        private static void SetFlowModConfig(string? gameDirectory, string modKey, bool enabled)
+        {
+            var targets = new List<string>();
+            var shared = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlowLauncher", "shared", "config", "flowclient-mods.json");
+            targets.Add(shared);
+            if (!string.IsNullOrEmpty(gameDirectory))
+            {
+                var local = Path.Combine(gameDirectory, "config", "flowclient-mods.json");
+                if (!targets.Contains(local)) targets.Add(local);
+            }
+
+            foreach (var path in targets)
+            {
+                try
+                {
+                    if (File.Exists(path))
+                    {
+                        var content = File.ReadAllText(path);
+                        var node = JsonNode.Parse(content)?.AsObject();
+                        if (node != null)
+                        {
+                            node[modKey] = enabled;
+                            File.WriteAllText(path, node.ToJsonString());
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
 
         private string _settingsInstanceName = "";
         public string SettingsInstanceName
@@ -964,14 +1087,24 @@ namespace Launcher.ViewModels
                     // Check if already installed
                     if (_modrinthSubtype == "mod")
                     {
-                        var isBundled = hit.Slug.Contains("flowclient") || hit.Title.Contains("Flow Client") ||
-                                        hit.Slug.Contains("voicechat") || hit.Title.Contains("Voice Chat");
-                        var isInstalled = installedModsList.Any(m => m.ProjectId == hit.ProjectId ||
+                        var isJei = hit.Slug.Equals("jei", StringComparison.OrdinalIgnoreCase) ||
+                                    hit.ProjectId == "u6dRKJwZ" ||
+                                    hit.Title.Contains("Just Enough Items", StringComparison.OrdinalIgnoreCase);
+                        var isVoiceChat = hit.Slug.Contains("voicechat", StringComparison.OrdinalIgnoreCase) ||
+                                          hit.Title.Contains("Voice Chat", StringComparison.OrdinalIgnoreCase);
+                        var isFlow = hit.Slug.Contains("flowclient", StringComparison.OrdinalIgnoreCase) ||
+                                     hit.Title.Contains("Flow Client", StringComparison.OrdinalIgnoreCase);
+
+                        var isBundled = isFlow ||
+                                        (isJei && (inst?.EnableJeiMod ?? true) && (inst?.EnableFlowMod ?? true)) ||
+                                        (isVoiceChat && (inst?.EnableVoiceChatMod ?? true));
+
+                        var isInstalled = isBundled || installedModsList.Any(m => m.ProjectId == hit.ProjectId ||
                                                                      string.Equals(m.Slug, hit.Slug, StringComparison.OrdinalIgnoreCase))
                                           || InstalledMods.Any(m => m.Title.Equals(hit.Title, StringComparison.OrdinalIgnoreCase) ||
                                                                     m.FileName.Contains(hit.Slug, StringComparison.OrdinalIgnoreCase));
                         item.IsInstalled = isInstalled;
-                        item.CanUninstall = !isBundled;
+                        item.CanUninstall = isInstalled && !isBundled;
                     }
                     else if (_modrinthSubtype == "resourcepack")
                     {
@@ -1049,6 +1182,21 @@ namespace Launcher.ViewModels
             {
                 item.IsInstalling = false;
                 return;
+            }
+
+            if (item.ProjectType == "mod")
+            {
+                var isJei = item.Slug.Equals("jei", StringComparison.OrdinalIgnoreCase) ||
+                            item.ProjectId == "u6dRKJwZ" ||
+                            item.Title.Contains("Just Enough Items", StringComparison.OrdinalIgnoreCase);
+                if (isJei && inst.EnableJeiMod && inst.EnableFlowMod)
+                {
+                    System.Windows.MessageBox.Show("JEI (Just Enough Items) is already bundled and integrated with Flow Client. You do not need to install it separately.", "Flow Client", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    item.IsInstalling = false;
+                    item.IsInstalled = true;
+                    item.CanUninstall = false;
+                    return;
+                }
             }
 
             try
@@ -1322,6 +1470,13 @@ namespace Launcher.ViewModels
             OnPropertyChanged(nameof(IsTexturesTabSelected));
             OnPropertyChanged(nameof(IsShadersTabSelected));
             OnPropertyChanged(nameof(IsModrinthTabSelected));
+            OnPropertyChanged(nameof(IsFlowTabSelected));
+            OnPropertyChanged(nameof(IsFlowModEnabled));
+            OnPropertyChanged(nameof(IsJeiModEnabled));
+            OnPropertyChanged(nameof(IsVoiceChatModEnabled));
+            OnPropertyChanged(nameof(FlowStatusText));
+            OnPropertyChanged(nameof(JeiStatusText));
+            OnPropertyChanged(nameof(VoiceChatStatusText));
             OnPropertyChanged(nameof(SettingsInstanceName));
             OnPropertyChanged(nameof(SettingsRamMb));
             OnPropertyChanged(nameof(SettingsRamText));
@@ -1371,6 +1526,9 @@ namespace Launcher.ViewModels
         public int RamMb { get; set; } = 4096;
         public string JavaPath { get; set; } = "";
         public string JvmArgs { get; set; } = "";
+        public bool EnableFlowMod { get; set; } = true;
+        public bool EnableVoiceChatMod { get; set; } = true;
+        public bool EnableJeiMod { get; set; } = true;
 
         public string DisplayTitle
         {

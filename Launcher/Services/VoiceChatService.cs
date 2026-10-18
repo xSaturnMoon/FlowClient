@@ -34,6 +34,18 @@ namespace Launcher.Services
             InstallToInstance(gameDirectory, source);
         }
 
+        public void RemoveVoiceChatMod(string gameDirectory)
+        {
+            var modsDir = Path.Combine(gameDirectory, "mods");
+            if (!Directory.Exists(modsDir))
+                return;
+
+            foreach (var file in Directory.GetFiles(modsDir, "voicechat*.jar"))
+            {
+                try { File.Delete(file); } catch { }
+            }
+        }
+
         public static bool IsVoiceChatEnabled(string gameDirectory)
         {
             var configPath = Path.Combine(gameDirectory, "config", "flowclient-mods.json");
