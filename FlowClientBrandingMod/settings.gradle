@@ -12,12 +12,5 @@ plugins {
 
 rootProject.name = 'flowclient-branding'
 
-include '1.20.1'
+include '26.2'
 
-def requested = gradle.startParameter.taskNames.join(' ').toLowerCase()
-if (requested.contains('26.2') || requested.contains('buildall')) {
-    include '26.2'
-}
-if (requested.contains('1.21.1') || requested.contains('neoforge') || requested.contains('buildall')) {
-    include '1.21.1-neoforge'
-}

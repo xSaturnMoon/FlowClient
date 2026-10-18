@@ -23,9 +23,5 @@ subprojects {
 }
 
 tasks.register('buildAll') {
-    dependsOn ':1.20.1:build', ':1.20.1:copyToLauncher'
-    dependsOn ':1.21.1-neoforge:build', ':1.21.1-neoforge:copyToLauncher'
-    if (gradle.startParameter.taskNames.join(' ').toLowerCase().contains('buildall')) {
-        dependsOn ':26.2:build', ':26.2:copyToLauncher'
-    }
+    dependsOn ':26.2:build', ':26.2:copyToLauncher'
 }

@@ -68,78 +68,29 @@ namespace Launcher.Services
         public void EnsureFabricBrandingMod(string gameDirectory, string minecraftVersion) =>
             EnsureBrandingMod(gameDirectory, minecraftVersion, "Fabric");
 
-        public static string ResolveModFileName(string minecraftVersion, string loader)
-        {
-            if (IsNeoForgeLoader(loader) && IsMinecraft1211(minecraftVersion))
-                return "flowclient-branding-1.21.1-neoforge-1.0.0.jar";
-
-            return ResolveFabricModFileName(minecraftVersion);
-        }
+        public static string ResolveModFileName(string minecraftVersion, string loader) =>
+            ResolveModFileName(minecraftVersion);
 
         public static string ResolveModFileName(string minecraftVersion) =>
-            ResolveFabricModFileName(minecraftVersion);
-
-        private static string ResolveFabricModFileName(string minecraftVersion)
-        {
-            if (Version.TryParse(NormalizeVersion(minecraftVersion), out var version))
-            {
-                if (version.Major >= 26)
-                    return "flowclient-branding-26.2-1.0.0.jar";
-
-                if (version.Major == 1 && version.Minor >= 20)
-                    return "flowclient-branding-1.20.1-1.0.0.jar";
-            }
-
-            return "flowclient-branding-1.20.1-1.0.0.jar";
-        }
-
-        private static string NormalizeVersion(string minecraftVersion) =>
-            minecraftVersion.Split('-', '+', ' ')[0];
+            "flowclient-branding-26.2-1.0.0.jar";
 
         private static string ResolveSourcePath(string minecraftVersion, string loader)
         {
-            foreach (var fileName in GetCandidateModFiles(minecraftVersion, loader))
-            {
-                var bundled = Path.Combine(AppContext.BaseDirectory, "Assets", "Mods", fileName);
-                if (File.Exists(bundled))
-                    return bundled;
+            var fileName = ResolveModFileName(minecraftVersion, loader);
+            var bundled = Path.Combine(AppContext.BaseDirectory, "Assets", "Mods", fileName);
+            if (File.Exists(bundled))
+                return bundled;
 
-                var runtime = Path.Combine(RuntimeDir, fileName);
-                if (File.Exists(runtime))
-                    return runtime;
-            }
+            var runtime = Path.Combine(RuntimeDir, fileName);
+            if (File.Exists(runtime))
+                return runtime;
 
-            return Path.Combine(
-                AppContext.BaseDirectory,
-                "Assets",
-                "Mods",
-                ResolveModFileName(minecraftVersion, loader));
+            return bundled;
         }
 
         private static IEnumerable<string> GetCandidateModFiles(string minecraftVersion, string loader)
         {
-            yield return ResolveModFileName(minecraftVersion, loader);
-
-            if (IsNeoForgeLoader(loader) && IsMinecraft1211(minecraftVersion))
-                yield break;
-
-            if (Version.TryParse(NormalizeVersion(minecraftVersion), out var version)
-                && version.Major == 1
-                && version.Minor >= 21)
-            {
-                yield return "flowclient-branding-26.2-1.0.0.jar";
-            }
-        }
-
-        private static bool IsNeoForgeLoader(string loader) =>
-            loader.Equals("NeoForge", StringComparison.OrdinalIgnoreCase);
-
-        private static bool IsMinecraft1211(string minecraftVersion)
-        {
-            if (!Version.TryParse(NormalizeVersion(minecraftVersion), out var version))
-                return false;
-
-            return version.Major == 1 && version.Minor == 21 && version.Build == 1;
+            yield return "flowclient-branding-26.2-1.0.0.jar";
         }
 
         private static void RemoveOtherFlowClientJars(string modsDir, string keepSourcePath)
