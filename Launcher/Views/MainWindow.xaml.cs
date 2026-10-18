@@ -558,13 +558,15 @@ namespace Launcher.Views
         }
 
         private bool _isInVersionSettingsMode;
+        private LibraryCardItemViewModel? _activeVersionSettingsItem;
 
         private void OnVersionSettingsModeChanged(bool isInSettings, LibraryCardItemViewModel? item)
         {
             Dispatcher.BeginInvoke(() =>
             {
                 _isInVersionSettingsMode = isInSettings;
-                AnimateSidebarVersionSettingsMode(isInSettings);
+                _activeVersionSettingsItem = item;
+                AnimateSidebarVersionSettingsMode(isInSettings, item);
             });
         }
 
@@ -586,10 +588,12 @@ namespace Launcher.Views
             Apply(NavModrinthBtn, tab == "Modrinth");
         }
 
-        private void AnimateSidebarVersionSettingsMode(bool isInSettings)
+        private void AnimateSidebarVersionSettingsMode(bool isInSettings, LibraryCardItemViewModel? item = null)
         {
             var duration = TimeSpan.FromMilliseconds(200);
             var cubic = new CubicEase { EasingMode = EasingMode.EaseInOut };
+            item ??= _activeVersionSettingsItem;
+            var isVanilla = string.Equals(item?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
 
             if (isInSettings)
             {
@@ -606,31 +610,54 @@ namespace Launcher.Views
                 };
                 NavDiscoverDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutDiscover);
 
-                // 2. Library -> Mods
-                var fadeOutLibrary = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
-                fadeOutLibrary.Completed += (_, _) =>
+                // 2. Library -> Mods (Only for modded loaders, hide on Vanilla)
+                if (isVanilla)
                 {
-                    NavLibraryDefaultPanel.Visibility = Visibility.Collapsed;
-                    NavLibraryModPanel.Visibility = Visibility.Visible;
-                    NavLibraryModPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
-                };
-                NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutLibrary);
+                    var collapseLibrary = new DoubleAnimation(NavLibraryContainer.ActualHeight > 0 ? NavLibraryContainer.ActualHeight : 40, 0, duration) { EasingFunction = cubic };
+                    var fadeLibrary = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                    collapseLibrary.Completed += (_, _) => NavLibraryContainer.Visibility = Visibility.Collapsed;
+                    NavLibraryContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseLibrary);
+                    NavLibraryContainer.BeginAnimation(UIElement.OpacityProperty, fadeLibrary);
+                }
+                else
+                {
+                    NavLibraryContainer.Visibility = Visibility.Visible;
+                    NavLibraryContainer.Height = 40;
+                    NavLibraryContainer.Opacity = 1;
+                    var fadeOutLibrary = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
+                    fadeOutLibrary.Completed += (_, _) =>
+                    {
+                        NavLibraryDefaultPanel.Visibility = Visibility.Collapsed;
+                        NavLibraryModPanel.Visibility = Visibility.Visible;
+                        NavLibraryModPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
+                    };
+                    NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutLibrary);
+                }
 
-                // 3. Textures -> Expand
+                // 3. Textures -> Expand (Always)
                 NavTexturesContainer.Visibility = Visibility.Visible;
                 var expandTextures = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
                 var fadeInTextures = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
                 NavTexturesContainer.BeginAnimation(FrameworkElement.HeightProperty, expandTextures);
                 NavTexturesContainer.BeginAnimation(UIElement.OpacityProperty, fadeInTextures);
 
-                // 4. Shaders -> Expand
-                NavShadersContainer.Visibility = Visibility.Visible;
-                var expandShaders = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
-                var fadeInShaders = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
-                NavShadersContainer.BeginAnimation(FrameworkElement.HeightProperty, expandShaders);
-                NavShadersContainer.BeginAnimation(UIElement.OpacityProperty, fadeInShaders);
+                // 4. Shaders -> Expand (Only for modded loaders, hide on Vanilla)
+                if (!isVanilla)
+                {
+                    NavShadersContainer.Visibility = Visibility.Visible;
+                    var expandShaders = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
+                    var fadeInShaders = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                    NavShadersContainer.BeginAnimation(FrameworkElement.HeightProperty, expandShaders);
+                    NavShadersContainer.BeginAnimation(UIElement.OpacityProperty, fadeInShaders);
+                }
+                else
+                {
+                    NavShadersContainer.Visibility = Visibility.Collapsed;
+                    NavShadersContainer.Height = 0;
+                    NavShadersContainer.Opacity = 0;
+                }
 
-                // 5. Modrinth -> Expand
+                // 5. Modrinth -> Expand (Always)
                 NavModrinthContainer.Visibility = Visibility.Visible;
                 var expandModrinth = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
                 var fadeInModrinth = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
@@ -676,14 +703,15 @@ namespace Launcher.Views
                 NavDiscoverInfoPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutInfo);
 
                 // 2. Mods -> Library
-                var fadeOutMod = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(120));
-                fadeOutMod.Completed += (_, _) =>
-                {
-                    NavLibraryModPanel.Visibility = Visibility.Collapsed;
-                    NavLibraryDefaultPanel.Visibility = Visibility.Visible;
-                    NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
-                };
-                NavLibraryModPanel.BeginAnimation(UIElement.OpacityProperty, fadeOutMod);
+                NavLibraryContainer.Visibility = Visibility.Visible;
+                var expandLibrary = new DoubleAnimation(NavLibraryContainer.ActualHeight, 40, duration) { EasingFunction = cubic };
+                var fadeInLibrary = new DoubleAnimation(NavLibraryContainer.Opacity, 1, TimeSpan.FromMilliseconds(200));
+                NavLibraryContainer.BeginAnimation(FrameworkElement.HeightProperty, expandLibrary);
+                NavLibraryContainer.BeginAnimation(UIElement.OpacityProperty, fadeInLibrary);
+
+                NavLibraryModPanel.Visibility = Visibility.Collapsed;
+                NavLibraryDefaultPanel.Visibility = Visibility.Visible;
+                NavLibraryDefaultPanel.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
 
                 // 3. Textures -> Collapse
                 var collapseTextures = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
@@ -693,7 +721,7 @@ namespace Launcher.Views
                 NavTexturesContainer.BeginAnimation(UIElement.OpacityProperty, fadeTextures);
 
                 // 4. Shaders -> Collapse
-                var collapseShaders = new DoubleAnimation(40, 0, duration) { EasingFunction = cubic };
+                var collapseShaders = new DoubleAnimation(NavShadersContainer.ActualHeight > 0 ? NavShadersContainer.ActualHeight : 40, 0, duration) { EasingFunction = cubic };
                 var fadeShaders = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
                 collapseShaders.Completed += (_, _) => NavShadersContainer.Visibility = Visibility.Collapsed;
                 NavShadersContainer.BeginAnimation(FrameworkElement.HeightProperty, collapseShaders);
@@ -984,12 +1012,16 @@ namespace Launcher.Views
         {
             if (QuickConnectOverlay.Visibility == Visibility.Visible)
             {
-                QuickConnectOverlay.Visibility = Visibility.Collapsed;
+                CloseQuickConnectMenu();
                 return;
             }
 
             AccountMenuOverlay.Visibility = Visibility.Collapsed;
+            OpenQuickConnectMenu();
+        }
 
+        private void OpenQuickConnectMenu()
+        {
             var selectedId = InstanceSelectionService.SelectedInstanceId;
             var inst = !string.IsNullOrEmpty(selectedId)
                 ? _instances.GetById(selectedId)
@@ -1009,7 +1041,44 @@ namespace Launcher.Views
             QuickConnectAddPanel.Opacity = 0;
             QuickConnectStatusText.Visibility = Visibility.Collapsed;
             RefreshQuickConnectList();
+
             QuickConnectOverlay.Visibility = Visibility.Visible;
+            QuickConnectCard.Opacity = 0;
+            QuickConnectCardTransform.Y = -12;
+
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            var slideDown = new DoubleAnimation(-12, 0, TimeSpan.FromMilliseconds(220))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+
+            QuickConnectCard.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+            QuickConnectCardTransform.BeginAnimation(TranslateTransform.YProperty, slideDown);
+        }
+
+        private void CloseQuickConnectMenu()
+        {
+            if (QuickConnectOverlay.Visibility != Visibility.Visible) return;
+
+            var fadeOut = new DoubleAnimation(QuickConnectCard.Opacity, 0, TimeSpan.FromMilliseconds(160))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            var slideUp = new DoubleAnimation(QuickConnectCardTransform.Y, -10, TimeSpan.FromMilliseconds(160))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+
+            fadeOut.Completed += (_, _) =>
+            {
+                QuickConnectOverlay.Visibility = Visibility.Collapsed;
+            };
+
+            QuickConnectCard.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+            QuickConnectCardTransform.BeginAnimation(TranslateTransform.YProperty, slideUp);
         }
 
         private void QuickConnectToggleAdd_Click(object sender, RoutedEventArgs e)
@@ -1017,7 +1086,7 @@ namespace Launcher.Views
             var isClosing = QuickConnectAddPanel.Visibility == Visibility.Visible && QuickConnectAddPanel.Height > 10;
             if (isClosing)
             {
-                var hAnim = new DoubleAnimation(QuickConnectAddPanel.ActualHeight > 0 ? QuickConnectAddPanel.ActualHeight : 148, 0, new Duration(TimeSpan.FromMilliseconds(180)))
+                var hAnim = new DoubleAnimation(QuickConnectAddPanel.ActualHeight > 0 ? QuickConnectAddPanel.ActualHeight : 196, 0, new Duration(TimeSpan.FromMilliseconds(180)))
                 {
                     EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
                 };
@@ -1033,7 +1102,7 @@ namespace Launcher.Views
             else
             {
                 QuickConnectAddPanel.Visibility = Visibility.Visible;
-                var targetHeight = 148.0;
+                var targetHeight = 196.0;
                 var hAnim = new DoubleAnimation(0, targetHeight, new Duration(TimeSpan.FromMilliseconds(220)))
                 {
                     EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
@@ -1049,7 +1118,7 @@ namespace Launcher.Views
 
         private void QuickConnectBackdrop_Click(object sender, MouseButtonEventArgs e)
         {
-            QuickConnectOverlay.Visibility = Visibility.Collapsed;
+            CloseQuickConnectMenu();
         }
 
         private void RefreshQuickConnectList()

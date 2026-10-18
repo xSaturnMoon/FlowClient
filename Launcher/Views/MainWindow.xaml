@@ -374,36 +374,38 @@
                             </Button>
 
                             <!-- 2. Library / Mod -->
-                            <Button x:Name="NavLibraryBtn" Style="{StaticResource SidebarLibraryBtnStyle}" Click="NavLibrary_Click">
-                                <Grid>
-                                    <!-- Default: Library -->
-                                    <Grid x:Name="NavLibraryDefaultPanel">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="22"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Path Grid.Column="0" Data="M 1,4 L 8,1 L 15,4 L 8,7 Z M 1,8 L 8,11 L 15,8 M 1,12 L 8,15 L 15,12"
-                                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                              StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                              Width="15" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="Library" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
+                            <Grid x:Name="NavLibraryContainer" Height="40" ClipToBounds="True">
+                                <Button x:Name="NavLibraryBtn" Style="{StaticResource SidebarLibraryBtnStyle}" Click="NavLibrary_Click">
+                                    <Grid>
+                                        <!-- Default: Library -->
+                                        <Grid x:Name="NavLibraryDefaultPanel">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="22"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Path Grid.Column="0" Data="M 1,4 L 8,1 L 15,4 L 8,7 Z M 1,8 L 8,11 L 15,8 M 1,12 L 8,15 L 15,12"
+                                                  Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                                  StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Width="15" Height="14" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="Library" FontSize="13.5" FontWeight="Bold"
+                                                       FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
+                                        </Grid>
+                                        <!-- Instance Mode: Mod -->
+                                        <Grid x:Name="NavLibraryModPanel" Opacity="0" Visibility="Collapsed">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="22"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Path Grid.Column="0" Width="14" Height="14" Stretch="Uniform"
+                                                  Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                                  Data="M 20.5 11 H 19 V 7 C 19 5.9 18.1 5 17 5 H 13 V 3.5 C 13 2.12 11.88 1 10.5 1 S 8 2.12 8 3.5 V 5 H 4 C 2.9 5 2.01 5.9 2.01 7 L 2 10.5 H 3.5 C 4.88 10.5 6 11.62 6 13 S 4.88 15.5 3.5 15.5 H 2 V 19 C 2 20.1 2.9 21 4 21 H 7.5 C 7.5 19.62 8.62 18.5 10 18.5 S 12.5 19.62 12.5 21 H 17 C 18.1 21 19 20.1 19 19 V 15.5 H 20.5 C 21.88 15.5 23 14.38 23 13 S 21.88 11 20.5 11 Z"
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="Mods" FontSize="13.5" FontWeight="Bold"
+                                                       FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
+                                        </Grid>
                                     </Grid>
-                                    <!-- Instance Mode: Mod -->
-                                    <Grid x:Name="NavLibraryModPanel" Opacity="0" Visibility="Collapsed">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="22"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Path Grid.Column="0" Width="14" Height="14" Stretch="Uniform"
-                                              Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                              Data="M 20.5 11 H 19 V 7 C 19 5.9 18.1 5 17 5 H 13 V 3.5 C 13 2.12 11.88 1 10.5 1 S 8 2.12 8 3.5 V 5 H 4 C 2.9 5 2.01 5.9 2.01 7 L 2 10.5 H 3.5 C 4.88 10.5 6 11.62 6 13 S 4.88 15.5 3.5 15.5 H 2 V 19 C 2 20.1 2.9 21 4 21 H 7.5 C 7.5 19.62 8.62 18.5 10 18.5 S 12.5 19.62 12.5 21 H 17 C 18.1 21 19 20.1 19 19 V 15.5 H 20.5 C 21.88 15.5 23 14.38 23 13 S 21.88 11 20.5 11 Z"
-                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="Mods" FontSize="13.5" FontWeight="Bold"
-                                                   FontFamily="{StaticResource NunitoBoldFont}" VerticalAlignment="Center" Margin="8,2,0,0"/>
-                                    </Grid>
-                                </Grid>
-                            </Button>
+                                </Button>
+                            </Grid>
 
                             <!-- 3. Textures (Version Settings Mode) -->
                             <Grid x:Name="NavTexturesContainer" Height="0" Opacity="0" Visibility="Collapsed" ClipToBounds="True">
@@ -693,8 +695,12 @@
                 <Border Background="#01000000" MouseLeftButtonDown="QuickConnectBackdrop_Click"/>
 
                 <!-- Dropdown Card anchored below Quick Connect button in top-right -->
-                <Border Width="330" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,44,48,0"
-                        Background="#1E1E22" BorderThickness="0" CornerRadius="18" Padding="18,16" SnapsToDevicePixels="True">
+                <Border x:Name="QuickConnectCard" Width="330" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,46,16,0"
+                        Background="#1E1E22" BorderThickness="0" CornerRadius="18" Padding="18,16" SnapsToDevicePixels="True"
+                        RenderTransformOrigin="0.5,0">
+                    <Border.RenderTransform>
+                        <TranslateTransform x:Name="QuickConnectCardTransform" Y="0"/>
+                    </Border.RenderTransform>
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="32" ShadowDepth="8" Direction="270" Color="#000000" Opacity="0.75"/>
                     </Border.Effect>
@@ -825,27 +831,117 @@
 
                                                 <!-- Actions: Delete & Play -->
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <!-- Delete Button -->
-                                                    <Button Width="26" Height="26" Background="Transparent" BorderThickness="0"
+                                                    <!-- Delete Button with smooth hover scale and red highlight -->
+                                                    <Button Width="28" Height="28" Background="Transparent" BorderThickness="0"
                                                             Cursor="Hand" ToolTip="Delete server" Margin="0,0,6,0"
                                                             Tag="{Binding Id}" Click="QuickConnectDelete_Click" FocusVisualStyle="{x:Null}">
-                                                        <Path Data="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
-                                                              Stroke="#6E6E76" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                              Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="delBd" Background="Transparent" CornerRadius="14" Width="28" Height="28"
+                                                                        RenderTransformOrigin="0.5,0.5">
+                                                                    <Border.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                                    </Border.RenderTransform>
+                                                                    <Path x:Name="delPath" Data="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                                                                          Stroke="#6E6E76" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                          Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="delBd" Property="Background" Value="#25252B"/>
+                                                                        <Setter TargetName="delPath" Property="Stroke" Value="#EF4444"/>
+                                                                        <Trigger.EnterActions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation Storyboard.TargetName="delBd" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.12" Duration="0:0:0.12">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                    <DoubleAnimation Storyboard.TargetName="delBd" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.12" Duration="0:0:0.12">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </Trigger.EnterActions>
+                                                                        <Trigger.ExitActions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation Storyboard.TargetName="delBd" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.12">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                    <DoubleAnimation Storyboard.TargetName="delBd" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.12">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </Trigger.ExitActions>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                        <Setter TargetName="delBd" Property="Background" Value="#322228"/>
+                                                                        <Trigger.EnterActions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation Storyboard.TargetName="delBd" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.94" Duration="0:0:0.06"/>
+                                                                                    <DoubleAnimation Storyboard.TargetName="delBd" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.94" Duration="0:0:0.06"/>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </Trigger.EnterActions>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
                                                     </Button>
 
-                                                    <!-- Play Button -->
+                                                    <!-- Play Button with smooth hover scale and color animation -->
                                                     <Button Height="28" Padding="14,0" Background="#FFFFFF" Foreground="#101010"
                                                             FontWeight="Bold" FontSize="11.5" FontFamily="{StaticResource NunitoBoldFont}"
                                                             Cursor="Hand" Tag="{Binding}" Click="QuickConnectPlay_Click" FocusVisualStyle="{x:Null}">
                                                         <Button.Template>
                                                             <ControlTemplate TargetType="Button">
-                                                                <Border x:Name="pb" Background="{TemplateBinding Background}" CornerRadius="14" Padding="{TemplateBinding Padding}">
+                                                                <Border x:Name="pb" Background="{TemplateBinding Background}" CornerRadius="14" Padding="{TemplateBinding Padding}"
+                                                                        RenderTransformOrigin="0.5,0.5">
+                                                                    <Border.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                                    </Border.RenderTransform>
                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
                                                                 <ControlTemplate.Triggers>
                                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                                        <Setter TargetName="pb" Property="Background" Value="#E5E5E5"/>
+                                                                        <Setter TargetName="pb" Property="Background" Value="#F3F3F5"/>
+                                                                        <Trigger.EnterActions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation Storyboard.TargetName="pb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.06" Duration="0:0:0.14">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                    <DoubleAnimation Storyboard.TargetName="pb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.06" Duration="0:0:0.14">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </Trigger.EnterActions>
+                                                                        <Trigger.ExitActions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation Storyboard.TargetName="pb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.12">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                    <DoubleAnimation Storyboard.TargetName="pb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.12">
+                                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                                    </DoubleAnimation>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </Trigger.ExitActions>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                        <Setter TargetName="pb" Property="Background" Value="#DDDDDF"/>
+                                                                        <Trigger.EnterActions>
+                                                                            <BeginStoryboard>
+                                                                                <Storyboard>
+                                                                                    <DoubleAnimation Storyboard.TargetName="pb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.96" Duration="0:0:0.06"/>
+                                                                                    <DoubleAnimation Storyboard.TargetName="pb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.96" Duration="0:0:0.06"/>
+                                                                                </Storyboard>
+                                                                            </BeginStoryboard>
+                                                                        </Trigger.EnterActions>
                                                                     </Trigger>
                                                                 </ControlTemplate.Triggers>
                                                             </ControlTemplate>

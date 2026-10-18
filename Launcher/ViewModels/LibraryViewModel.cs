@@ -48,9 +48,15 @@ namespace Launcher.ViewModels
                 {
                     _selectedSettingsInstance = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(SupportsMods));
+                    OnPropertyChanged(nameof(SupportsShaders));
+                    OnPropertyChanged(nameof(ModrinthStatusText));
                 }
             }
         }
+
+        public bool SupportsMods => !string.Equals(SelectedSettingsInstance?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
+        public bool SupportsShaders => !string.Equals(SelectedSettingsInstance?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
 
         public string SearchQuery
         {
@@ -113,7 +119,7 @@ namespace Launcher.ViewModels
                 {
                     Id = inst.Id,
                     Name = inst.Name,
-                    MinecraftVersion = inst.MinecraftVersion,
+                    MinecraftVersion = string.IsNullOrWhiteSpace(inst.MinecraftVersion) || inst.MinecraftVersion.Equals("Unknown", StringComparison.OrdinalIgnoreCase) ? "1.21.4" : inst.MinecraftVersion,
                     Loader = inst.Loader,
                     LoaderIconUri = LoaderBranding.GetIconUri(inst.Loader),
                     ArtworkUri = ResolveArtworkUri(inst.MinecraftVersion, inst.Name),
@@ -235,10 +241,10 @@ namespace Launcher.ViewModels
         }
 
         public bool IsInfoTabSelected => _settingsTab == "Info";
-        public bool IsModsTabSelected => _settingsTab.Equals("Mods", StringComparison.OrdinalIgnoreCase) || _settingsTab.Equals("Mod", StringComparison.OrdinalIgnoreCase);
+        public bool IsModsTabSelected => SupportsMods && (_settingsTab.Equals("Mods", StringComparison.OrdinalIgnoreCase) || _settingsTab.Equals("Mod", StringComparison.OrdinalIgnoreCase));
         public bool IsModTabSelected => IsModsTabSelected;
         public bool IsTexturesTabSelected => _settingsTab.Equals("Textures", StringComparison.OrdinalIgnoreCase);
-        public bool IsShadersTabSelected => _settingsTab.Equals("Shaders", StringComparison.OrdinalIgnoreCase);
+        public bool IsShadersTabSelected => SupportsShaders && _settingsTab.Equals("Shaders", StringComparison.OrdinalIgnoreCase);
         public bool IsModrinthTabSelected => _settingsTab.Equals("Modrinth", StringComparison.OrdinalIgnoreCase);
 
         private string _settingsInstanceName = "";
@@ -431,7 +437,7 @@ namespace Launcher.ViewModels
 
         public void OpenModsFolder()
         {
-            if (SelectedSettingsInstance == null) return;
+            if (SelectedSettingsInstance == null || !SupportsMods) return;
             var dir = _instanceService.GetModsPath(SelectedSettingsInstance.Id);
             System.IO.Directory.CreateDirectory(dir);
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -840,9 +846,13 @@ namespace Launcher.ViewModels
             get => _modrinthSubtype;
             set
             {
-                if (_modrinthSubtype != value)
+                var target = value;
+                if (!SupportsMods && target == "mod") target = "resourcepack";
+                if (!SupportsShaders && target == "shader") target = "resourcepack";
+
+                if (_modrinthSubtype != target)
                 {
-                    _modrinthSubtype = value;
+                    _modrinthSubtype = target;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsModrinthModsSelected));
                     OnPropertyChanged(nameof(IsModrinthTexturesSelected));
@@ -893,13 +903,19 @@ namespace Launcher.ViewModels
         {
             get
             {
-                var mc = SelectedSettingsInstance?.MinecraftVersion ?? "Unknown";
-                var loader = SelectedSettingsInstance?.Loader ?? "Vanilla";
+                var inst = SelectedSettingsInstance
+                           ?? AllVersions.FirstOrDefault(v => v.Id == InstanceSelectionService.SelectedInstanceId)
+                           ?? AllVersions.FirstOrDefault();
+                var mc = string.IsNullOrWhiteSpace(inst?.MinecraftVersion) || inst.MinecraftVersion.Equals("Unknown", StringComparison.OrdinalIgnoreCase)
+                    ? "1.21.4"
+                    : inst.MinecraftVersion;
+                var loader = inst?.Loader ?? "Vanilla";
+
                 if (_modrinthSubtype == "mod")
                     return $"Minecraft {mc} • {loader}";
                 if (_modrinthSubtype == "resourcepack")
-                    return $"Minecraft {mc} • Global Resource Packs";
-                return $"Minecraft {mc} • Global Shader Packs";
+                    return $"Minecraft {mc} • Textures";
+                return $"Minecraft {mc} • Shaders";
             }
         }
 
@@ -1021,6 +1037,8 @@ namespace Launcher.ViewModels
         public async Task InstallModrinthItemAsync(ModrinthItemViewModel item)
         {
             if (item == null || item.IsInstalling || SelectedSettingsInstance == null) return;
+            if (item.ProjectType == "mod" && !SupportsMods) return;
+            if (item.ProjectType == "shader" && !SupportsShaders) return;
             item.IsInstalling = true;
 
             var inst = _instanceService.GetById(SelectedSettingsInstance.Id);
@@ -1258,6 +1276,17 @@ namespace Launcher.ViewModels
         {
             SelectedSettingsInstance = item;
             _settingsTab = "Info";
+
+            var isVanilla = string.Equals(item.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
+            if (isVanilla)
+            {
+                _modrinthSubtype = "resourcepack";
+            }
+            else if (_modrinthSubtype != "mod" && _modrinthSubtype != "shader")
+            {
+                _modrinthSubtype = "mod";
+            }
+
             var inst = _instanceService.GetById(item.Id);
             if (inst != null)
             {
@@ -1265,7 +1294,10 @@ namespace Launcher.ViewModels
                 _settingsRamMb = inst.RamMb > 0 ? inst.RamMb : 4096;
                 _settingsJvmArgs = inst.JvmArgs ?? "";
 
-                _instanceService.SyncModsFromDisk(inst);
+                if (!isVanilla)
+                {
+                    _instanceService.SyncModsFromDisk(inst);
+                }
                 SettingsMods.Clear();
                 foreach (var mod in inst.Mods)
                 {
@@ -1485,6 +1517,11 @@ namespace Launcher.ViewModels
         public string DisplayName { get; set; } = "";
         public string DownloadUrl { get; set; } = "";
         public string FileName { get; set; } = "";
+
+        public override string ToString() =>
+            !string.IsNullOrWhiteSpace(DisplayName) ? DisplayName :
+            (!string.IsNullOrWhiteSpace(VersionNumber) ? VersionNumber :
+            (!string.IsNullOrWhiteSpace(Name) ? Name : "Latest"));
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propName = null)

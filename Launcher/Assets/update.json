@@ -1,9 +1,9 @@
 {
-  "version": "1.5.0",
+  "version": "1.5.1",
   "releaseDate": "October 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.5.0: Redesigned Quick Connect with sleek stroke-based server icon and collapsible gear-animated Add Server panel; improved discrete GPU detection for NVIDIA/Radeon GPUs; overhauled Discord Rich Presence with resilient keepalive and game presence; curved profile avatar without grey disc; and polished Library version cards with hover clipping fixes and clean edge fitting.",
+  "releaseNotes": "Flow Client v1.5.1: Fixed Quick Connect Add Server form clipping; adjusted dropdown position near window edge; added smooth open/close entrance/exit slide & fade animations; added interactive hover scale/color feedback to server Play and Delete buttons; fixed Modrinth version ComboBox display name formatting and instance version badge; enforced Vanilla instance rules (no mods/shaders tabs or folders created, Modrinth filtered to Textures only); and restored fluid sliding animation on ModernToggleSwitch ball.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.0/FlowClient-v1.5.0.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.1/FlowClient-v1.5.1.zip"
 }

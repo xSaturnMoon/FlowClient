@@ -69,10 +69,14 @@ namespace Launcher.Services
         public void Save(MinecraftInstance instance)
         {
             EnsureLoaded();
+            var isVanilla = string.Equals(instance.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
             Directory.CreateDirectory(GetInstanceDirectory(instance.Id));
-            Directory.CreateDirectory(Path.Combine(GetInstanceDirectory(instance.Id), "mods"));
+            if (!isVanilla)
+            {
+                Directory.CreateDirectory(Path.Combine(GetInstanceDirectory(instance.Id), "mods"));
+                Directory.CreateDirectory(Path.Combine(GetInstanceDirectory(instance.Id), "shaderpacks"));
+            }
             Directory.CreateDirectory(Path.Combine(GetInstanceDirectory(instance.Id), "resourcepacks"));
-            Directory.CreateDirectory(Path.Combine(GetInstanceDirectory(instance.Id), "shaderpacks"));
             Directory.CreateDirectory(Path.Combine(GetInstanceDirectory(instance.Id), "saves"));
 
             var idx = _instances.FindIndex(i => i.Id == instance.Id);
