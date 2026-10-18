@@ -68,15 +68,37 @@ namespace Launcher.Services
         public void EnsureFabricBrandingMod(string gameDirectory, string minecraftVersion) =>
             EnsureBrandingMod(gameDirectory, minecraftVersion, "Fabric");
 
-        public static string ResolveModFileName(string minecraftVersion, string loader) =>
+        public static string NormalizeVersion(string minecraftVersion) =>
+            (minecraftVersion ?? "").Trim().TrimStart('v', 'V').Split('-', '+', ' ')[0];
+
+        public static string? ResolveModFileName(string minecraftVersion, string loader) =>
             ResolveModFileName(minecraftVersion);
 
-        public static string ResolveModFileName(string minecraftVersion) =>
-            "flowclient-branding-26.2-1.0.0.jar";
+        public static string? ResolveModFileName(string minecraftVersion)
+        {
+            var normVersion = NormalizeVersion(minecraftVersion);
+            if (string.Equals(normVersion, "26.2", StringComparison.OrdinalIgnoreCase))
+                return "flowclient-branding-26.2-1.0.0.jar";
 
-        private static string ResolveSourcePath(string minecraftVersion, string loader)
+            var candidate1 = $"flowclient-branding-{normVersion}-1.0.0.jar";
+            if (File.Exists(Path.Combine(AppContext.BaseDirectory, "Assets", "Mods", candidate1)) ||
+                File.Exists(Path.Combine(RuntimeDir, candidate1)))
+                return candidate1;
+
+            var candidate2 = $"flowclient-branding-{normVersion}.jar";
+            if (File.Exists(Path.Combine(AppContext.BaseDirectory, "Assets", "Mods", candidate2)) ||
+                File.Exists(Path.Combine(RuntimeDir, candidate2)))
+                return candidate2;
+
+            return null;
+        }
+
+        private static string? ResolveSourcePath(string minecraftVersion, string loader)
         {
             var fileName = ResolveModFileName(minecraftVersion, loader);
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+
             var bundled = Path.Combine(AppContext.BaseDirectory, "Assets", "Mods", fileName);
             if (File.Exists(bundled))
                 return bundled;
@@ -85,12 +107,14 @@ namespace Launcher.Services
             if (File.Exists(runtime))
                 return runtime;
 
-            return bundled;
+            return null;
         }
 
         private static IEnumerable<string> GetCandidateModFiles(string minecraftVersion, string loader)
         {
-            yield return "flowclient-branding-26.2-1.0.0.jar";
+            var fileName = ResolveModFileName(minecraftVersion, loader);
+            if (!string.IsNullOrEmpty(fileName))
+                yield return fileName;
         }
 
         private static void RemoveOtherFlowClientJars(string modsDir, string keepSourcePath)

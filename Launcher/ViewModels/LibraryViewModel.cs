@@ -51,13 +51,47 @@ namespace Launcher.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(SupportsMods));
                     OnPropertyChanged(nameof(SupportsShaders));
+                    OnPropertyChanged(nameof(SupportsFlow));
                     OnPropertyChanged(nameof(ModrinthStatusText));
                 }
             }
         }
 
+        public static bool IsVersionAtLeast120(string? versionStr)
+        {
+            if (string.IsNullOrWhiteSpace(versionStr))
+                return false;
+
+            var clean = versionStr.Trim().TrimStart('v', 'V');
+            var core = clean.Split(new[] { '-', '+', ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            var parts = core.Split('.', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                return false;
+
+            if (!int.TryParse(parts[0], out var major))
+                return false;
+
+            // 26.x or year-based Minecraft snapshots (e.g. 26.2, 26.3, 24w...)
+            if (major >= 20)
+                return true;
+
+            // Standard Minecraft versioning: 1.20, 1.20.1, 1.21.1, etc.
+            if (major == 1)
+            {
+                if (parts.Length > 1 && int.TryParse(parts[1], out var minor))
+                {
+                    return minor >= 20;
+                }
+                return false;
+            }
+
+            return false;
+        }
+
         public bool SupportsMods => !string.Equals(SelectedSettingsInstance?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
         public bool SupportsShaders => !string.Equals(SelectedSettingsInstance?.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
+        public bool SupportsFlow => SupportsMods && IsVersionAtLeast120(SelectedSettingsInstance?.MinecraftVersion);
 
         public string SearchQuery
         {
@@ -214,9 +248,15 @@ namespace Launcher.ViewModels
             get => _settingsTab;
             set
             {
-                if (_settingsTab != value)
+                var target = value;
+                if (!SupportsFlow && target.Equals("Flow", StringComparison.OrdinalIgnoreCase))
                 {
-                    _settingsTab = value;
+                    target = "Info";
+                }
+
+                if (_settingsTab != target)
+                {
+                    _settingsTab = target;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsInfoTabSelected));
                     OnPropertyChanged(nameof(IsModTabSelected));
@@ -251,7 +291,7 @@ namespace Launcher.ViewModels
         public bool IsTexturesTabSelected => _settingsTab.Equals("Textures", StringComparison.OrdinalIgnoreCase);
         public bool IsShadersTabSelected => SupportsShaders && _settingsTab.Equals("Shaders", StringComparison.OrdinalIgnoreCase);
         public bool IsModrinthTabSelected => _settingsTab.Equals("Modrinth", StringComparison.OrdinalIgnoreCase);
-        public bool IsFlowTabSelected => SupportsMods && _settingsTab.Equals("Flow", StringComparison.OrdinalIgnoreCase);
+        public bool IsFlowTabSelected => SupportsFlow && _settingsTab.Equals("Flow", StringComparison.OrdinalIgnoreCase);
 
         public bool IsFlowModEnabled
         {
@@ -303,6 +343,12 @@ namespace Launcher.ViewModels
                         _instanceService.Save(inst);
                         var instanceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlowLauncher", "FlowVersions", inst.Id);
                         SetFlowModConfig(instanceDir, "jei", value);
+                        if (!value)
+                        {
+                            new JeiService().RemoveJeiMod(instanceDir);
+                            var modsDir = _instanceService.GetModsPath(inst.Id);
+                            new JeiService().RemoveJeiMod(modsDir);
+                        }
                     }
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(JeiStatusText));
@@ -330,6 +376,8 @@ namespace Launcher.ViewModels
                         if (!value)
                         {
                             new VoiceChatService().RemoveVoiceChatMod(instanceDir);
+                            var modsDir = _instanceService.GetModsPath(inst.Id);
+                            new VoiceChatService().RemoveVoiceChatMod(modsDir);
                         }
                     }
                     OnPropertyChanged();
@@ -1095,9 +1143,10 @@ namespace Launcher.ViewModels
                         var isFlow = hit.Slug.Contains("flowclient", StringComparison.OrdinalIgnoreCase) ||
                                      hit.Title.Contains("Flow Client", StringComparison.OrdinalIgnoreCase);
 
-                        var isBundled = isFlow ||
-                                        (isJei && (inst?.EnableJeiMod ?? true) && (inst?.EnableFlowMod ?? true)) ||
-                                        (isVoiceChat && (inst?.EnableVoiceChatMod ?? true));
+                        var isBundled = SupportsFlow && (
+                                            isFlow ||
+                                            (isJei && (inst?.EnableJeiMod ?? true)) ||
+                                            (isVoiceChat && (inst?.EnableVoiceChatMod ?? true)));
 
                         var isInstalled = isBundled || installedModsList.Any(m => m.ProjectId == hit.ProjectId ||
                                                                      string.Equals(m.Slug, hit.Slug, StringComparison.OrdinalIgnoreCase))
@@ -1189,9 +1238,9 @@ namespace Launcher.ViewModels
                 var isJei = item.Slug.Equals("jei", StringComparison.OrdinalIgnoreCase) ||
                             item.ProjectId == "u6dRKJwZ" ||
                             item.Title.Contains("Just Enough Items", StringComparison.OrdinalIgnoreCase);
-                if (isJei && inst.EnableJeiMod && inst.EnableFlowMod)
+                if (SupportsFlow && isJei && inst.EnableJeiMod)
                 {
-                    System.Windows.MessageBox.Show("JEI (Just Enough Items) is already bundled and integrated with Flow Client. You do not need to install it separately.", "Flow Client", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    System.Windows.MessageBox.Show("JEI (Just Enough Items) is managed by Flow Client. You can toggle it on or off anytime in the FLOW tab.", "Flow Client", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                     item.IsInstalling = false;
                     item.IsInstalled = true;
                     item.CanUninstall = false;

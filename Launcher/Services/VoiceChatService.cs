@@ -18,14 +18,15 @@ namespace Launcher.Services
         public async Task EnsureVoiceChatAsync(
             string gameDirectory,
             string minecraftVersion,
+            string loader = "Fabric",
             IProgress<string>? progress = null,
             CancellationToken cancellationToken = default)
         {
-            var source = ResolveSourcePath(minecraftVersion);
+            var source = ResolveSourcePath(minecraftVersion, loader);
             if (source == null)
             {
                 progress?.Report("Downloading Simple Voice Chat…");
-                source = await EnsureRuntimeJarAsync(minecraftVersion, cancellationToken);
+                source = await EnsureRuntimeJarAsync(minecraftVersion, loader, cancellationToken);
             }
 
             if (source == null)
@@ -63,37 +64,75 @@ namespace Launcher.Services
             }
         }
 
-        private static string? ResolveSourcePath(string minecraftVersion)
+        private static string NormalizeLoader(string loader)
         {
-            foreach (var fileName in GetCandidateJarFiles(minecraftVersion))
+            var l = (loader ?? "fabric").Trim().ToLowerInvariant();
+            if (l.Contains("neo")) return "neoforge";
+            if (l.Contains("forge")) return "forge";
+            if (l.Contains("quilt")) return "quilt";
+            return "fabric";
+        }
+
+        private static string NormalizeVersion(string minecraftVersion) =>
+            (minecraftVersion ?? "").Trim().TrimStart('v', 'V').Split('-', '+', ' ')[0];
+
+        private static bool IsMinecraft26_2(string minecraftVersion) =>
+            string.Equals(NormalizeVersion(minecraftVersion), "26.2", StringComparison.OrdinalIgnoreCase);
+
+        private static string? ResolveSourcePath(string minecraftVersion, string loader)
+        {
+            var normLoader = NormalizeLoader(loader);
+            var normVersion = NormalizeVersion(minecraftVersion);
+
+            foreach (var fileName in GetCandidateJarFiles(minecraftVersion, loader))
             {
                 var bundled = Path.Combine(AppContext.BaseDirectory, "Assets", "Mods", fileName);
                 if (File.Exists(bundled))
                     return bundled;
 
-                var runtime = Path.Combine(RuntimeRoot, NormalizeVersion(minecraftVersion), fileName);
+                var runtime = Path.Combine(RuntimeRoot, $"{normLoader}-{normVersion}", fileName);
                 if (File.Exists(runtime))
                     return runtime;
             }
 
-            var versionDir = Path.Combine(RuntimeRoot, NormalizeVersion(minecraftVersion));
-            if (!Directory.Exists(versionDir))
-                return null;
+            var versionDir = Path.Combine(RuntimeRoot, $"{normLoader}-{normVersion}");
+            if (Directory.Exists(versionDir))
+            {
+                var existing = Directory.GetFiles(versionDir, "voicechat*.jar").FirstOrDefault();
+                if (existing != null)
+                    return existing;
+            }
 
-            return Directory.GetFiles(versionDir, "voicechat*.jar").FirstOrDefault();
+            var legacyDir = Path.Combine(RuntimeRoot, normVersion);
+            if (Directory.Exists(legacyDir))
+            {
+                var existingLegacy = Directory.GetFiles(legacyDir, "voicechat*.jar").FirstOrDefault();
+                if (existingLegacy != null)
+                    return existingLegacy;
+            }
+
+            return null;
         }
 
-        private async Task<string?> EnsureRuntimeJarAsync(string minecraftVersion, CancellationToken ct)
+        private async Task<string?> EnsureRuntimeJarAsync(string minecraftVersion, string loader, CancellationToken ct)
         {
-            var versionDir = Path.Combine(RuntimeRoot, NormalizeVersion(minecraftVersion));
+            var normLoader = NormalizeLoader(loader);
+            var normVersion = NormalizeVersion(minecraftVersion);
+            var versionDir = Path.Combine(RuntimeRoot, $"{normLoader}-{normVersion}");
             Directory.CreateDirectory(versionDir);
 
             var existing = Directory.GetFiles(versionDir, "voicechat*.jar").FirstOrDefault();
             if (existing != null)
                 return existing;
 
-            var versions = await _modrinth.GetVersionsAsync(ProjectId, NormalizeVersion(minecraftVersion), "fabric", ct);
+            var versions = await _modrinth.GetVersionsAsync(ProjectId, normVersion, normLoader, ct);
             var release = versions.FirstOrDefault();
+            if (release == null && normLoader == "quilt")
+            {
+                versions = await _modrinth.GetVersionsAsync(ProjectId, normVersion, "fabric", ct);
+                release = versions.FirstOrDefault();
+            }
+
             if (release == null)
                 return null;
 
@@ -136,9 +175,11 @@ namespace Launcher.Services
             }
         }
 
-        private static IEnumerable<string> GetCandidateJarFiles(string minecraftVersion)
+        private static IEnumerable<string> GetCandidateJarFiles(string minecraftVersion, string loader)
         {
-            if (Version.TryParse(NormalizeVersion(minecraftVersion), out var version) && version.Major >= 26)
+            // Bundled 26.2 jar must strictly ONLY be used for Minecraft 26.2 on Fabric loader!
+            // Never return this jar for 26.3 or any other version.
+            if (IsMinecraft26_2(minecraftVersion) && NormalizeLoader(loader) == "fabric")
                 yield return BundledJar26;
         }
 
@@ -159,8 +200,5 @@ namespace Launcher.Services
             var hash = SHA256.HashData(stream);
             return Convert.ToHexString(hash);
         }
-
-        private static string NormalizeVersion(string minecraftVersion) =>
-            minecraftVersion.Split('-', '+', ' ')[0];
     }
 }

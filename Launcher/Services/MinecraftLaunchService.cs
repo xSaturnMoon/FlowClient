@@ -12,6 +12,7 @@ using CmlLib.Core.ModLoaders.FabricMC;
 using CmlLib.Core.ModLoaders.QuiltMC;
 using CmlLib.Core.ProcessBuilder;
 using Launcher.Models;
+using Launcher.ViewModels;
 
 namespace Launcher.Services
 {
@@ -40,6 +41,7 @@ namespace Launcher.Services
         private readonly SessionKeepAliveService _session = SessionKeepAliveService.Instance;
         private readonly FlowClientBrandingService _branding = new();
         private readonly VoiceChatService _voiceChat = new();
+        private readonly JeiService _jei = new();
         private readonly SharedGameSettingsService _sharedSettings = new();
         private readonly GlobalContentService _globalContent = new();
         private readonly ServerHistoryService _serverHistory = ServerHistoryService.Instance;
@@ -73,7 +75,10 @@ namespace Launcher.Services
                 _sharedSettings.ApplyToInstance(gameDir);
                 _globalContent.SyncToGameDirectory(gameDir);
 
-                var enableFlow = instance.EnableFlowMod && LauncherSettingsService.Instance.Current.EnableFlowClientMod;
+                var isVanilla = string.Equals(instance.Loader, "Vanilla", StringComparison.OrdinalIgnoreCase);
+                var supportsFlow = !isVanilla && LibraryViewModel.IsVersionAtLeast120(instance.MinecraftVersion);
+
+                var enableFlow = supportsFlow && instance.EnableFlowMod && LauncherSettingsService.Instance.Current.EnableFlowClientMod;
                 if (enableFlow && ShouldInjectBrandingMod(instance))
                 {
                     _branding.EnsureBrandingMod(gameDir, instance.MinecraftVersion, instance.Loader);
@@ -83,18 +88,41 @@ namespace Launcher.Services
                     _branding.RemoveBrandingMod(gameDir);
                 }
 
-                var enableVoice = instance.EnableVoiceChatMod && LauncherSettingsService.Instance.Current.EnableVoiceChatMod;
-                if (IsFabricInstance(instance) && enableVoice)
+                var enableVoice = supportsFlow && instance.EnableVoiceChatMod && LauncherSettingsService.Instance.Current.EnableVoiceChatMod;
+                if (enableVoice)
                 {
                     await _voiceChat.EnsureVoiceChatAsync(
                         gameDir,
                         instance.MinecraftVersion,
+                        instance.Loader,
                         progress,
                         cancellationToken);
                 }
                 else
                 {
                     _voiceChat.RemoveVoiceChatMod(gameDir);
+                }
+
+                var enableJei = supportsFlow && instance.EnableJeiMod;
+                var isFabric26_2WithFlow = string.Equals(instance.Loader, "Fabric", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(FlowClientBrandingService.NormalizeVersion(instance.MinecraftVersion), "26.2", StringComparison.OrdinalIgnoreCase)
+                    && enableFlow;
+
+                if (enableJei)
+                {
+                    if (!isFabric26_2WithFlow)
+                    {
+                        await _jei.EnsureJeiAsync(
+                            gameDir,
+                            instance.MinecraftVersion,
+                            instance.Loader,
+                            progress,
+                            cancellationToken);
+                    }
+                }
+                else
+                {
+                    _jei.RemoveJeiMod(gameDir);
                 }
 
                 var mcPath = new MinecraftPath(MinecraftRoot);
@@ -544,6 +572,9 @@ namespace Launcher.Services
 
         private static bool ShouldInjectBrandingMod(MinecraftInstance instance)
         {
+            if (!LibraryViewModel.IsVersionAtLeast120(instance.MinecraftVersion))
+                return false;
+
             if (IsFabricInstance(instance))
                 return true;
 

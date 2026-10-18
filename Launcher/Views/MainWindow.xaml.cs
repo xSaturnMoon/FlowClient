@@ -665,8 +665,9 @@ namespace Launcher.Views
                 NavModrinthContainer.BeginAnimation(FrameworkElement.HeightProperty, expandModrinth);
                 NavModrinthContainer.BeginAnimation(UIElement.OpacityProperty, fadeInModrinth);
 
-                // 6. Flow -> Expand (Only for modded loaders, hide on Vanilla)
-                if (!isVanilla)
+                // 6. Flow -> Expand (Only for modded loaders and MC >= 1.20)
+                var supportsFlow = !isVanilla && LibraryViewModel.IsVersionAtLeast120(item?.MinecraftVersion);
+                if (supportsFlow)
                 {
                     NavFlowContainer.Visibility = Visibility.Visible;
                     var expandFlow = new DoubleAnimation(0, 40, duration) { EasingFunction = cubic };
@@ -844,9 +845,12 @@ namespace Launcher.Views
         {
             if (_isInVersionSettingsMode)
             {
-                UpdateVersionSettingsSidebarActiveButton("Flow");
                 if (_viewCache.GetValueOrDefault("Library") is LibraryView lv)
                 {
+                    if (!lv.Vm.SupportsFlow)
+                        return;
+
+                    UpdateVersionSettingsSidebarActiveButton("Flow");
                     lv.Vm.SettingsTab = "Flow";
                 }
             }

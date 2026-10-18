@@ -1,9 +1,9 @@
 {
-  "version": "1.5.2",
+  "version": "1.5.3",
   "releaseDate": "October 18, 2026",
   "channel": "Stable",
-  "releaseNotes": "Flow Client v1.5.2: Introduced dedicated Flow ecosystem tab in version settings to enable or disable the Flow Client in-game suite and bundled companion dependencies (Just Enough Items and Simple Voice Chat); resolved JEI duplicate installation issue on Modrinth by recognizing it as bundled with Flow and displaying Installed (Flow); automated instance-specific mod configuration and launch injection.",
+  "releaseNotes": "Flow Client v1.5.3: Strict version gating for Flow ecosystem tab (< 1.20 and Vanilla instances hide Flow tab and sidebar button); strict Simple Voice Chat version resolution ensuring 26.2 jar is never injected into 26.3 or other versions; dynamic version-matching JEI (Just Enough Items) service downloading and caching the exact jar for non-26.2 versions; safe multi-version Flow branding resolution preventing incompatible mod jar injection.",
   "manifestUrl": "https://raw.githubusercontent.com/xSaturnMoon/FlowClient/main/Launcher/Assets/update.json",
   "githubRepository": "xSaturnMoon/FlowClient",
-  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.2/FlowClient-v1.5.2.zip"
+  "downloadUrl": "https://github.com/xSaturnMoon/FlowClient/releases/download/v1.5.3/FlowClient-v1.5.3.zip"
 }
